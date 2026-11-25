@@ -107,32 +107,27 @@ class PhoneLoginTests(TestCase):
         self.assertEqual(User.objects.filter(phone="+998901234567").count(), 1)
 
 
-class ReadablePasswordTests(TestCase):
-    """The admin reads a worker's password out over the phone, so it is stored as typed."""
+class PasswordSecurityTests(TestCase):
+    """Plaintext passwords are never stored or exposed."""
 
-    def test_setting_a_password_keeps_the_readable_copy_in_step(self):
+    def test_password_is_hashed_not_stored_plaintext(self):
         user = make_user("bobur", [UserRole.ARRACHI])
-        self.assertEqual(user.password_plain, PASSWORD)
         self.assertTrue(user.check_password(PASSWORD))
+        self.assertFalse(hasattr(user, "password_plain"))
 
-        user.set_password("Boshqa-Parol-2026")
-        user.save()
-        self.assertEqual(user.password_plain, "Boshqa-Parol-2026")
-        self.assertTrue(user.check_password("Boshqa-Parol-2026"))
-
-    def test_admin_sees_the_phone_and_password_on_the_worker_list(self):
+    def test_admin_sees_phone_on_the_worker_list(self):
         make_user("bobur", [UserRole.ARRACHI], phone="+998901234567", full_name="Bobur Karimov")
         self.client.force_login(make_admin())
 
         response = self.client.get(reverse("users:user_list"))
         self.assertContains(response, "+998 90 123 45 67")
-        self.assertContains(response, PASSWORD)
+        self.assertNotContains(response, PASSWORD)
 
     def test_a_worker_never_sees_the_worker_list(self):
         self.client.force_login(make_user("bobur", [UserRole.ARRACHI]))
         self.assertEqual(self.client.get(reverse("users:user_list")).status_code, 403)
 
-    def test_admin_resetting_a_password_updates_both_copies(self):
+    def test_admin_resetting_a_password_hashes_it(self):
         worker = make_user("bobur", [UserRole.ARRACHI])
         self.client.force_login(make_admin())
 
@@ -148,7 +143,6 @@ class ReadablePasswordTests(TestCase):
             },
         )
         worker.refresh_from_db()
-        self.assertEqual(worker.password_plain, "Yangi-Parol-2026")
         self.assertTrue(worker.check_password("Yangi-Parol-2026"))
 
 

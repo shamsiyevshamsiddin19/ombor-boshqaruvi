@@ -24,8 +24,8 @@
     </div>
   </form>
 
-  {# ---- Kirish ma'lumotlari: admin ishchiga telefon orqali aytib berishi uchun ---- #}
-  <div class="panel p-5 sm:p-6 lg:col-span-5" x-data="{ show: false }">
+  {# ---- Kirish ma'lumotlari ---- #}
+  <div class="panel p-5 sm:p-6 lg:col-span-5">
     <h2 class="panel-title">{% translate "Kirish ma'lumotlari" %}</h2>
     <dl class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
       <div>
@@ -34,20 +34,7 @@
       </div>
       <div>
         <dt class="text-muted" style="font-size:12px">{% translate "Parol" %}</dt>
-        <dd class="flex items-center gap-2 mt-0.5">
-          {% if account.password_plain %}
-            <span class="num font-medium" x-show="show" x-cloak>{{ account.password_plain }}</span>
-            <span class="num font-medium tracking-widest" x-show="!show">••••••••</span>
-            <button type="button" @click="show = !show" class="text-muted hover:text-ink"
-                    :aria-label="show ? '{% translate "Parolni yashirish" %}' : '{% translate "Parolni ko'rsatish" %}'"
-                    aria-label="{% translate "Parolni ko'rsatish" %}">
-              <span x-show="!show">{% icon "eye" 18 %}</span>
-              <span x-show="show" x-cloak>{% icon "eye-off" 18 %}</span>
-            </button>
-          {% else %}
-            <span class="text-muted">{% translate "Noma'lum — yangisini o'rnating" %}</span>
-          {% endif %}
-        </dd>
+        <dd class="mt-0.5 text-muted">{% translate "Yangisini o'rnatish uchun chapdagi formadan foydalaning" %}</dd>
       </div>
     </dl>
   </div>

@@ -142,8 +142,6 @@ class UserManager(DjangoUserManager.from_queryset(UserQuerySet)):
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_approved", True)
         extra_fields.setdefault("roles", [UserRole.ADMIN.value])
-        if password:
-            extra_fields.setdefault("password_plain", password)
         return super().create_superuser(username, email, password, **extra_fields)
 
 
@@ -158,11 +156,8 @@ class User(AbstractUser):
         validators=[validate_phone],
         help_text=_("Tizimga shu raqam bilan kiriladi."),
     )
-    #: The password as typed, kept readable so an administrator can tell a worker
-    #: their own password over the phone. Requested deliberately; it means a copy of
-    #: this database exposes every worker account, so keep backups and admin access
-    #: as tightly held as the warehouse itself.
-    password_plain = models.CharField(_("Parol"), max_length=128, blank=True, default="")
+    # password_plain field removed — storing plaintext passwords is a critical
+    # security risk. Admins reset passwords via the edit form instead.
     roles = models.JSONField(
         default=list,
         blank=True,
@@ -192,13 +187,7 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
     def set_password(self, raw_password):
-        """Hash the password *and* keep the readable copy the admin screens show.
-
-        Every path that sets a password (registration, the admin's reset field,
-        ``createsuperuser``, ``seed_demo``) goes through here, so the two stay in step.
-        """
         super().set_password(raw_password)
-        self.password_plain = raw_password or ""
 
     # --- Phone ------------------------------------------------------------
     @property

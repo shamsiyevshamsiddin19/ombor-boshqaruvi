@@ -20,14 +20,13 @@ class SeedDemoCommandTests(TestCase):
         admin = User.objects.get(phone="+998900000001")
         self.assertEqual(admin.full_name, "Akmal Rustamov")
         self.assertTrue(admin.is_superuser)
-        self.assertEqual(admin.password_plain, "ombor-demo-2026")
         self.assertTrue(admin.check_password("ombor-demo-2026"))
 
         arrachi = User.objects.get(phone="+998900000002")
         self.assertEqual(arrachi.full_name, "Bobur Karimov")
         self.assertEqual(arrachi.roles, [UserRole.ARRACHI.value])
         self.assertTrue(arrachi.is_approved)
-        self.assertEqual(arrachi.password_plain, "ombor-demo-2026")
+        self.assertTrue(arrachi.check_password("ombor-demo-2026"))
 
         pending = User.objects.get(phone="+998900000006")
         self.assertEqual(pending.full_name, "Otabek Nazarov")
@@ -37,6 +36,5 @@ class SeedDemoCommandTests(TestCase):
         out2 = StringIO()
         call_command("seed_demo", "--users-only", "--password", "new-password-123", force=True, stdout=out2)
         admin.refresh_from_db()
-        self.assertEqual(admin.password_plain, "new-password-123")
         self.assertTrue(admin.check_password("new-password-123"))
 

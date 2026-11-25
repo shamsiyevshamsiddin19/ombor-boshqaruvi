@@ -51,14 +51,14 @@
           <th class="w-[180px] min-w-[160px] text-left">{% translate "Telefon raqami" %}</th>
           <th class="min-w-[220px] text-left">{% translate "Ishchi" %}</th>
           <th class="min-w-[220px] text-left">{% translate "Kasblari" %}</th>
-          <th class="w-[160px] min-w-[140px] text-left">{% translate "Parol" %}</th>
+          <th class="w-[160px] min-w-[140px] text-left">{% translate "Parol holati" %}</th>
           <th class="w-[120px] min-w-[100px] text-center">{% translate "Holati" %}</th>
           <th class="w-[130px] min-w-[110px] text-right">{% translate "Amal" %}</th>
         </tr>
       </thead>
       <tbody>
         {% for u in users %}
-        <tr class="hover:bg-raised/40 transition-colors" x-data="{ show: false }">
+        <tr class="hover:bg-raised/40 transition-colors">
           {# 1. Telefon raqami #}
           <td class="px-5 py-3.5 whitespace-nowrap">
             <span class="num font-mono text-[13.5px] font-medium text-ink">{{ u.phone_display|default:u.login_id }}</span>
@@ -90,21 +90,9 @@
             </div>
           </td>
 
-          {# 4. Parol #}
+          {# 4. Parol holati #}
           <td class="px-4 py-3.5 whitespace-nowrap">
-            {% if u.password_plain %}
-              <div class="inline-flex items-center gap-1.5 rounded border border-rule bg-raised/50 px-2 py-0.5">
-                <span class="num font-mono text-xs text-ink" x-show="show" x-cloak>{{ u.password_plain }}</span>
-                <span class="num font-mono text-xs tracking-widest text-muted" x-show="!show">••••••</span>
-                <button type="button" @click="show = !show" class="text-muted hover:text-ink transition-colors"
-                        :aria-label="show ? '{% translate "Parolni yashirish" %}' : '{% translate "Parolni ko'rsatish" %}'">
-                  <span x-show="!show">{% icon "eye" 14 %}</span>
-                  <span x-show="show" x-cloak>{% icon "eye-off" 14 %}</span>
-                </button>
-              </div>
-            {% else %}
-              <span class="text-xs text-muted">—</span>
-            {% endif %}
+            <span class="text-xs text-muted">{% translate "O'rnatilgan" %}</span>
           </td>
 
           {# 5. Holati #}
@@ -134,7 +122,7 @@
   {# Mobile Card List #}
   <ul class="md:hidden divide-y divide-rule">
     {% for u in users %}
-    <li class="flex items-center justify-between gap-3 px-4 py-3.5" x-data="{ show: false }">
+    <li class="flex items-center justify-between gap-3 px-4 py-3.5">
       <div class="min-w-0 flex-1">
         <div class="flex items-center gap-1.5">
           <p class="truncate font-medium text-ink text-[15px]">{{ u.display_name }}</p>
@@ -148,17 +136,6 @@
             <span class="text-[10px] text-muted">{% translate "rol yo'q" %}</span>
           {% endfor %}
         </div>
-        {% if u.password_plain %}
-          <div class="mt-1.5 flex items-center gap-1.5 text-xs">
-            <span class="text-muted">{% translate "Parol:" %}</span>
-            <span class="num font-mono text-ink font-medium" x-show="show" x-cloak>{{ u.password_plain }}</span>
-            <span class="num font-mono tracking-widest text-muted" x-show="!show">••••••</span>
-            <button type="button" @click="show = !show" class="text-muted hover:text-ink">
-              <span x-show="!show">{% icon "eye" 14 %}</span>
-              <span x-show="show" x-cloak>{% icon "eye-off" 14 %}</span>
-            </button>
-          </div>
-        {% endif %}
       </div>
       <div class="flex-none flex flex-col items-end gap-2">
         {% if not u.is_active %}

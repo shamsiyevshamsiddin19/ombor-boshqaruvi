@@ -216,11 +216,27 @@ class UserAdminEditForm(forms.ModelForm):
 
     def clean(self):
         cleaned = super().clean()
-        if self.acting_user is not None and self.instance.pk == self.acting_user.pk:
-            if UserRole.ADMIN not in (cleaned.get("roles") or []) and not self.instance.is_superuser:
-                self.add_error("roles", _("O'zingizdan administrator rolini olib tashlay olmaysiz."))
-            if not cleaned.get("is_active", True) or not cleaned.get("is_approved", True):
-                self.add_error(None, _("O'z hisobingizni o'chira yoki tasdiqdan chiqara olmaysiz."))
+        target = self.instance
+        actor = self.acting_user
+
+        if actor is not None:
+            # Superuser hisoblarini faqat superuser tahrir qila oladi
+            if target.is_superuser and not actor.is_superuser:
+                raise forms.ValidationError(
+                    _("Superuser hisobini faqat boshqa superuser tahrir qila oladi.")
+                )
+            # Admin hisobiga oddiy admin ADMIN rolini bermaydi/olmasligi kerak
+            if target.pk != actor.pk and target.is_warehouse_admin and not actor.is_superuser:
+                raise forms.ValidationError(
+                    _("Boshqa administrator hisobini tahrirlash uchun superuser huquqi kerak.")
+                )
+            # O'zini o'zi himoyalash
+            if target.pk == actor.pk:
+                if UserRole.ADMIN not in (cleaned.get("roles") or []) and not target.is_superuser:
+                    self.add_error("roles", _("O'zingizdan administrator rolini olib tashlay olmaysiz."))
+                if not cleaned.get("is_active", True) or not cleaned.get("is_approved", True):
+                    self.add_error(None, _("O'z hisobingizni o'chira yoki tasdiqdan chiqara olmaysiz."))
+
         if cleaned.get("is_approved") and not cleaned.get("roles"):
             self.add_error("roles", _("Tasdiqlangan foydalanuvchida kamida bitta rol bo'lishi kerak."))
         return cleaned
