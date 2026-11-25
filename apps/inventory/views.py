@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -20,7 +20,6 @@ from apps.users.permissions import (
 )
 
 from . import selectors, services
-from .templatetags.wms import month_name
 from .forms import (
     ExpenseFilterForm,
     ExpenseForm,
@@ -45,6 +44,7 @@ from .models import (
     transaction_type_label,
     unit_short_label,
 )
+from .templatetags.wms import month_name
 
 
 def apply_service_errors(form, exc: ValidationError) -> None:

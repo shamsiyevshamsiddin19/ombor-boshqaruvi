@@ -15,7 +15,6 @@ from ..models import (
     default_roles_for_category,
 )
 
-
 PRICE_FIELDS = ("unit_price_usd", "total_price_usd", "total_value_usd")
 
 

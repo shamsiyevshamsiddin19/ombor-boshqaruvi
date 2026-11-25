@@ -8,7 +8,6 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.inventory import services
-from apps.inventory.models import MaterialCategory, MeasurementUnit
 from apps.inventory.tests.factories import (
     PASSWORD,
     make_admin,

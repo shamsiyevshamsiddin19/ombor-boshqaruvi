@@ -8,7 +8,14 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.inventory import services
-from apps.inventory.models import BaseMaterial, InventoryTransaction, LeftoverOffcut, MaterialCategory, MeasurementUnit, TransactionType
+from apps.inventory.models import (
+    BaseMaterial,
+    InventoryTransaction,
+    LeftoverOffcut,
+    MaterialCategory,
+    MeasurementUnit,
+    TransactionType,
+)
 from apps.users.models import UserRole
 
 from .factories import frozen_at, make_admin, make_material, make_user, stock_up

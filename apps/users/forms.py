@@ -17,7 +17,6 @@ from .models import (
     worker_role_choices,
 )
 
-
 #: Lets ``partials/password_field.html`` flip the input between dots and plain text.
 PASSWORD_EYE_ATTRS = {"x-bind:type": "show ? 'text' : 'password'"}
 

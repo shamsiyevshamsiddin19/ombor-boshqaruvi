@@ -6,7 +6,6 @@ from apps.users.permissions import is_warehouse_admin
 
 from . import selectors
 
-
 #: url_name -> the nav item that should be highlighted
 NAV_SECTIONS = {
     "home": "home",

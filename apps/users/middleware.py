@@ -2,6 +2,7 @@ from django.conf import settings
 from django.middleware.locale import LocaleMiddleware
 from django.utils import translation
 
+
 class CookieLocaleMiddleware(LocaleMiddleware):
     """Interface language comes only from the language cookie (set by the UZ/RU/EN switch).
 
