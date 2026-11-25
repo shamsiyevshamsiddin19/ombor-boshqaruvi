@@ -60,6 +60,7 @@
       <p class="mt-2 text-negative" style="font-size:12px" x-show="(max - q) < min && min > 0">{% blocktranslate with amount=m.minimum_threshold|qty unit=m.unit_short %}Minimal qoldiqdan ({{ amount }} {{ unit }}) kam bo'ladi — administrator xarid ro'yxatida ko'radi.{% endblocktranslate %}</p>
     </div>
 
+    {% include "partials/field.html" with field=form.project %}
     {% include "partials/field.html" with field=form.notes %}
 
     <button type="submit" class="btn btn-primary btn-lg btn-block">{% icon "take" 18 %} {% translate "Oldim — tasdiqlash" %}</button>

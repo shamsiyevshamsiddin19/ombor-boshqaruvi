@@ -36,6 +36,7 @@ from .models import (
     InventoryTransaction,
     LeftoverOffcut,
     MeasurementUnit,
+    Project,
     category_choices,
     category_codes,
     default_roles_for_category,
@@ -122,6 +123,7 @@ class WithdrawWholeView(StockTakerRequiredMixin, FormView):
                 user=self.request.user,
                 quantity=form.cleaned_data["quantity"],
                 notes=form.cleaned_data.get("notes", ""),
+                project=form.cleaned_data.get("project"),
             )
         except ValidationError as exc:
             apply_service_errors(form, exc)
@@ -215,6 +217,7 @@ class OffcutWithdrawView(StockTakerRequiredMixin, FormView):
                 user=self.request.user,
                 quantity=form.cleaned_data["quantity"],
                 notes=form.cleaned_data.get("notes", ""),
+                project=form.cleaned_data.get("project"),
             )
         except ValidationError as exc:
             apply_service_errors(form, exc)
@@ -629,11 +632,12 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                     _("Birlik narxi (USD)"),
                     _("Jami (USD)"),
                     _("Qoldiq o'lchami (mm)"),
+                    _("Loyiha"),
                     _("Ishchi"),
                     _("Izoh"),
                 ]
             )
-            for txn in qs.iterator(chunk_size=500):
+            for txn in qs.select_related("project").iterator(chunk_size=500):
                 yield writer.writerow(
                     [
                         timezone.localtime(txn.created_at).strftime("%Y-%m-%d %H:%M"),
@@ -645,6 +649,7 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                         f"{txn.unit_price_usd}",
                         f"{txn.total_price_usd}",
                         f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",
+                        _csv_safe(txn.project.name if txn.project else ""),
                         _csv_safe(txn.user.display_name),
                         _csv_safe(txn.notes),
                     ]
@@ -653,4 +658,50 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
         response = StreamingHttpResponse(rows(), content_type="text/csv; charset=utf-8")
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
+
+
+# ---------------------------------------------------------------------------
+# Project management (admin only)
+# ---------------------------------------------------------------------------
+class ProjectListView(WarehouseAdminRequiredMixin, ListView):
+    template_name = "inventory/project_list.html"
+    context_object_name = "projects"
+    paginate_by = 50
+
+    def get_queryset(self):
+        qs = Project.objects.select_related("created_by").order_by("-is_active", "-created_at")
+        status = self.request.GET.get("status", "active")
+        if status == "active":
+            qs = qs.filter(is_active=True)
+        elif status == "archived":
+            qs = qs.filter(is_active=False)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["status"] = self.request.GET.get("status", "active")
+        return context
+
+
+class ProjectCreateView(WarehouseAdminRequiredMixin, CreateView):
+    model = Project
+    template_name = "inventory/project_form.html"
+    fields = ["name", "client", "notes"]
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.save()
+        messages.success(self.request, _("“%(name)s” loyihasi yaratildi.") % {"name": form.instance.name})
+        return redirect("inventory:project_list")
+
+
+class ProjectUpdateView(WarehouseAdminRequiredMixin, UpdateView):
+    model = Project
+    template_name = "inventory/project_form.html"
+    fields = ["name", "client", "is_active", "notes"]
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, _("“%(name)s” saqlandi.") % {"name": form.instance.name})
+        return redirect("inventory:project_list")
 

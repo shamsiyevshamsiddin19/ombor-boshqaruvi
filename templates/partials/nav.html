@@ -58,6 +58,16 @@
   </li>
   <li>
     <a class="nav-item relative"
+       href="{% url 'inventory:project_list' %}"
+       title="{% translate "Loyihalar" %}"
+       :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
+       {% if nav_section == "projects" %}aria-current="page"{% endif %}>
+      {% icon "folder" 18 "flex-none" %}
+      <span class="truncate" :class="{ 'lg:hidden': collapsed }">{% translate "Loyihalar" %}</span>
+    </a>
+  </li>
+  <li>
+    <a class="nav-item relative"
        href="{% url 'inventory:expenses' %}"
        title="{% translate "Xarajatlar" %}"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"

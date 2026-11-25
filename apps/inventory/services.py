@@ -20,6 +20,7 @@ from .models import (
     InventoryTransaction,
     LeftoverOffcut,
     OperatingExpense,
+    Project,
     TransactionType,
     WholeMaterial,
     default_roles_for_category,
@@ -231,7 +232,7 @@ def record_kirim(
 # ---------------------------------------------------------------------------
 # Chiqim: worker withdrawals
 # ---------------------------------------------------------------------------
-def withdraw_whole_material(*, material: BaseMaterial, user, quantity, notes: str = "") -> InventoryTransaction:
+def withdraw_whole_material(*, material: BaseMaterial, user, quantity, notes: str = "", project: Project | None = None) -> InventoryTransaction:
     """Worker takes whole units (sheets, litres, pieces...) from the shelf."""
     _require_taker(user)
     _require_access(user, material)
@@ -261,11 +262,12 @@ def withdraw_whole_material(*, material: BaseMaterial, user, quantity, notes: st
             total_price_usd=(unit_price * quantity).quantize(CENTS, rounding=ROUND_HALF_UP),
             stock_after=stock.quantity,
             unit_of_measure=base.unit_of_measure,
+            project=project,
             notes=notes.strip(),
         )
 
 
-def withdraw_offcut(*, offcut: LeftoverOffcut, user, quantity: int = 1, notes: str = "") -> InventoryTransaction:
+def withdraw_offcut(*, offcut: LeftoverOffcut, user, quantity: int = 1, notes: str = "", project: Project | None = None) -> InventoryTransaction:
     """Worker reuses offcut piece(s). The record is removed once no pieces remain."""
     _require_taker(user)
     _require_access(user, offcut.material)
@@ -304,6 +306,7 @@ def withdraw_offcut(*, offcut: LeftoverOffcut, user, quantity: int = 1, notes: s
             is_offcut=True,
             offcut_length_mm=length_mm,
             offcut_width_mm=width_mm,
+            project=project,
             notes=notes.strip(),
         )
 

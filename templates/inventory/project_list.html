@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load wms i18n %}
+{% block title %}{% translate "Loyihalar" %}{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <h1 class="font-bold text-[24px] leading-8 lg:text-[30px] lg:leading-9 text-ink">{% translate "Loyihalar" %}</h1>
+    <p class="mt-0.5 text-muted" style="font-size:14px">{% translate "Buyurtma va loyihalar — chiqimlarni guruhlash uchun" %}</p>
+  </div>
+  <a href="{% url 'inventory:project_create' %}" class="btn btn-primary min-h-10 px-4 text-sm font-medium">{% icon "plus" 16 %} {% translate "Yangi loyiha" %}</a>
+</div>
+
+<div class="mt-5 flex items-center gap-1.5 border-b border-line pb-2">
+  <a class="chip-sm" href="?status=active" {% if status == 'active' %}aria-current="true"{% endif %}>{% translate "Faol" context "filter" %}</a>
+  <a class="chip-sm" href="?status=archived" {% if status == 'archived' %}aria-current="true"{% endif %}>{% translate "Arxiv" %}</a>
+  <a class="chip-sm" href="?status=all" {% if status == 'all' %}aria-current="true"{% endif %}>{% translate "Hammasi" %}</a>
+</div>
+
+{% if projects %}
+<div class="panel mt-4 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead><tr>
+      <th class="px-4 py-3 text-left font-medium text-muted">{% translate "Nomi" %}</th>
+      <th class="px-4 py-3 text-left font-medium text-muted">{% translate "Mijoz" %}</th>
+      <th class="px-4 py-3 text-left font-medium text-muted">{% translate "Holati" %}</th>
+      <th class="px-4 py-3 text-left font-medium text-muted">{% translate "Yaratildi" %}</th>
+      <th class="px-4 py-3"></th>
+    </tr></thead>
+    <tbody>
+    {% for p in projects %}
+      <tr class="border-t border-line">
+        <td class="px-4 py-3 font-medium">{{ p.name }}</td>
+        <td class="px-4 py-3 text-muted">{{ p.client|default:"—" }}</td>
+        <td class="px-4 py-3">
+          {% if p.is_active %}<span class="badge badge-green">{% translate "Faol" context "status" %}</span>
+          {% else %}<span class="badge badge-gray">{% translate "Arxiv" %}</span>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-muted num">{{ p.created_at|date:"d.m.Y" }}</td>
+        <td class="px-4 py-3 text-right"><a href="{% url 'inventory:project_edit' p.pk %}" class="link text-xs">{% translate "Tahrirlash" %}</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "partials/pagination.html" %}
+{% else %}
+<p class="mt-8 text-center text-muted">{% translate "Hali loyiha yo'q." %}</p>
+{% endif %}
+{% endblock %}

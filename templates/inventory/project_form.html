@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load wms i18n %}
+{% block title %}{% if object.pk %}{{ object.name }}{% else %}{% translate "Yangi loyiha" %}{% endif %}{% endblock %}
+{% block content %}
+<div class="max-w-[600px]">
+  <a href="{% url 'inventory:project_list' %}" class="inline-flex items-center gap-1.5 text-xs text-muted hover:text-ink">{% icon "back" 14 %} {% translate "Loyihalar" %}</a>
+  <h1 class="mt-3 font-bold text-[24px] leading-8">{% if object.pk %}{% translate "Loyihani tahrirlash" %}{% else %}{% translate "Yangi loyiha" %}{% endif %}</h1>
+
+  <form method="post" class="panel form-stack mt-6 p-5 sm:p-6" novalidate>
+    {% csrf_token %}
+    {% include "partials/form_errors.html" %}
+    {% include "partials/field.html" with field=form.name %}
+    {% include "partials/field.html" with field=form.client %}
+    {% if form.is_active %}{% include "partials/field.html" with field=form.is_active %}{% endif %}
+    {% include "partials/field.html" with field=form.notes %}
+    <button type="submit" class="btn btn-primary btn-lg btn-block">{% if object.pk %}{% translate "Saqlash" %}{% else %}{% translate "Yaratish" %}{% endif %}</button>
+  </form>
+</div>
+{% endblock %}

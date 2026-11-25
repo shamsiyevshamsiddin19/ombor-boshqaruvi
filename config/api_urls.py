@@ -9,6 +9,7 @@ router.register("materials", inventory_api.MaterialViewSet, basename="material")
 router.register("whole-materials", inventory_api.WholeMaterialViewSet, basename="whole-material")
 router.register("offcuts", inventory_api.LeftoverOffcutViewSet, basename="offcut")
 router.register("transactions", inventory_api.TransactionViewSet, basename="transaction")
+router.register("projects", inventory_api.ProjectViewSet, basename="project")
 router.register("expenses", inventory_api.ExpenseViewSet, basename="expense")
 router.register("pending-users", users_api.PendingUserViewSet, basename="pending-user")
 

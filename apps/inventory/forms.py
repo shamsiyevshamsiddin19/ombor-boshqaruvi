@@ -15,6 +15,7 @@ from .models import (
     ExpenseCategory,
     MaterialCategory,
     MeasurementUnit,
+    Project,
     WholeMaterial,
     active_category_choices,
     category_choices,
@@ -285,6 +286,12 @@ class WithdrawWholeForm(forms.Form):
     quantity = forms.DecimalField(
         label=_("Qancha oldingiz?"), min_value=Decimal("0.01"), max_digits=12, decimal_places=2
     )
+    project = forms.ModelChoiceField(
+        label=_("Loyiha / buyurtma"),
+        queryset=Project.objects.filter(is_active=True),
+        required=False,
+        empty_label=_("— tanlang (ixtiyoriy) —"),
+    )
     notes = forms.CharField(
         label=_("Izoh"),
         required=False,
@@ -330,6 +337,12 @@ class OffcutForm(forms.Form):
 
 class WithdrawOffcutForm(forms.Form):
     quantity = forms.IntegerField(label=_("Necha dona oldingiz?"), min_value=1, initial=1)
+    project = forms.ModelChoiceField(
+        label=_("Loyiha / buyurtma"),
+        queryset=Project.objects.filter(is_active=True),
+        required=False,
+        empty_label=_("— tanlang (ixtiyoriy) —"),
+    )
     notes = forms.CharField(label=_("Izoh"), required=False, max_length=500)
 
     def __init__(self, *args, max_quantity: int, **kwargs):
@@ -357,6 +370,11 @@ class ReportFilterForm(forms.Form):
     material = MaterialChoiceField(
         label=_("Material"), required=False, queryset=BaseMaterial.objects.order_by("name"), empty_label=_("Barchasi")
     )
+    project = forms.ModelChoiceField(
+        label=_("Loyiha"), required=False,
+        queryset=Project.objects.all().order_by("-is_active", "name"),
+        empty_label=_("Barchasi"),
+    )
 
     def clean_month(self) -> dt.date | None:
         value = self.cleaned_data.get("month")
@@ -378,6 +396,7 @@ class ReportFilterForm(forms.Form):
             "transaction_type": data.get("transaction_type", ""),
             "user_id": data["user"].pk if data.get("user") else None,
             "material_id": data["material"].pk if data.get("material") else None,
+            "project_id": data["project"].pk if data.get("project") else None,
         }
 
 

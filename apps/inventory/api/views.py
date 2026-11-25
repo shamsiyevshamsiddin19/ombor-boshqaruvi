@@ -8,13 +8,14 @@ from rest_framework.views import APIView
 from apps.users.permissions import CanTakeStock, IsWarehouseAdmin
 
 from .. import selectors, services
-from ..models import BaseMaterial, ExpenseCategory, InventoryTransaction, TransactionType, category_codes
+from ..models import BaseMaterial, ExpenseCategory, InventoryTransaction, Project, TransactionType, category_codes
 from .serializers import (
     BaseMaterialSerializer,
     KirimSerializer,
     LeftoverOffcutSerializer,
     OffcutWithdrawSerializer,
     OperatingExpenseSerializer,
+    ProjectSerializer,
     TransactionSerializer,
     WholeMaterialSerializer,
     WithdrawSerializer,
@@ -190,6 +191,25 @@ class DashboardAPIView(APIView):
                 "low_stock": WholeMaterialSerializer(low_stock, many=True, context={"request": request}).data,
             }
         )
+
+
+class ProjectViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Admin: manage projects / production orders."""
+
+    serializer_class = ProjectSerializer
+    permission_classes = [IsWarehouseAdmin]
+
+    def get_queryset(self):
+        return Project.objects.order_by("-is_active", "-created_at")
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
 
 class ExpenseViewSet(

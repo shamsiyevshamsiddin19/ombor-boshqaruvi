@@ -11,12 +11,13 @@
   <a href="{% url 'inventory:reports_export' %}?{{ export_query }}" class="btn btn-secondary">{% icon "download" %} {% translate "CSV yuklab olish" %}</a>
 </div>
 
-<form method="get" class="form-stack mt-6 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(4,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
+<form method="get" class="form-stack mt-6 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
   <div>{% include "partials/field.html" with field=filter_form.month %}</div>
   <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
   <div>{% include "partials/field.html" with field=filter_form.category %}</div>
   <div>{% include "partials/field.html" with field=filter_form.user %}</div>
-  <div class="col-span-2 md:col-span-1">{% include "partials/field.html" with field=filter_form.material %}</div>
+  <div>{% include "partials/field.html" with field=filter_form.material %}</div>
+  <div>{% include "partials/field.html" with field=filter_form.project %}</div>
   <div class="col-span-2 flex gap-2 md:col-span-1">
     <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
     <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
