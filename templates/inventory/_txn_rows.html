@@ -77,10 +77,10 @@
         {# 7. Narxlar (show_price) #}
         {% if show_price %}
         <td class="text-right whitespace-nowrap font-mono text-xs text-muted">
-          {% if t.unit_price_usd %}{{ t.unit_price_usd|usd:4 }}{% else %}—{% endif %}
+          {% if t.unit_price_usd != None %}{{ t.unit_price_usd|usd:4 }}{% else %}—{% endif %}
         </td>
         <td class="text-right whitespace-nowrap font-mono text-[13.5px] font-semibold text-ink">
-          {% if t.total_price_usd %}{{ t.total_price_usd|usd }}{% else %}<span class="text-muted font-normal">—</span>{% endif %}
+          {% if t.total_price_usd != None %}{{ t.total_price_usd|usd }}{% else %}<span class="text-muted font-normal">—</span>{% endif %}
         </td>
         {% endif %}
 
@@ -134,7 +134,7 @@
         <span class="text-xs text-muted font-sans ml-0.5">
           {% if t.is_offcut %}{% translate "dona" %}{% else %}{{ t.material.unit_short }}{% endif %}
         </span>
-        {% if show_price and t.total_price_usd %}
+        {% if show_price and t.total_price_usd != None %}
           <span class="block text-xs text-muted mt-0.5">{{ t.total_price_usd|usd }}</span>
         {% endif %}
       </div>

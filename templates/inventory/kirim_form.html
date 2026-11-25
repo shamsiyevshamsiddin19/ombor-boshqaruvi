@@ -135,7 +135,7 @@
                 {% for e in form.quantity.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
                 {% for e in form.containers.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
                 <p class="text-[11px] text-muted mt-1 font-mono" x-show="m && m.container && containers" x-cloak>
-                  = <strong class="text-ink font-semibold" x-text="n(qty)"></strong> <span x-text="m.unit"></span>
+                  = <strong class="text-ink font-semibold" x-text="n(qty)"></strong> <span x-text="m ? m.unit : ''"></span>
                 </p>
               </td>
 
