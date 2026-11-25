@@ -143,16 +143,14 @@ class WorkerRegistrationForm(UserCreationForm):
         return phone
 
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.full_name = self.cleaned_data["full_name"].strip()
-        user.phone = self.cleaned_data["phone"]
-        user.username = user.phone
-        user.roles = normalize_roles(self.cleaned_data["roles"])
-        user.is_approved = False
-        user.is_active = True
-        if commit:
-            user.save()
-        return user
+        from . import services
+
+        return services.register_worker(
+            phone=self.cleaned_data["phone"],
+            password=self.cleaned_data["password1"],
+            full_name=self.cleaned_data["full_name"].strip(),
+            roles=self.cleaned_data["roles"],
+        )
 
 
 class RoleAssignmentForm(forms.ModelForm):

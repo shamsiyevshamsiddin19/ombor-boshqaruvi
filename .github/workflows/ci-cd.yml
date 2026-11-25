@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:18
+        image: postgres:16
         env:
           POSTGRES_DB: wms
           POSTGRES_USER: wms
@@ -36,8 +36,7 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          # Same major version as the production server (Ubuntu 26.04).
-          python-version: "3.14"
+          python-version: "3.12"
           cache: pip
 
       - name: Install dependencies
