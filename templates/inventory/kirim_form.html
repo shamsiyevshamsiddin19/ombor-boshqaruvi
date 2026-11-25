@@ -21,12 +21,13 @@
 
 <div class="mt-5"
      x-data="{
-       isDesktop: window.innerWidth >= 768,
+       isDesktop: window.innerWidth >= 1024,
        meta: JSON.parse(document.getElementById('material-meta').textContent),
        allMaterials: JSON.parse(document.getElementById('kirim-materials').textContent),
        category: '{{ form.category.value|default_if_none:''|escapejs }}',
        material: '{{ form.material.value|default_if_none:''|escapejs }}',
        containers: Number('{{ form.containers.value|default_if_none:''|escapejs }}') || '',
+       mobileQtyMode: 'container',
        quantity: '{{ form.quantity.value|default_if_none:''|escapejs }}',
        mode: '{{ form.price_mode.value|default_if_none:'total'|escapejs }}',
        price: '{{ form.price_usd.value|default_if_none:''|escapejs }}',
@@ -50,7 +51,7 @@
        usd(v, d = 2) { return '$' + Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
        n(v) { return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
      }"
-     @resize.window="isDesktop = window.innerWidth >= 768">
+     @resize.window="isDesktop = window.innerWidth >= 1024">
 
   <form method="post" autocomplete="off" novalidate>
     {% csrf_token %}
@@ -91,7 +92,7 @@
     {# =================== UNIFIED EXCEL DATA GRID =================== #}
     <div class="panel overflow-hidden shadow-xs">
       {# Desktop Excel Table #}
-      <div class="hidden md:block overflow-x-auto">
+      <div class="hidden lg:block overflow-x-auto">
         <table class="grid-table">
           <thead>
             <tr>
@@ -254,8 +255,8 @@
         </table>
       </div>
 
-      {# Mobile Card View (md:hidden) #}
-      <div class="md:hidden p-4 form-stack bg-surface">
+      {# Mobile Card View (lg:hidden) #}
+      <div class="lg:hidden p-4 form-stack bg-surface">
         <div>
           <label class="field-label" for="m-{{ form.material.id_for_label }}">{{ form.material.label }}</label>
           <select name="{{ form.material.html_name }}" id="m-{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="isDesktop" class="control" required x-init="$el.querySelectorAll('[data-server]').forEach(o => o.remove())">
@@ -268,14 +269,24 @@
           <p class="text-[11px] text-muted mt-1" x-show="m && m.dims" x-cloak x-text="m ? m.dims : ''"></p>
         </div>
 
-        <div class="grid grid-cols-2 gap-2" x-show="m && m.container" x-cloak>
-          <div>
-            <label class="field-label">{{ form.containers.label }}</label>
-            <input type="number" name="{{ form.containers.html_name }}" step="0.01" min="0.01" :disabled="isDesktop" class="control font-mono" x-model.number="containers" placeholder="5">
+        <div x-show="m && m.container" x-cloak>
+          <div class="flex items-center gap-2 mb-2">
+            <button type="button" class="text-xs px-2 py-1 rounded" :class="mobileQtyMode === 'container' ? 'bg-accent text-white' : 'bg-raised text-muted'" @click="mobileQtyMode = 'container'">{% translate "Idish" %}</button>
+            <button type="button" class="text-xs px-2 py-1 rounded" :class="mobileQtyMode === 'direct' ? 'bg-accent text-white' : 'bg-raised text-muted'" @click="mobileQtyMode = 'direct'; containers = ''">{% translate "Birlik" %}</button>
           </div>
-          <div>
-            <label class="field-label">{% translate "Miqdor" %}</label>
-            <input type="text" disabled class="control font-mono bg-raised" :value="qty + (m ? ' ' + m.unit : '')" readonly>
+          <div class="grid grid-cols-2 gap-2" x-show="mobileQtyMode === 'container'">
+            <div>
+              <label class="field-label">{{ form.containers.label }}</label>
+              <input type="number" name="{{ form.containers.html_name }}" step="0.01" min="0.01" :disabled="isDesktop" class="control font-mono" x-model.number="containers" placeholder="5">
+            </div>
+            <div>
+              <label class="field-label">{% translate "Miqdor" %}</label>
+              <input type="text" disabled class="control font-mono bg-raised" :value="qty + (m ? ' ' + m.unit : '')" readonly>
+            </div>
+          </div>
+          <div x-show="mobileQtyMode === 'direct'">
+            <label class="field-label" for="m-qty-direct">{{ form.quantity.label }}</label>
+            <input type="number" id="m-qty-direct" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop || mobileQtyMode !== 'direct'" class="control font-mono" x-model="quantity" placeholder="100">
           </div>
         </div>
 
@@ -283,7 +294,7 @@
           <label class="field-label" for="m-{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
           <input type="number" id="m-{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop || !!(m && m.container && containers)" class="control font-mono" x-model="quantity" placeholder="100">
         </div>
-        <input type="hidden" name="{{ form.quantity.html_name }}" :value="qty" :disabled="isDesktop || !(m && m.container && containers)">
+        <input type="hidden" name="{{ form.quantity.html_name }}" :value="qty" :disabled="isDesktop || !(m && m.container && containers && mobileQtyMode === 'container')">
 
         <div>
           <label class="field-label" id="m-price-mode-label">{{ form.price_mode.label }}</label>
@@ -328,7 +339,7 @@
 
       {# Mobile Recent Receipts List #}
       {% if recent_kirim %}
-      <div class="md:hidden border-t border-line">
+      <div class="lg:hidden border-t border-line">
         <div class="px-4 py-2 bg-raised/70 text-[11px] font-semibold uppercase tracking-wider text-muted">
           {% translate "Oxirgi kirimlar" %}
         </div>

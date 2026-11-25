@@ -86,8 +86,8 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
 
         context.update(
             {
-                "whole_stock": whole.order_by("material__category", "material__name"),
-                "offcuts": offcuts,
+                "whole_stock": whole.order_by("material__category", "material__name")[:200],
+                "offcuts": offcuts[:200],
                 "query": query,
                 "category": category,
                 "tab": tab if tab in ("whole", "offcuts") else "whole",
