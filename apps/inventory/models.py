@@ -68,9 +68,6 @@ DEFAULT_CATEGORY_ROLES: dict[str, list[str]] = {
     MaterialCategory.HARDWARE: [UserRole.SBORKACHI],
 }
 
-#: Legacy categories supporting dimensions / offcuts; DB ``Category.supports_offcuts`` takes precedence.
-OFFCUT_CATEGORIES = frozenset({MaterialCategory.SHEET, MaterialCategory.LINEAR})
-
 
 def unit_short_label(unit: str) -> str:
     """'LITER' -> 'L' (or 'л' in Russian); unknown units are returned as they are."""
@@ -141,8 +138,7 @@ def category_codes() -> list[str]:
 
 
 def offcut_category_codes() -> set[str]:
-    db_codes = {row["code"] for row in _category_rows() if row["supports_offcuts"]}
-    return db_codes | OFFCUT_CATEGORIES
+    return {row["code"] for row in _category_rows() if row["supports_offcuts"]}
 
 
 def default_roles_for_category(category: str) -> list[str]:

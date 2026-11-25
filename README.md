@@ -186,7 +186,7 @@ python manage.py test                                               # SQLite
 DATABASE_URL=postgres://... python manage.py test                   # PostgreSQL
 ```
 
-129 tests, in `apps/users/tests/` and `apps/inventory/tests/`:
+189 tests, in `apps/users/tests/` and `apps/inventory/tests/`:
 
 1. **Registration and approval:** pending accounts, role checkboxes, no self-granted
    ADMIN, login blocked with a clear message, revoking approval ends live sessions,
@@ -250,7 +250,7 @@ low item (a stock track with a tick at the minimum).
 - **Prices hidden from workers** in pages and API, beyond the brief's role isolation.
 - **Uzbek UI copy**; model choice labels stay bilingual as given in the spec.
 - **Python:** the Docker image uses 3.12 as specified. Development and the test runs
-  for this delivery used Python 3.14 locally, where all tests pass on both PostgreSQL 17
+  for this delivery used Python 3.12 locally, where all tests pass on both PostgreSQL 16
   and SQLite.
 - Out of scope, as the brief says: native apps and QR codes. The API uses session
   authentication; add token auth if a separate client needs it.
@@ -271,7 +271,7 @@ redirect there. Static files are served by WhiteNoise.
 | `/usr/local/bin/wms-manage` | `manage.py` with the production env, e.g. `wms-manage createsuperuser` |
 
 **CI/CD** (`.github/workflows/ci-cd.yml`): every push and pull request runs Django checks,
-a missing-migrations check and the full test suite against PostgreSQL 18. A push to
+a missing-migrations check and the full test suite against PostgreSQL 16. A push to
 `main` that passes is then synced to the server with rsync over SSH and
 `deploy/deploy.sh` runs there: install requirements, `migrate`, `collectstatic`, restart
 `wms`, and fail the job unless the login page answers 200.
