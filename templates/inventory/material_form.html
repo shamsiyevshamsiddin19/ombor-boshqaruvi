@@ -40,7 +40,7 @@
 
 <div class="mt-5"
      x-data="{
-       isDesktop: window.innerWidth >= 768,
+       isDesktop: window.innerWidth >= 1024,
        isEdit: {% if material %}true{% else %}false{% endif %},
        offcutCats: JSON.parse(document.getElementById('offcut-categories').textContent || '[]'),
        workerRoles: JSON.parse(document.getElementById('worker-roles-meta').textContent || '[]'),
@@ -119,7 +119,7 @@
          this.dropdownStyle = `top:${Math.round(top)}px;left:${Math.round(Math.max(12, left))}px;width:${Math.round(width)}px;`;
        }
      }"
-     @resize.window="isDesktop = window.innerWidth >= 768; rolesOpen = false;"
+     @resize.window="isDesktop = window.innerWidth >= 1024; rolesOpen = false;"
      @scroll.window="if (rolesOpen) rolesOpen = false;"
      @keydown.escape.window="rolesOpen = false">
 
@@ -130,7 +130,7 @@
     {# =================== UNIFIED SMART DATA GRID =================== #}
     <div class="panel overflow-hidden shadow-xs">
       {# Desktop Excel Table #}
-      <div class="hidden md:block overflow-x-auto">
+      <div class="hidden lg:block overflow-x-auto">
         <table class="grid-table">
           <thead>
             <tr>
@@ -466,8 +466,8 @@
         </div>
       </template>
 
-      {# Mobile Card View (md:hidden) #}
-      <div class="md:hidden p-4 form-stack bg-surface">
+      {# Mobile Card View (lg:hidden) #}
+      <div class="lg:hidden p-4 form-stack bg-surface">
         <div>
           <label class="field-label" for="m-{{ form.name.id_for_label }}">{{ form.name.label }}</label>
           <input type="text" name="{{ form.name.html_name }}" id="m-{{ form.name.id_for_label }}" value="{{ form.name.value|default_if_none:'' }}" :disabled="isDesktop" class="control" placeholder="LMDF 18 mm oq" required>

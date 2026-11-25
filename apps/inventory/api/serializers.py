@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from apps.users.models import worker_role_choices
@@ -76,7 +77,7 @@ class BaseMaterialSerializer(serializers.ModelSerializer):
         length = attrs.get("length_mm", getattr(getattr(self.instance, "whole_stock", None), "length_mm", None))
         width = attrs.get("width_mm", getattr(getattr(self.instance, "whole_stock", None), "width_mm", None))
         if bool(length) != bool(width):
-            raise serializers.ValidationError({"width_mm": "length_mm and width_mm must be given together."})
+            raise serializers.ValidationError({"width_mm": _("O'lchamlar (uzunlik va kenglik) birga berilishi kerak.")})
         return attrs
 
     def create(self, validated_data):

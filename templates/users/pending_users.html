@@ -19,7 +19,7 @@
 <div class="panel mt-5 overflow-hidden shadow-xs">
   {% if pending_users %}
   {# Desktop Table #}
-  <div class="hidden md:block overflow-x-auto">
+  <div class="hidden lg:block overflow-x-auto">
     <table class="grid-table">
       <thead>
         <tr>
@@ -65,7 +65,7 @@
   </div>
 
   {# Mobile Card List #}
-  <ul class="md:hidden divide-y divide-rule">
+  <ul class="lg:hidden divide-y divide-rule">
     {% for p in pending_users %}
     <li class="flex items-center justify-between gap-3 px-4 py-3.5">
       <div class="min-w-0 flex-1">

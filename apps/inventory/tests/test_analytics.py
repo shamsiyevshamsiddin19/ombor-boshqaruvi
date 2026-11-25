@@ -170,8 +170,15 @@ class MonthlyFlowTests(TestCase):
         by_worker = {row["user__username"]: row["total_usd"] for row in selectors.consumption_by_worker(qs)}
         self.assertEqual(by_worker, {"arrachi": Decimal("56.92"), "roverchi": Decimal("12.31")})
 
-        (mdf_row,) = selectors.consumption_by_material(qs)
-        self.assertEqual(mdf_row["material__name"], "MDF")
-        self.assertEqual(mdf_row["quantity"], Decimal("-7"))  # 2 + 1 + 3 sheets + 1 offcut piece
-        self.assertEqual(mdf_row["total_usd"], Decimal("69.23"))
-        self.assertEqual(mdf_row["entries"], 4)
+        rows = list(selectors.consumption_by_material(qs))
+        whole_rows = [r for r in rows if not r["is_offcut"]]
+        offcut_rows = [r for r in rows if r["is_offcut"]]
+        self.assertEqual(len(whole_rows), 1)
+        self.assertEqual(whole_rows[0]["material__name"], "MDF")
+        self.assertEqual(whole_rows[0]["quantity"], Decimal("-6"))  # 2 + 1 + 3 sheets
+        self.assertEqual(whole_rows[0]["total_usd"], Decimal("69.23"))
+        self.assertEqual(whole_rows[0]["entries"], 3)
+        self.assertEqual(len(offcut_rows), 1)
+        self.assertEqual(offcut_rows[0]["quantity"], Decimal("-1"))
+        self.assertEqual(offcut_rows[0]["total_usd"], Decimal("0.00"))
+        self.assertEqual(offcut_rows[0]["entries"], 1)

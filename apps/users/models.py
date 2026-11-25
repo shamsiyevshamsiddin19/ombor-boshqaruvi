@@ -39,6 +39,19 @@ class WorkerRole(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def delete(self, *args, **kwargs):
+        from apps.inventory.models import BaseMaterial
+
+        if User.objects.filter(roles__contains=[self.code]).exists():
+            raise ValidationError(
+                _("Bu kasbga tayinlangan ishchilar bor — avval ularni boshqa kasbga ko'chiring.")
+            )
+        if BaseMaterial.objects.filter(allowed_roles__contains=[self.code]).exists():
+            raise ValidationError(
+                _("Bu kasbga bog'langan materiallar bor — avval ularning ruxsat ro'yxatini yangilang.")
+            )
+        return super().delete(*args, **kwargs)
+
 
 # Trade codes and names are read on almost every page, cached thread-safely via django.core.cache.
 ROLE_CACHE_KEY = "wms:worker_role_choices"

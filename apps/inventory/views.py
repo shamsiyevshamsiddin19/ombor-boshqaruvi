@@ -641,7 +641,7 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                         _csv_safe(txn.material.name),
                         _csv_safe(txn.material.category_short),
                         f"{txn.quantity_changed}",
-                        txn.material.unit_short,
+                        unit_short_label(txn.unit_of_measure) if txn.unit_of_measure else txn.material.unit_short,
                         f"{txn.unit_price_usd}",
                         f"{txn.total_price_usd}",
                         f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",

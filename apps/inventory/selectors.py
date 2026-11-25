@@ -297,17 +297,17 @@ def transaction_totals(qs: QuerySet[InventoryTransaction]) -> dict:
 
 
 def consumption_by_material(qs: QuerySet[InventoryTransaction]) -> QuerySet:
-    """Chiqim aggregated per material: how much of each material the workshop used."""
+    """Chiqim aggregated per material, offcuts grouped separately from whole stock."""
     return (
         qs.filter(transaction_type=TransactionType.CHIQIM)
         .order_by()
-        .values("material_id", "material__name", "material__category", "material__unit_of_measure")
+        .values("material_id", "material__name", "material__category", "material__unit_of_measure", "is_offcut")
         .annotate(
             quantity=Sum("quantity_changed"),
             total_usd=Coalesce(Sum("total_price_usd"), ZERO_MONEY),
             entries=Count("id"),
         )
-        .order_by("-total_usd", "material__name")
+        .order_by("-total_usd", "material__name", "is_offcut")
     )
 
 

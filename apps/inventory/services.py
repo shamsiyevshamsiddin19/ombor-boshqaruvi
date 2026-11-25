@@ -220,6 +220,7 @@ def record_kirim(
             unit_price_usd=unit_price,
             total_price_usd=batch_total,
             stock_after=new_quantity,
+            unit_of_measure=base.unit_of_measure,
             notes=notes.strip(),
             idempotency_key=idempotency_key or None,
         )
@@ -259,6 +260,7 @@ def withdraw_whole_material(*, material: BaseMaterial, user, quantity, notes: st
             unit_price_usd=unit_price,
             total_price_usd=(unit_price * quantity).quantize(CENTS, rounding=ROUND_HALF_UP),
             stock_after=stock.quantity,
+            unit_of_measure=base.unit_of_measure,
             notes=notes.strip(),
         )
 
@@ -298,6 +300,7 @@ def withdraw_offcut(*, offcut: LeftoverOffcut, user, quantity: int = 1, notes: s
             quantity_changed=Decimal(-pieces),
             unit_price_usd=ZERO,
             total_price_usd=ZERO,
+            unit_of_measure="PIECE",
             is_offcut=True,
             offcut_length_mm=length_mm,
             offcut_width_mm=width_mm,
@@ -355,12 +358,52 @@ def register_offcut(
             quantity_changed=Decimal(quantity),
             unit_price_usd=ZERO,
             total_price_usd=ZERO,
+            unit_of_measure="PIECE",
             is_offcut=True,
             offcut_length_mm=length_mm,
             offcut_width_mm=width_mm,
             notes=notes.strip(),
         )
     return offcut
+
+
+# ---------------------------------------------------------------------------
+# Reversal: admin corrects an incorrect entry
+# ---------------------------------------------------------------------------
+def reverse_transaction(*, entry: InventoryTransaction, user, reason: str = "") -> InventoryTransaction:
+    """Create a counter-entry that cancels ``entry`` and adjusts stock back."""
+    _require_admin(user)
+
+    if hasattr(entry, "reversal"):
+        raise ValidationError(_("Bu yozuv allaqachon qaytarilgan."))
+    if entry.transaction_type == TransactionType.REVERSAL:
+        raise ValidationError(_("Qaytarish yozuvini qaytarib bo'lmaydi."))
+
+    with transaction.atomic():
+        base = BaseMaterial.objects.select_for_update().get(pk=entry.material_id)
+
+        stock_after = None
+        if not entry.is_offcut and entry.transaction_type in (TransactionType.KIRIM, TransactionType.CHIQIM):
+            stock = WholeMaterial.objects.select_for_update().get(material=base)
+            stock.quantity -= entry.quantity_changed
+            stock.save(update_fields=["quantity", "updated_at"])
+            stock_after = stock.quantity
+
+        return InventoryTransaction.objects.create(
+            transaction_type=TransactionType.REVERSAL,
+            material=base,
+            user=user,
+            quantity_changed=-entry.quantity_changed,
+            unit_price_usd=entry.unit_price_usd,
+            total_price_usd=entry.total_price_usd,
+            stock_after=stock_after,
+            unit_of_measure=entry.unit_of_measure,
+            is_offcut=entry.is_offcut,
+            offcut_length_mm=entry.offcut_length_mm,
+            offcut_width_mm=entry.offcut_width_mm,
+            reversed_entry=entry,
+            notes=reason.strip(),
+        )
 
 
 # ---------------------------------------------------------------------------

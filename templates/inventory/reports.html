@@ -59,12 +59,12 @@
       {% for row in by_material %}
       <li class="border-t border-rule px-5 py-2.5">
         <div class="flex items-baseline justify-between gap-4">
-          <p class="min-w-0 truncate font-medium">{{ row.material__name }}</p>
+          <p class="min-w-0 truncate font-medium">{{ row.material__name }}{% if row.is_offcut %} <span class="text-xs text-muted font-normal">({% translate "qoldiq" %})</span>{% endif %}</p>
           <p class="num whitespace-nowrap text-right"><span class="font-semibold">{{ row.total_usd|usd }}</span></p>
         </div>
         <div class="mt-1 flex items-center gap-3">
           <div class="h-0.5 flex-1 bg-rule"><div class="h-0.5 {% if forloop.first %}bg-ink{% else %}bg-[#9ca3af]{% endif %}" style="width: {% widthratio row.total_usd by_material.0.total_usd 100 %}%"></div></div>
-          <p class="num whitespace-nowrap text-muted" style="font-size:12px">{{ row.quantity|absval|qty }} {{ row.material__unit_of_measure|unit_label }} · {% blocktranslate count n=row.entries %}{{ n }} marta{% plural %}{{ n }} marta{% endblocktranslate %}</p>
+          <p class="num whitespace-nowrap text-muted" style="font-size:12px">{{ row.quantity|absval|qty }} {% if row.is_offcut %}{% translate "dona" %}{% else %}{{ row.material__unit_of_measure|unit_label }}{% endif %} · {% blocktranslate count n=row.entries %}{{ n }} marta{% plural %}{{ n }} marta{% endblocktranslate %}</p>
         </div>
       </li>
       {% endfor %}

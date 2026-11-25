@@ -94,6 +94,13 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def delete(self, *args, **kwargs):
+        if BaseMaterial.objects.filter(category=self.code).exists():
+            raise ValidationError(
+                _("Bu kategoriyada materiallar bor — avval ularni boshqa kategoriyaga ko'chiring yoki arxivlang.")
+            )
+        return super().delete(*args, **kwargs)
+
 
 # Per-process category cache, cached thread-safely via django.core.cache.
 CATEGORY_CACHE_KEY = "wms:category_meta"
@@ -354,6 +361,7 @@ class TransactionType(models.TextChoices):
     KIRIM = "KIRIM", "Stock Arrival (Kirim)"
     CHIQIM = "CHIQIM", "Worker Withdrawal (Chiqim)"
     OFFCUT_DEPOSIT = "OFFCUT_DEPOSIT", "Offcut Deposit (Qoldiq)"
+    REVERSAL = "REVERSAL", "Reversal (Tuzatish)"
 
 
 #: Labels shown in the app (report filter, CSV). The English choice labels above are for Django admin only.
@@ -361,6 +369,7 @@ TRANSACTION_TYPE_LABELS = {
     TransactionType.KIRIM: _("Kirim"),
     TransactionType.CHIQIM: _("Chiqim"),
     TransactionType.OFFCUT_DEPOSIT: _("Qoldiq qo'shildi"),
+    TransactionType.REVERSAL: _("Tuzatish (qaytarish)"),
 }
 
 
@@ -417,9 +426,26 @@ class InventoryTransaction(models.Model):
         help_text="Whole-material balance right after this entry (null for offcut movements).",
     )
 
+    unit_of_measure = models.CharField(
+        max_length=20,
+        choices=MeasurementUnit.choices,
+        blank=True,
+        default="",
+        help_text="Unit at the time of this transaction; empty on legacy rows.",
+    )
+
     is_offcut = models.BooleanField(default=False)
     offcut_length_mm = models.IntegerField(null=True, blank=True)
     offcut_width_mm = models.IntegerField(null=True, blank=True)
+
+    reversed_entry = models.OneToOneField(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="reversal",
+        help_text="The original entry this reversal cancels.",
+    )
 
     idempotency_key = models.CharField(
         max_length=64,
@@ -448,7 +474,8 @@ class InventoryTransaction(models.Model):
             models.CheckConstraint(
                 condition=(
                     models.Q(transaction_type=TransactionType.CHIQIM, quantity_changed__lt=0)
-                    | (~models.Q(transaction_type=TransactionType.CHIQIM) & models.Q(quantity_changed__gt=0))
+                    | models.Q(transaction_type=TransactionType.REVERSAL)
+                    | (~models.Q(transaction_type__in=[TransactionType.CHIQIM, TransactionType.REVERSAL]) & models.Q(quantity_changed__gt=0))
                 ),
                 name="txn_quantity_sign_matches_type",
             ),

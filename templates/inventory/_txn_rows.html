@@ -1,7 +1,7 @@
 {% load wms i18n %}{# Ledger rows. Expects `transactions`; `show_user` and `show_price` flags. #}
 
 {# Desktop Table (Excel-like ERP Data Grid) #}
-<div class="hidden md:block overflow-x-auto">
+<div class="hidden lg:block overflow-x-auto">
   <table class="grid-table">
     <thead>
       <tr>
@@ -70,7 +70,7 @@
             {% if t.quantity_changed > 0 %}+{% else %}−{% endif %}{{ t.quantity_changed|absval|qty }}
           </span>
           <span class="text-xs text-muted font-sans ml-1">
-            {% if t.is_offcut %}{% translate "dona" %}{% else %}{{ t.material.unit_short }}{% endif %}
+            {% if t.is_offcut %}{% translate "dona" %}{% elif t.unit_of_measure %}{{ t.unit_of_measure|unit_label }}{% else %}{{ t.material.unit_short }}{% endif %}
           </span>
         </td>
 
@@ -95,7 +95,7 @@
 </div>
 
 {# Mobile Card List #}
-<ul class="md:hidden divide-y divide-rule">
+<ul class="lg:hidden divide-y divide-rule">
   {% for t in transactions %}
   <li class="p-4 flex flex-col gap-2">
     <div class="flex items-start justify-between gap-3">
@@ -132,7 +132,7 @@
           {% if t.quantity_changed > 0 %}+{% else %}−{% endif %}{{ t.quantity_changed|absval|qty }}
         </span>
         <span class="text-xs text-muted font-sans ml-0.5">
-          {% if t.is_offcut %}{% translate "dona" %}{% else %}{{ t.material.unit_short }}{% endif %}
+          {% if t.is_offcut %}{% translate "dona" %}{% elif t.unit_of_measure %}{{ t.unit_of_measure|unit_label }}{% else %}{{ t.material.unit_short }}{% endif %}
         </span>
         {% if show_price and t.total_price_usd != None %}
           <span class="block text-xs text-muted mt-0.5">{{ t.total_price_usd|usd }}</span>
