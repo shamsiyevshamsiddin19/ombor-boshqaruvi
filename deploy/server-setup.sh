@@ -30,9 +30,13 @@ fi
 sudo systemctl enable --now postgresql nginx >/dev/null
 
 # --- Directories -------------------------------------------------------------------
-sudo mkdir -p "$APP_ROOT/app"
-sudo chown "$APP_USER:$APP_USER" "$APP_ROOT" "$APP_ROOT/app"
+sudo mkdir -p "$APP_ROOT/releases"
+sudo chown "$APP_USER:$APP_USER" "$APP_ROOT" "$APP_ROOT/releases"
 sudo chmod 750 "$APP_ROOT"
+# Ensure app exists for first deploy (CI creates the first release and switches the symlink).
+if [ ! -e "$APP_ROOT/app" ]; then
+  mkdir -p "$APP_ROOT/app"
+fi
 
 # --- Database + env file -----------------------------------------------------------
 if [ ! -f "$ENV_FILE" ]; then

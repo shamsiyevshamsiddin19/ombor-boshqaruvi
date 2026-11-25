@@ -88,11 +88,17 @@ jobs:
             StrictHostKeyChecking yes
           EOF
 
-      - name: Upload code
-        run: >-
-          rsync -az --delete
-          --exclude-from=deploy/rsync-exclude.txt
-          ./ deploy-target:/var/www/wms/app/
+      - name: Create release directory and upload code
+        run: |
+          RELEASE="$(date -u +%Y%m%d_%H%M%S)"
+          ssh deploy-target "mkdir -p /var/www/wms/releases/$RELEASE"
+          rsync -az --delete \
+            --exclude-from=deploy/rsync-exclude.txt \
+            ./ "deploy-target:/var/www/wms/releases/$RELEASE/"
+          echo "RELEASE=$RELEASE" >> "$GITHUB_ENV"
 
-      - name: Migrate, collect static, restart
-        run: ssh deploy-target 'bash /var/www/wms/app/deploy/deploy.sh'
+      - name: Migrate, collect static, switch symlink, restart
+        run: >-
+          ssh deploy-target
+          "RELEASE_DIR=/var/www/wms/releases/$RELEASE
+          bash /var/www/wms/releases/$RELEASE/deploy/deploy.sh"
