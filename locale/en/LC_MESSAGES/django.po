@@ -2113,3 +2113,74 @@ msgstr "Existing trades:"
 #: templates/users/worker_role_form.html:7
 msgid "Qo'shilgach, ishchilar ro'yxatdan o'tishda shu kasbni tanlay oladi. Materiallarda ham shu kasbni belgilang."
 msgstr "Once added, workers can choose this trade when they register. Select it on materials too."
+
+#: apps/users/forms.py
+msgid "Superuser hisobini faqat boshqa superuser tahrir qila oladi."
+msgstr "Only another superuser can edit a superuser account."
+
+#: apps/users/forms.py
+msgid "Boshqa administrator hisobini tahrirlash uchun superuser huquqi kerak."
+msgstr "Superuser access is required to edit another administrator's account."
+
+#: apps/inventory/models.py
+msgid "Tuzatish (qaytarish)"
+msgstr "Reversal"
+
+#: apps/inventory/services.py
+msgid "Bu yozuv allaqachon qaytarilgan."
+msgstr "This entry has already been reversed."
+
+#: apps/inventory/services.py
+msgid "Qaytarish yozuvini qaytarib bo'lmaydi."
+msgstr "A reversal entry cannot be reversed."
+
+#: apps/inventory/api/serializers.py
+msgid "O'lchamlar (uzunlik va kenglik) birga berilishi kerak."
+msgstr "Dimensions (length and width) must be provided together."
+
+#: apps/users/models.py
+msgid "Bu kasbga tayinlangan ishchilar bor — avval ularni boshqa kasbga ko'chiring."
+msgstr "Workers are assigned to this trade — reassign them first."
+
+#: apps/users/models.py
+msgid "Bu kasbga bog'langan materiallar bor — avval ularning ruxsat ro'yxatini yangilang."
+msgstr "Materials are linked to this trade — update their allowed trades first."
+
+#: apps/inventory/models.py
+msgid "Bu kategoriyada materiallar bor — avval ularni boshqa kategoriyaga ko'chiring yoki arxivlang."
+msgstr "This category has materials — move or archive them first."
+
+#: apps/inventory/services.py
+#, python-format
+msgid "Jami zaxira hajmi juda katta (max %(max)s)."
+msgstr "Total stock is too large (max %(max)s)."
+
+#: apps/inventory/services.py
+#, python-format
+msgid "Partiya narxi juda katta (max %(max)s USD)."
+msgstr "Batch price is too large (max %(max)s USD)."
+
+#: apps/inventory/services.py
+msgid "Miqdorga nisbatan narx juda past — birlik narxi nolga tushadi."
+msgstr "Price is too low relative to quantity — unit price would round to zero."
+
+#: apps/users/views.py
+#, python-format
+msgid "Juda ko'p urinish. %(minutes)d daqiqadan keyin qayta urinib ko'ring."
+msgstr "Too many attempts. Try again in %(minutes)d minutes."
+
+#: templates/users/user_list.html
+msgid "Parol holati"
+msgstr "Password status"
+
+#: templates/users/user_list.html
+msgid "O'rnatilgan"
+msgstr "Set"
+
+#: templates/users/user_edit.html
+msgid "Yangisini o'rnatish uchun chapdagi formadan foydalaning"
+msgstr "Use the form on the left to set a new one"
+
+#: templates/inventory/kirim_form.html
+msgid "Idish"
+msgstr "Container"

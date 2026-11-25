@@ -2126,3 +2126,74 @@ msgstr "Существующие профессии:"
 #: templates/users/worker_role_form.html:7
 msgid "Qo'shilgach, ishchilar ro'yxatdan o'tishda shu kasbni tanlay oladi. Materiallarda ham shu kasbni belgilang."
 msgstr "После добавления работники смогут выбрать эту профессию при регистрации. Отметьте её и в материалах."
+
+#: apps/users/forms.py
+msgid "Superuser hisobini faqat boshqa superuser tahrir qila oladi."
+msgstr "Редактировать суперпользователя может только другой суперпользователь."
+
+#: apps/users/forms.py
+msgid "Boshqa administrator hisobini tahrirlash uchun superuser huquqi kerak."
+msgstr "Для редактирования другого администратора нужны права суперпользователя."
+
+#: apps/inventory/models.py
+msgid "Tuzatish (qaytarish)"
+msgstr "Корректировка (возврат)"
+
+#: apps/inventory/services.py
+msgid "Bu yozuv allaqachon qaytarilgan."
+msgstr "Эта запись уже была откорректирована."
+
+#: apps/inventory/services.py
+msgid "Qaytarish yozuvini qaytarib bo'lmaydi."
+msgstr "Корректировочную запись нельзя откатить."
+
+#: apps/inventory/api/serializers.py
+msgid "O'lchamlar (uzunlik va kenglik) birga berilishi kerak."
+msgstr "Размеры (длина и ширина) нужно указывать вместе."
+
+#: apps/users/models.py
+msgid "Bu kasbga tayinlangan ishchilar bor — avval ularni boshqa kasbga ko'chiring."
+msgstr "К этой профессии приписаны работники — сначала переведите их."
+
+#: apps/users/models.py
+msgid "Bu kasbga bog'langan materiallar bor — avval ularning ruxsat ro'yxatini yangilang."
+msgstr "К этой профессии привязаны материалы — сначала обновите их список допуска."
+
+#: apps/inventory/models.py
+msgid "Bu kategoriyada materiallar bor — avval ularni boshqa kategoriyaga ko'chiring yoki arxivlang."
+msgstr "В этой категории есть материалы — сначала переместите или архивируйте их."
+
+#: apps/inventory/services.py
+#, python-format
+msgid "Jami zaxira hajmi juda katta (max %(max)s)."
+msgstr "Общий объём запаса слишком велик (макс. %(max)s)."
+
+#: apps/inventory/services.py
+#, python-format
+msgid "Partiya narxi juda katta (max %(max)s USD)."
+msgstr "Цена партии слишком велика (макс. %(max)s USD)."
+
+#: apps/inventory/services.py
+msgid "Miqdorga nisbatan narx juda past — birlik narxi nolga tushadi."
+msgstr "Цена слишком мала для такого количества — цена за единицу округлится до нуля."
+
+#: apps/users/views.py
+#, python-format
+msgid "Juda ko'p urinish. %(minutes)d daqiqadan keyin qayta urinib ko'ring."
+msgstr "Слишком много попыток. Повторите через %(minutes)d мин."
+
+#: templates/users/user_list.html
+msgid "Parol holati"
+msgstr "Статус пароля"
+
+#: templates/users/user_list.html
+msgid "O'rnatilgan"
+msgstr "Установлен"
+
+#: templates/users/user_edit.html
+msgid "Yangisini o'rnatish uchun chapdagi formadan foydalaning"
+msgstr "Используйте форму слева, чтобы задать новый"
+
+#: templates/inventory/kirim_form.html
+msgid "Idish"
+msgstr "Ёмкость"
