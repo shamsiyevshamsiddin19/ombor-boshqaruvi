@@ -117,7 +117,9 @@ def warehouse_valuation_usd() -> Decimal:
     sum of the per-material values shown in the tables.
     """
     line_value = Round(ExpressionWrapper(F("quantity") * F("material__unit_price_usd"), output_field=MONEY), 2)
-    total = WholeMaterial.objects.aggregate(total=Coalesce(Sum(line_value, output_field=MONEY), ZERO_MONEY))["total"]
+    total = WholeMaterial.objects.filter(material__is_active=True).aggregate(
+        total=Coalesce(Sum(line_value, output_field=MONEY), ZERO_MONEY)
+    )["total"]
     return Decimal(total).quantize(Decimal("0.01"))
 
 
@@ -154,6 +156,7 @@ def estimated_offcut_value_usd() -> Decimal:
     )
     total = (
         LeftoverOffcut.objects.filter(
+            material__is_active=True,
             material__whole_stock__length_mm__isnull=False,
             material__whole_stock__width_mm__isnull=False,
             material__whole_stock__length_mm__gt=0,

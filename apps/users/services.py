@@ -1,9 +1,13 @@
+import logging
+
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .models import User, normalize_phone, normalize_roles
+
+audit_log = logging.getLogger("wms.audit")
 
 
 @transaction.atomic
@@ -30,6 +34,7 @@ def register_worker(*, phone: str, password: str, full_name: str, roles: list[st
     user.set_password(password)
     user.full_clean()
     user.save()
+    audit_log.info("user_registered user_id=%d roles=%s", user.pk, roles)
     return user
 
 
@@ -39,11 +44,16 @@ def approve_user(user: User, *, approved_by: User, roles: list[str] | None = Non
         user.roles = normalize_roles(roles)
     if not user.roles:
         raise ValidationError({"roles": _("Tasdiqlashdan oldin kamida bitta rol belgilang.")})
+    prev_roles = list(user.roles)
     user.is_approved = True
     user.is_active = True
     user.approved_at = timezone.now()
     user.approved_by = approved_by
     user.save()
+    audit_log.info(
+        "user_approved user_id=%d by=%d prev_roles=%s new_roles=%s",
+        user.pk, approved_by.pk, prev_roles, list(user.roles),
+    )
     return user
 
 
@@ -52,4 +62,6 @@ def reject_registration(user: User) -> None:
     """Discard a pending registration request (pending accounts have no ledger history)."""
     if user.is_approved or user.is_superuser:
         raise ValidationError(_("Faqat tasdiqlanmagan so'rovlarni rad etish mumkin."))
+    uid = user.pk
     user.delete()
+    audit_log.info("registration_rejected user_id=%d", uid)
