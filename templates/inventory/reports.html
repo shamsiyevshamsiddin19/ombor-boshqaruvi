@@ -39,7 +39,7 @@
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{% if totals.kirim_usd >= totals.chiqim_usd %}+{% else %}−{% endif %}{{ totals.net_abs|usd }}</p>
     <p class="mt-1 text-muted" style="font-size:12px">{% translate "kirim − chiqim" %}</p>
   </div>
-  <a href="{% url 'inventory:expenses' %}" class="border-r border-line p-5 block hover:bg-raised/40 transition-colors">
+  <a href="{% url 'inventory:expenses' %}{% if filter_form.cleaned_data.month %}?month={{ filter_form.cleaned_data.month|date:'Y-m' }}{% endif %}" class="border-r border-line p-5 block hover:bg-raised/40 transition-colors">
     <p class="text-muted">{% translate "Qo'shimcha xarajatlar" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{{ expense_totals.total_usd|usd }}</p>
     <p class="mt-1 text-muted" style="font-size:12px">{% translate "nalog, produkta, stanok" %}</p>

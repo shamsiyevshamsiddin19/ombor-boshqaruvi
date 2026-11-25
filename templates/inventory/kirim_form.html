@@ -54,6 +54,7 @@
 
   <form method="post" autocomplete="off" novalidate>
     {% csrf_token %}
+    <input type="hidden" name="{{ form.price_mode.html_name }}" :value="mode">
     {% include "partials/form_errors.html" %}
     {% if form.errors %}
     <div class="mb-4 rounded-lg border border-[#f3c0ba] bg-neg-bg px-4 py-3 text-neg-ink text-xs shadow-xs" role="alert">
@@ -62,10 +63,13 @@
         <span>{% translate "Ma'lumotlarni saqlashda xatolik yuz berdi:" %}</span>
       </div>
       <ul class="mt-1.5 ml-6 list-disc space-y-0.5">
-        {% for field, errors in form.errors.items %}
-          {% for error in errors %}
-            <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
           {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
         {% endfor %}
       </ul>
     </div>
@@ -106,8 +110,9 @@
             <tr class="bg-accent/[0.04] hover:bg-accent/[0.07] transition-colors border-b-2 border-accent/30">
               {# 1. Material #}
               <td class="px-4 py-3 align-middle">
-                <select name="{{ form.material.html_name }}" id="{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="!isDesktop" class="control !h-9 text-xs sm:text-sm w-full" required>
+                <select name="{{ form.material.html_name }}" id="{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="!isDesktop" class="control !h-9 text-xs sm:text-sm w-full" required x-init="$el.querySelectorAll('[data-server]').forEach(o => o.remove())">
                   <option value="">{% translate "Materialni tanlang" %}</option>
+                  {% for value, label in form.material.field.choices %}{% if value %}<option value="{{ value }}" data-server {% if form.material.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}
                   <template x-for="item in filteredMaterials" :key="item.id">
                     <option :value="item.id" :selected="item.id === material" x-text="item.label"></option>
                   </template>
@@ -253,8 +258,9 @@
       <div class="md:hidden p-4 form-stack bg-surface">
         <div>
           <label class="field-label" for="m-{{ form.material.id_for_label }}">{{ form.material.label }}</label>
-          <select name="{{ form.material.html_name }}" id="m-{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="isDesktop" class="control" required>
+          <select name="{{ form.material.html_name }}" id="m-{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="isDesktop" class="control" required x-init="$el.querySelectorAll('[data-server]').forEach(o => o.remove())">
             <option value="">{% translate "Materialni tanlang" %}</option>
+            {% for value, label in form.material.field.choices %}{% if value %}<option value="{{ value }}" data-server {% if form.material.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}
             <template x-for="item in filteredMaterials" :key="item.id">
               <option :value="item.id" :selected="item.id === material" x-text="item.label"></option>
             </template>
@@ -274,28 +280,28 @@
         </div>
 
         <div x-show="!m || !m.container">
-          <label class="field-label">{{ form.quantity.label }}</label>
-          <input type="number" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop || !!(m && m.container && containers)" class="control font-mono" x-model="quantity" placeholder="100">
+          <label class="field-label" for="m-{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
+          <input type="number" id="m-{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop || !!(m && m.container && containers)" class="control font-mono" x-model="quantity" placeholder="100">
         </div>
         <input type="hidden" name="{{ form.quantity.html_name }}" :value="qty" :disabled="isDesktop || !(m && m.container && containers)">
 
         <div>
-          <label class="field-label">{{ form.price_mode.label }}</label>
-          <div class="grid grid-cols-2 gap-2">
+          <label class="field-label" id="m-price-mode-label">{{ form.price_mode.label }}</label>
+          <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="m-price-mode-label">
             <label class="choice-tile cursor-pointer" :class="{ 'border-accent bg-accent-soft text-accent-ink font-semibold': mode === 'total' }">
-              <input type="radio" name="{{ form.price_mode.html_name }}" value="total" x-model="mode" :disabled="isDesktop" class="hidden">
+              <input type="radio" name="{{ form.price_mode.html_name }}" value="total" x-model="mode" :disabled="isDesktop" class="sr-only">
               <span class="text-xs">{% translate "Optom narx" %}</span>
             </label>
             <label class="choice-tile cursor-pointer" :class="{ 'border-accent bg-accent-soft text-accent-ink font-semibold': mode === 'unit' }">
-              <input type="radio" name="{{ form.price_mode.html_name }}" value="unit" x-model="mode" :disabled="isDesktop" class="hidden">
+              <input type="radio" name="{{ form.price_mode.html_name }}" value="unit" x-model="mode" :disabled="isDesktop" class="sr-only">
               <span class="text-xs">{% translate "Dona narxi" %}</span>
             </label>
           </div>
         </div>
 
         <div>
-          <label class="field-label">{{ form.price_usd.label }}</label>
-          <input type="number" name="{{ form.price_usd.html_name }}" :step="mode === 'total' ? '0.01' : '0.0001'" min="0" :disabled="isDesktop" class="control font-mono" x-model="price" placeholder="0.00">
+          <label class="field-label" for="m-{{ form.price_usd.id_for_label }}">{{ form.price_usd.label }}</label>
+          <input type="number" id="m-{{ form.price_usd.id_for_label }}" name="{{ form.price_usd.html_name }}" :step="mode === 'total' ? '0.01' : '0.0001'" min="0" :disabled="isDesktop" class="control font-mono" x-model="price" placeholder="0.00">
         </div>
 
         <div class="p-3 rounded border border-line/60 bg-raised/50 flex items-center justify-between font-mono text-xs" x-show="p" x-cloak>
@@ -310,8 +316,8 @@
         </div>
 
         <div>
-          <label class="field-label">{{ form.notes.label }}</label>
-          <input type="text" name="{{ form.notes.html_name }}" x-model="notes" :disabled="isDesktop" class="control text-xs" placeholder="{% translate "Yetkazib beruvchi, faktura raqami..." %}">
+          <label class="field-label" for="m-{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+          <input type="text" id="m-{{ form.notes.id_for_label }}" name="{{ form.notes.html_name }}" x-model="notes" :disabled="isDesktop" class="control text-xs" placeholder="{% translate "Yetkazib beruvchi, faktura raqami..." %}">
         </div>
 
         <button type="submit" class="btn btn-primary btn-block min-h-10 text-xs font-semibold">

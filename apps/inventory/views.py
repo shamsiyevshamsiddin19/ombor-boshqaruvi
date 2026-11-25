@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -567,6 +567,19 @@ class ExpenseListCreateView(WarehouseAdminRequiredMixin, ListView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
+def _csv_safe(value) -> str:
+    """Neutralise spreadsheet formula injection in free-text cells."""
+    text = "" if value is None else str(value)
+    return "'" + text if text[:1] in ("=", "+", "-", "@", "\t", "\r") else text
+
+
+class _Echo:
+    """Write-target for csv.writer that yields each row for StreamingHttpResponse."""
+
+    def write(self, value):
+        return value
+
+
 class ExpenseExportView(WarehouseAdminRequiredMixin, View):
     def get(self, request):
         form = ExpenseFilterForm(request.GET)
@@ -574,29 +587,25 @@ class ExpenseExportView(WarehouseAdminRequiredMixin, View):
         month = form.cleaned_data.get("month") if form.is_valid() else None
         filename = f"qoshimcha-xarajatlar-{month:%Y-%m}.csv" if month else "qoshimcha-xarajatlar.csv"
 
-        response = HttpResponse(content_type="text/csv; charset=utf-8")
+        def rows():
+            writer = csv.writer(_Echo())
+            yield "\ufeff"
+            yield writer.writerow([_("Sana"), _("Turi"), _("Xarajat nomi"), _("Summa (USD)"), _("Kim kiritdi"), _("Izoh")])
+            for exp in qs.iterator(chunk_size=500):
+                yield writer.writerow(
+                    [
+                        exp.expense_date.strftime("%Y-%m-%d"),
+                        _csv_safe(expense_category_label(exp.category)),
+                        _csv_safe(exp.title),
+                        f"{exp.amount_usd}",
+                        _csv_safe(exp.created_by.display_name),
+                        _csv_safe(exp.notes),
+                    ]
+                )
+
+        response = StreamingHttpResponse(rows(), content_type="text/csv; charset=utf-8")
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        response.write("\ufeff")
-        writer = csv.writer(response)
-        writer.writerow([_("Sana"), _("Turi"), _("Xarajat nomi"), _("Summa (USD)"), _("Kim kiritdi"), _("Izoh")])
-        for exp in qs.iterator(chunk_size=500):
-            writer.writerow(
-                [
-                    exp.expense_date.strftime("%Y-%m-%d"),
-                    _csv_safe(expense_category_label(exp.category)),
-                    _csv_safe(exp.title),
-                    f"{exp.amount_usd}",
-                    _csv_safe(exp.created_by.display_name),
-                    _csv_safe(exp.notes),
-                ]
-            )
         return response
-
-
-def _csv_safe(value) -> str:
-    """Neutralise spreadsheet formula injection in free-text cells."""
-    text = "" if value is None else str(value)
-    return "'" + text if text[:1] in ("=", "+", "-", "@", "\t", "\r") else text
 
 
 class ReportExportView(WarehouseAdminRequiredMixin, View):
@@ -606,40 +615,42 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
         month = form.cleaned_data.get("month") if form.is_valid() else None
         filename = f"ombor-harakatlari-{month:%Y-%m}.csv" if month else "ombor-harakatlari.csv"
 
-        response = HttpResponse(content_type="text/csv; charset=utf-8")
-        response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        response.write("﻿")  # BOM so Excel opens UTF-8 correctly
-        writer = csv.writer(response)
-        writer.writerow(
-            [
-                _("Sana"),
-                _("Turi"),
-                _("Material"),
-                _("Kategoriya"),
-                _("Miqdor"),
-                _("Birlik"),
-                _("Birlik narxi (USD)"),
-                _("Jami (USD)"),
-                _("Qoldiq o'lchami (mm)"),
-                _("Ishchi"),
-                _("Izoh"),
-            ]
-        )
-        for txn in qs.iterator(chunk_size=500):
-            writer.writerow(
+        def rows():
+            writer = csv.writer(_Echo())
+            yield "﻿"
+            yield writer.writerow(
                 [
-                    timezone.localtime(txn.created_at).strftime("%Y-%m-%d %H:%M"),
-                    transaction_type_label(txn.transaction_type),
-                    _csv_safe(txn.material.name),
-                    _csv_safe(txn.material.category_short),
-                    f"{txn.quantity_changed}",
-                    txn.material.unit_short,
-                    f"{txn.unit_price_usd}",
-                    f"{txn.total_price_usd}",
-                    f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",
-                    _csv_safe(txn.user.display_name),
-                    _csv_safe(txn.notes),
+                    _("Sana"),
+                    _("Turi"),
+                    _("Material"),
+                    _("Kategoriya"),
+                    _("Miqdor"),
+                    _("Birlik"),
+                    _("Birlik narxi (USD)"),
+                    _("Jami (USD)"),
+                    _("Qoldiq o'lchami (mm)"),
+                    _("Ishchi"),
+                    _("Izoh"),
                 ]
             )
+            for txn in qs.iterator(chunk_size=500):
+                yield writer.writerow(
+                    [
+                        timezone.localtime(txn.created_at).strftime("%Y-%m-%d %H:%M"),
+                        transaction_type_label(txn.transaction_type),
+                        _csv_safe(txn.material.name),
+                        _csv_safe(txn.material.category_short),
+                        f"{txn.quantity_changed}",
+                        txn.material.unit_short,
+                        f"{txn.unit_price_usd}",
+                        f"{txn.total_price_usd}",
+                        f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",
+                        _csv_safe(txn.user.display_name),
+                        _csv_safe(txn.notes),
+                    ]
+                )
+
+        response = StreamingHttpResponse(rows(), content_type="text/csv; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 

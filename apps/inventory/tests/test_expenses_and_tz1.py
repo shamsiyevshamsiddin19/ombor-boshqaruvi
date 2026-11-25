@@ -115,7 +115,7 @@ class OperatingExpenseTests(TestCase):
 
         csv_resp = self.client.get(reverse("inventory:expenses_export"), {"month": "2026-11"})
         self.assertEqual(csv_resp["Content-Type"], "text/csv; charset=utf-8")
-        rows = list(csv.reader(io.StringIO(csv_resp.content.decode("utf-8").lstrip("\ufeff"))))
+        rows = list(csv.reader(io.StringIO(b"".join(csv_resp.streaming_content).decode("utf-8").lstrip("\ufeff"))))
         self.assertEqual(len(rows), 3)
 
         reports_resp = self.client.get(reverse("inventory:reports"), {"month": "2026-11"})

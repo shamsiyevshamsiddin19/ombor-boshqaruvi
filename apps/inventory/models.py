@@ -220,6 +220,10 @@ class BaseMaterial(models.Model):
         ordering = ["name"]
         verbose_name = _("material")
         verbose_name_plural = _("materiallar")
+        indexes = [
+            models.Index(fields=["name"], name="idx_material_name"),
+            models.Index(fields=["category", "is_active"], name="idx_material_cat_active"),
+        ]
         constraints = [
             models.CheckConstraint(condition=models.Q(unit_price_usd__gte=0), name="material_price_non_negative"),
             models.CheckConstraint(condition=models.Q(minimum_threshold__gte=0), name="material_threshold_non_negative"),
@@ -451,6 +455,13 @@ class InventoryTransaction(models.Model):
                     | (~models.Q(transaction_type=TransactionType.CHIQIM) & models.Q(quantity_changed__gt=0))
                 ),
                 name="txn_quantity_sign_matches_type",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(is_offcut=False)
+                    | models.Q(is_offcut=True, offcut_length_mm__gt=0, offcut_width_mm__gt=0)
+                ),
+                name="txn_offcut_dims_when_offcut",
             ),
         ]
 

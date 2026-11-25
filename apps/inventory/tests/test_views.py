@@ -297,7 +297,7 @@ class DashboardAndReportTests(WorkshopTestCase):
         response = self.client.get(reverse("inventory:reports_export"), {"category": MaterialCategory.SHEET})
         self.assertEqual(response["Content-Type"], "text/csv; charset=utf-8")
         self.assertIn("attachment;", response["Content-Disposition"])
-        body = response.content.decode("utf-8")
+        body = b"".join(response.streaming_content).decode("utf-8")
         self.assertTrue(body.startswith("﻿"))
         rows = list(csv.reader(io.StringIO(body.lstrip("﻿"))))
         self.assertEqual(rows[0][0], "Sana")
