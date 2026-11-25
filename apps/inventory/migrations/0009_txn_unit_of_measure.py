@@ -36,5 +36,5 @@ class Migration(migrations.Migration):
             name='unit_of_measure',
             field=models.CharField(blank=True, choices=[('PIECE', 'Dona'), ('SQM', 'Kvadrat metr'), ('LITER', 'Litr'), ('KG', 'Kilogramm'), ('METER', 'Metr'), ('CM', 'Santimetr')], default='', help_text='Unit at the time of this transaction; empty on legacy rows.', max_length=20),
         ),
-        migrations.RunPython(backfill_units, migrations.RunPython.noop),
+        migrations.RunPython(backfill_units, lambda apps, se: apps.get_model("inventory", "InventoryTransaction").objects.all().update(unit_of_measure="")),
     ]

@@ -31,5 +31,5 @@ class Migration(migrations.Migration):
             ],
             options={"verbose_name": "kasb", "verbose_name_plural": "kasblar", "ordering": ["sort_order", "name"]},
         ),
-        migrations.RunPython(seed_trades, migrations.RunPython.noop),
+        migrations.RunPython(seed_trades, lambda apps, se: apps.get_model("users", "WorkerRole").objects.filter(code__in=[c for c, *_ in TRADES]).delete()),
     ]

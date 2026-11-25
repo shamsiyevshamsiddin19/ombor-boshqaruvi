@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 'ordering': ['sort_order', 'name'],
             },
         ),
-        migrations.RunPython(seed_categories, migrations.RunPython.noop),
+        migrations.RunPython(seed_categories, lambda apps, se: apps.get_model("inventory", "Category").objects.filter(code__in=[c for c, *_ in CATEGORIES]).delete()),
         migrations.AlterField(
             model_name='basematerial',
             name='category',

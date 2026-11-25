@@ -54,6 +54,12 @@ def seed_tz_categories(apps, schema_editor):
     BaseMaterial.objects.filter(category="SHEET", name__istartswith="LMDF").update(category="LMDF")
 
 
+def unseed_tz_categories(apps, schema_editor):
+    Category = apps.get_model("inventory", "Category")
+    Category.objects.filter(code__in=[c for c, *_ in TZ_CATEGORIES]).delete()
+    Category.objects.filter(code__in=LEGACY_CATEGORIES).update(is_active=True)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -102,5 +108,5 @@ class Migration(migrations.Migration):
                 'constraints': [models.CheckConstraint(condition=models.Q(('amount_usd__gt', 0)), name='expense_amount_positive')],
             },
         ),
-        migrations.RunPython(seed_tz_categories, migrations.RunPython.noop),
+        migrations.RunPython(seed_tz_categories, unseed_tz_categories),
     ]
