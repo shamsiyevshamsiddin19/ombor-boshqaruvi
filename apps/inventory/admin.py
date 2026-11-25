@@ -27,6 +27,15 @@ class LeftoverOffcutAdmin(admin.ModelAdmin):
     list_filter = ("material__category",)
     search_fields = ("material__name", "notes")
 
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(InventoryTransaction)
 class InventoryTransactionAdmin(admin.ModelAdmin):
@@ -68,6 +77,12 @@ class OperatingExpenseAdmin(admin.ModelAdmin):
     list_filter = ("category", "expense_date")
     search_fields = ("title", "notes")
     date_hierarchy = "expense_date"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
     def has_delete_permission(self, request, obj=None):
         return False
