@@ -122,9 +122,14 @@ class Command(BaseCommand):
         users = {"admin": admin}
         for index, (username, full_name, roles, approved) in enumerate(WORKERS, start=2):
             phone = f"+99890000000{index}"
-            user = User.objects.filter(
-                Q(phone=phone) | Q(username=phone) | Q(username=username)
-            ).first()
+            user = User.objects.filter(phone=phone).first()
+            if user is None:
+                user = User.objects.filter(username=username).first()
+                if user is not None and user.phone and not user.phone.startswith("+99890000000"):
+                    raise CommandError(
+                        f"Username '{username}' allaqachon boshqa hisobga tegishli. "
+                        f"Demo ma'lumotlar bu hisobni o'zgartirmaydi."
+                    )
             if user is None:
                 user = User(
                     username=phone,

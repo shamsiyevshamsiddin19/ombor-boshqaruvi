@@ -223,6 +223,7 @@ class BaseMaterial(models.Model):
         constraints = [
             models.CheckConstraint(condition=models.Q(unit_price_usd__gte=0), name="material_price_non_negative"),
             models.CheckConstraint(condition=models.Q(minimum_threshold__gte=0), name="material_threshold_non_negative"),
+            models.UniqueConstraint(fields=["name", "category"], name="unique_material_per_category"),
         ]
 
     def __str__(self) -> str:

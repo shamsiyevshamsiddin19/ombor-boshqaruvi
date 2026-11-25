@@ -182,7 +182,10 @@ class MonthFlow:
 def month_bounds(year: int, month: int) -> tuple[dt.datetime, dt.datetime]:
     tz = timezone.get_current_timezone()
     start = dt.datetime(year, month, 1, tzinfo=tz)
-    end = dt.datetime(year + (month == 12), month % 12 + 1, 1, tzinfo=tz)
+    if year >= 9999 and month == 12:
+        end = dt.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=tz)
+    else:
+        end = dt.datetime(year + (month == 12), month % 12 + 1, 1, tzinfo=tz)
     return start, end
 
 
