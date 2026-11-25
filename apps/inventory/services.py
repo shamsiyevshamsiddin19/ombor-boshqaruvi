@@ -177,6 +177,10 @@ def record_kirim(
         if batch_total < 0:
             raise ValidationError({"total_price_usd": _("Narx manfiy bo'lishi mumkin emas.")})
         unit_price = (batch_total / quantity).quantize(PRICE_PLACES, rounding=ROUND_HALF_UP)
+        if batch_total > 0 and unit_price == ZERO:
+            raise ValidationError(
+                {"total_price_usd": _("Miqdorga nisbatan narx juda past — birlik narxi nolga tushadi.")}
+            )
     else:
         unit_price = _decimal(unit_price_usd, "unit_price_usd")
         if unit_price < 0:

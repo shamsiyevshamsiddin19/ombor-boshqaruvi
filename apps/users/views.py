@@ -2,8 +2,10 @@ import re
 
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -17,10 +19,45 @@ from .models import User, WorkerRole
 from .permissions import WarehouseAdminRequiredMixin
 
 
+def _get_client_ip(request):
+    xff = request.META.get("HTTP_X_FORWARDED_FOR")
+    if xff:
+        return xff.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "")
+
+
+def _check_rate_limit(request, scope, max_attempts=10, window=3600):
+    if request.method != "POST":
+        return None
+    from django.conf import settings
+    if getattr(settings, "RATELIMIT_DISABLED", False):
+        return None
+    ip = _get_client_ip(request)
+    key = f"ratelimit:{scope}:{ip}"
+    try:
+        attempts = cache.get(key, 0)
+    except Exception:
+        return None
+    if attempts >= max_attempts:
+        return HttpResponse(
+            _("Juda ko'p urinish. %(minutes)d daqiqadan keyin qayta urinib ko'ring.")
+            % {"minutes": window // 60},
+            status=429,
+        )
+    cache.set(key, attempts + 1, window)
+    return None
+
+
 class LoginView(auth_views.LoginView):
     form_class = LoginForm
     template_name = "users/login.html"
     redirect_authenticated_user = True
+
+    def post(self, request, *args, **kwargs):
+        blocked = _check_rate_limit(request, "login", max_attempts=10, window=900)
+        if blocked:
+            return blocked
+        return super().post(request, *args, **kwargs)
 
 
 class LogoutView(auth_views.LogoutView):
@@ -36,6 +73,12 @@ class RegisterView(CreateView):
         if request.user.is_authenticated:
             return redirect("inventory:home")
         return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        blocked = _check_rate_limit(request, "register", max_attempts=5, window=3600)
+        if blocked:
+            return blocked
+        return super().post(request, *args, **kwargs)
 
 
 class RegistrationDoneView(TemplateView):

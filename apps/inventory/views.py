@@ -392,9 +392,13 @@ class MaterialUpdateView(WarehouseAdminRequiredMixin, MaterialFormContextMixin, 
         material = form.save(commit=False)
         if not material.allowed_roles:
             material.allowed_roles = default_roles_for_category(material.category)
+        catalogue_fields = [
+            "name", "category", "unit_of_measure", "container_size",
+            "minimum_threshold", "allowed_roles", "is_active", "updated_at",
+        ]
         with transaction.atomic():
             form.create_pending_category()
-            material.save()
+            material.save(update_fields=catalogue_fields)
             form.save_stock_dimensions(material)
         messages.success(self.request, _("“%(name)s” saqlandi.") % {"name": material.name})
         return redirect("inventory:material_list")

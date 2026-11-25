@@ -132,7 +132,7 @@ def validate_phone(value) -> None:
 
 class UserQuerySet(models.QuerySet):
     def pending_approval(self):
-        return self.filter(is_approved=False, is_superuser=False, is_active=True)
+        return self.filter(is_approved=False, is_superuser=False, is_active=True, approved_at__isnull=True)
 
     def approved(self):
         return self.filter(models.Q(is_approved=True) | models.Q(is_superuser=True))

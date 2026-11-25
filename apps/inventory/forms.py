@@ -368,7 +368,10 @@ class ReportFilterForm(forms.Form):
             raise forms.ValidationError(_("Oyni YYYY-MM ko'rinishida kiriting.")) from exc
 
     def selector_kwargs(self) -> dict:
-        data = self.cleaned_data if self.is_valid() else {}
+        if not self.is_bound:
+            return {}
+        self.is_valid()
+        data = self.cleaned_data
         return {
             "month": data.get("month"),
             "category": data.get("category", ""),
@@ -431,7 +434,10 @@ class ExpenseFilterForm(forms.Form):
             raise forms.ValidationError(_("Oyni YYYY-MM ko'rinishida kiriting.")) from exc
 
     def selector_kwargs(self) -> dict:
-        data = self.cleaned_data if self.is_valid() else {}
+        if not self.is_bound:
+            return {}
+        self.is_valid()
+        data = self.cleaned_data
         return {
             "month": data.get("month"),
             "category": data.get("category", ""),

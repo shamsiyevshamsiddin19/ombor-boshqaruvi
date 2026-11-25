@@ -88,12 +88,20 @@ class BaseMaterialSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         dims = {key: validated_data.pop(key) for key in ("length_mm", "width_mm") if key in validated_data}
         roles = validated_data.pop("allowed_roles", None)
+        validated_data.pop("unit_price_usd", None)
+        changed_fields = []
         for key, value in validated_data.items():
             setattr(instance, key, value)
+            changed_fields.append(key)
         if roles is not None:
             instance.allowed_roles = list(roles) or default_roles_for_category(instance.category)
+            changed_fields.append("allowed_roles")
         instance.full_clean()
-        instance.save()
+        if changed_fields:
+            changed_fields.append("updated_at")
+            instance.save(update_fields=changed_fields)
+        else:
+            instance.save()
         if dims:
             stock, _ = WholeMaterial.objects.get_or_create(material=instance)
             for key, value in dims.items():
