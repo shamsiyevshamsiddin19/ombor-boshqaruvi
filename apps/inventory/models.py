@@ -420,6 +420,13 @@ class InventoryTransaction(models.Model):
     offcut_length_mm = models.IntegerField(null=True, blank=True)
     offcut_width_mm = models.IntegerField(null=True, blank=True)
 
+    idempotency_key = models.CharField(
+        max_length=64,
+        null=True,
+        blank=True,
+        unique=True,
+        help_text="Client-supplied key to prevent duplicate submissions.",
+    )
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 

@@ -32,6 +32,9 @@ CENTS = Decimal("0.01")
 PRICE_PLACES = Decimal("0.0001")
 ZERO = Decimal("0")
 
+MAX_QUANTITY = Decimal("9999999999.99")
+MAX_TOTAL_PRICE = Decimal("999999999999.99")
+
 
 class InsufficientStockError(ValidationError):
     """Requested quantity exceeds what is on the shelf."""
@@ -151,6 +154,7 @@ def record_kirim(
     unit_price_usd=None,
     total_price_usd=None,
     notes: str = "",
+    idempotency_key: str | None = None,
 ) -> InventoryTransaction:
     """
     Book a purchase. Pass *either* the per-unit price or the total batch price (USD).
@@ -160,6 +164,10 @@ def record_kirim(
     prices change between batches.
     """
     _require_admin(user)
+    if idempotency_key:
+        existing = InventoryTransaction.objects.filter(idempotency_key=idempotency_key).first()
+        if existing is not None:
+            return existing
     quantity = _positive_quantity(material, quantity)
 
     if (unit_price_usd is None) == (total_price_usd is None):
@@ -176,6 +184,8 @@ def record_kirim(
         unit_price = unit_price.quantize(PRICE_PLACES, rounding=ROUND_HALF_UP)
         batch_total = unit_price * quantity
     batch_total = batch_total.quantize(CENTS, rounding=ROUND_HALF_UP)
+    if batch_total > MAX_TOTAL_PRICE:
+        raise ValidationError({"total_price_usd": _("Partiya narxi juda katta (max %(max)s USD).") % {"max": MAX_TOTAL_PRICE}})
 
     with transaction.atomic():
         stock = _locked_stock(material)
@@ -185,6 +195,8 @@ def record_kirim(
 
         old_quantity = stock.quantity
         new_quantity = old_quantity + quantity
+        if new_quantity > MAX_QUANTITY:
+            raise ValidationError({"quantity": _("Jami zaxira hajmi juda katta (max %(max)s).") % {"max": MAX_QUANTITY}})
         if old_quantity <= 0:
             average_price = unit_price
         else:
@@ -205,6 +217,7 @@ def record_kirim(
             total_price_usd=batch_total,
             stock_after=new_quantity,
             notes=notes.strip(),
+            idempotency_key=idempotency_key or None,
         )
     material.unit_price_usd = average_price
     return entry

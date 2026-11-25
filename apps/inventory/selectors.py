@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from django.db import connection
-from django.db.models import Count, DecimalField, ExpressionWrapper, F, Q, QuerySet, Sum, Value
-from django.db.models.functions import Coalesce, Round, TruncMonth
+from django.db.models import BigIntegerField, Count, DecimalField, ExpressionWrapper, F, Q, QuerySet, Sum, Value
+from django.db.models.functions import Cast, Coalesce, Round, TruncMonth
 from django.utils import timezone
 
 from .models import (
@@ -137,16 +137,17 @@ def estimated_offcut_value_usd() -> Decimal:
     Calculated via database-level SQL aggregation to avoid loading offcut records
     into application memory.
     """
+    BIGINT = BigIntegerField()
     line_val = Round(
         ExpressionWrapper(
             (
-                F("length_mm")
+                Cast(F("length_mm"), BIGINT)
                 * F("width_mm")
                 * F("material__unit_price_usd")
                 * F("quantity")
                 * Value(Decimal("1.000000"), output_field=MONEY)
             )
-            / (F("material__whole_stock__length_mm") * F("material__whole_stock__width_mm")),
+            / (Cast(F("material__whole_stock__length_mm"), BIGINT) * F("material__whole_stock__width_mm")),
             output_field=MONEY,
         ),
         2,
