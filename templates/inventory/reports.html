@@ -62,7 +62,7 @@
   <section class="panel overflow-hidden" aria-labelledby="by-worker">
     <div class="panel-head"><h2 id="by-worker" class="panel-title">{% translate "Sarf ishchilar bo'yicha" %}</h2><p class="text-muted" style="font-size:12px">{% translate "USD, olingan materiallar qiymati" %}</p></div>
     {% if by_worker %}
-    <ul>
+    <ul class="list-rows">
       {% for row in by_worker %}
       <li class="flex items-center justify-between gap-4 border-t border-rule px-5" style="min-height:45px">
         <p class="min-w-0 truncate">{{ row.user__full_name|default:row.user__username }}</p>
@@ -76,7 +76,7 @@
   <section class="panel overflow-hidden" aria-labelledby="by-material">
     <div class="panel-head"><h2 id="by-material" class="panel-title">{% translate "Sarf materiallar bo'yicha" %}</h2><p class="text-muted" style="font-size:12px">{% translate "eng qimmati birinchi" %}</p></div>
     {% if by_material %}
-    <ul>
+    <ul class="list-rows">
       {% for row in by_material %}
       <li class="border-t border-rule px-5 py-2.5">
         <div class="flex items-baseline justify-between gap-4">

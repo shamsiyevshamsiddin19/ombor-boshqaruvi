@@ -258,7 +258,7 @@
       <h2 class="font-semibold text-ink text-sm">{% translate "Qoldiq materiallar" %}</h2>
       <span class="pill pill-neutral font-medium text-xs">{{ recent_offcuts|length }}</span>
     </div>
-    <ul class="divide-y divide-rule">
+    <ul class="list-rows divide-y divide-rule">
       {% for offcut in recent_offcuts %}{% with m=offcut.material %}
       <li class="p-3.5 flex items-center justify-between gap-3">
         <div class="flex items-center gap-2.5 min-w-0 flex-1">

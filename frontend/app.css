@@ -196,6 +196,14 @@
     @apply border-r border-line/50 px-4 py-3 align-middle last:border-r-0;
   }
 
+  /* Zebra striping for <ul><li> data rows (same rhythm as .grid-table, for lists that aren't a <table>) */
+  .list-rows > li:nth-child(even) {
+    background-color: rgba(244, 244, 245, 0.45);
+  }
+  .list-rows > li:hover {
+    background-color: rgba(9, 9, 11, 0.035);
+  }
+
   /* Desktop Dark Monochrome Sidebar */
   .sidebar-dark {
     background-color: #09090b !important;
