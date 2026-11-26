@@ -26,8 +26,6 @@
        allMaterials: JSON.parse(document.getElementById('kirim-materials').textContent),
        category: '{{ form.category.value|default_if_none:''|escapejs }}',
        material: '{{ form.material.value|default_if_none:''|escapejs }}',
-       containers: Number('{{ form.containers.value|default_if_none:''|escapejs }}') || '',
-       mobileQtyMode: 'container',
        quantity: '{{ form.quantity.value|default_if_none:''|escapejs }}',
        mode: '{{ form.price_mode.value|default_if_none:'total'|escapejs }}',
        price: '{{ form.price_usd.value|default_if_none:''|escapejs }}',
@@ -42,7 +40,7 @@
          }
        },
        get m() { return this.meta[this.material] || null; },
-       get qty() { return (this.m && this.m.container && this.containers) ? Math.round(this.containers * Number(this.m.container) * 100) / 100 : (Number(this.quantity) || 0); },
+       get qty() { return Number(this.quantity) || 0; },
        get p() { return Number(this.price) || 0; },
        get total() { return this.mode === 'total' ? this.p : this.p * this.qty; },
        get unit() { return this.qty ? (this.mode === 'total' ? this.p / this.qty : this.p) : 0; },
@@ -128,21 +126,11 @@
 
               {# 2. Miqdor #}
               <td class="px-3 py-3 align-middle">
-                <div class="flex flex-col gap-1.5">
-                  <div x-show="m && m.container" x-cloak class="relative">
-                    <input type="number" name="{{ form.containers.html_name }}" id="{{ form.containers.id_for_label }}" step="0.01" min="0.01" inputmode="decimal" :disabled="!isDesktop" class="control !h-8 text-xs font-mono pr-12 w-full" x-model.number="containers" placeholder="Masalan: 5">
-                    <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted font-medium">{% translate "idish" %}</span>
-                  </div>
-                  <div class="relative">
-                    <input type="number" name="{{ form.quantity.html_name }}" id="{{ form.quantity.id_for_label }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="!isDesktop" class="control !h-9 text-xs font-mono pr-12 w-full" :value="(m && m.container && containers) ? qty : quantity" @input="quantity = $event.target.value" :readonly="!!(m && m.container && containers)" placeholder="100" required>
-                    <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted font-medium" x-text="m ? m.unit : ''"></span>
-                  </div>
+                <div class="relative">
+                  <input type="number" name="{{ form.quantity.html_name }}" id="{{ form.quantity.id_for_label }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="!isDesktop" class="control !h-9 text-xs font-mono pr-12 w-full" x-model="quantity" placeholder="100" required>
+                  <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted font-medium" x-text="m ? m.unit : ''"></span>
                 </div>
                 {% for e in form.quantity.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-                {% for e in form.containers.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-                <p class="text-[11px] text-muted mt-1 font-mono" x-show="m && m.container && containers" x-cloak>
-                  = <strong class="text-ink font-semibold" x-text="n(qty)"></strong> <span x-text="m ? m.unit : ''"></span>
-                </p>
               </td>
 
               {# 3. Narx turi #}
@@ -269,32 +257,10 @@
           <p class="text-[11px] text-muted mt-1" x-show="m && m.dims" x-cloak x-text="m ? m.dims : ''"></p>
         </div>
 
-        <div x-show="m && m.container" x-cloak>
-          <div class="flex items-center gap-2 mb-2">
-            <button type="button" class="text-xs px-2 py-1 rounded" :class="mobileQtyMode === 'container' ? 'bg-accent text-white' : 'bg-raised text-muted'" @click="mobileQtyMode = 'container'">{% translate "Idish" %}</button>
-            <button type="button" class="text-xs px-2 py-1 rounded" :class="mobileQtyMode === 'direct' ? 'bg-accent text-white' : 'bg-raised text-muted'" @click="mobileQtyMode = 'direct'; containers = ''">{% translate "Birlik" %}</button>
-          </div>
-          <div class="grid grid-cols-2 gap-2" x-show="mobileQtyMode === 'container'">
-            <div>
-              <label class="field-label">{{ form.containers.label }}</label>
-              <input type="number" name="{{ form.containers.html_name }}" step="0.01" min="0.01" :disabled="isDesktop" class="control font-mono" x-model.number="containers" placeholder="5">
-            </div>
-            <div>
-              <label class="field-label">{% translate "Miqdor" %}</label>
-              <input type="text" disabled class="control font-mono bg-raised" :value="qty + (m ? ' ' + m.unit : '')" readonly>
-            </div>
-          </div>
-          <div x-show="mobileQtyMode === 'direct'">
-            <label class="field-label" for="m-qty-direct">{{ form.quantity.label }}</label>
-            <input type="number" id="m-qty-direct" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop || mobileQtyMode !== 'direct'" class="control font-mono" x-model="quantity" placeholder="100">
-          </div>
-        </div>
-
-        <div x-show="!m || !m.container">
+        <div>
           <label class="field-label" for="m-{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
-          <input type="number" id="m-{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop || !!(m && m.container && containers)" class="control font-mono" x-model="quantity" placeholder="100">
+          <input type="number" id="m-{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop" class="control font-mono" x-model="quantity" placeholder="100">
         </div>
-        <input type="hidden" name="{{ form.quantity.html_name }}" :value="qty" :disabled="isDesktop || !(m && m.container && containers && mobileQtyMode === 'container')">
 
         <div>
           <label class="field-label" id="m-price-mode-label">{{ form.price_mode.label }}</label>

@@ -215,19 +215,11 @@ class KirimViewTests(WorkshopTestCase):
         entry = InventoryTransaction.objects.kirim().order_by("-pk").first()
         self.assertEqual(entry.total_price_usd, Decimal("80.00"))
 
-    def test_containers_are_converted_to_litres(self):
-        self.client.post(
-            self.url, {"material": self.paint.pk, "containers": "2", "price_mode": "total", "price_usd": "104.40"}
-        )
-        entry = InventoryTransaction.objects.kirim().order_by("-pk").first()
-        self.assertEqual((entry.material, entry.quantity_changed, entry.unit_price_usd), (self.paint, Decimal("24"), Decimal("4.3500")))
-
-    def test_kirim_containers_and_quantity_with_total_price(self):
+    def test_kirim_quantity_with_total_price(self):
         response = self.client.post(
             self.url,
             {
                 "material": self.paint.pk,
-                "containers": "12",
                 "quantity": "144",
                 "price_mode": "total",
                 "price_usd": "44646",

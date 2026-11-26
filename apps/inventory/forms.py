@@ -220,18 +220,8 @@ class KirimForm(forms.Form):
     material = MaterialChoiceField(
         queryset=BaseMaterial.objects.filter(is_active=True), label=_("Material"), empty_label=_("Materialni tanlang")
     )
-    containers = forms.DecimalField(
-        label=_("Idishlar soni"),
-        required=False,
-        min_value=Decimal("0.01"),
-        max_digits=10,
-        decimal_places=2,
-        widget=forms.NumberInput(attrs={"x-model.number": "containers", "inputmode": "decimal"}),
-        help_text=_("Masalan, 5 chelak. Miqdor idish hajmiga ko'paytirib hisoblanadi."),
-    )
     quantity = forms.DecimalField(
         label=_("Miqdor"),
-        required=False,
         min_value=Decimal("0.01"),
         max_digits=12,
         decimal_places=2,
@@ -255,17 +245,6 @@ class KirimForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        material: BaseMaterial | None = cleaned.get("material")
-        containers = cleaned.get("containers")
-        quantity = cleaned.get("quantity")
-        if material and containers:
-            if not material.container_size:
-                self.add_error("containers", _("Bu material uchun idish hajmi belgilanmagan."))
-            else:
-                quantity = (containers * material.container_size).quantize(Decimal("0.01"))
-                cleaned["quantity"] = quantity
-        if not quantity and not self.has_error("containers") and not self.has_error("quantity"):
-            self.add_error("quantity", _("Miqdorni yoki idishlar sonini kiriting."))
         price = cleaned.get("price_usd")
         if cleaned.get("price_mode") == self.PRICE_TOTAL and price is not None and price != price.quantize(Decimal("0.01")):
             self.add_error("price_usd", _("Optom narx ko'pi bilan 2 xonali kasr bo'lishi mumkin."))
