@@ -36,21 +36,21 @@ WORKERS = [
     ("yangi_ishchi", "Otabek Nazarov", [UserRole.SHKURKACHI], False),
 ]
 
-# name, category, unit, container, minimum, (length, width), monthly kirim, unit price USD, monthly use share
+# name, category, unit, minimum, (length, width), monthly kirim, unit price USD, monthly use share
 MATERIALS = [
-    ("MDF 16 mm oq", MaterialCategory.SHEET, MeasurementUnit.PIECE, None, 10, (2750, 1830), 30, "38.50", 0.85),
-    ("LDSP 18 mm yong'oq", MaterialCategory.SHEET, MeasurementUnit.PIECE, None, 8, (2800, 2070), 20, "46.00", 0.80),
-    ("Fanera 12 mm", MaterialCategory.SHEET, MeasurementUnit.PIECE, None, 6, (2440, 1220), 12, "27.40", 0.90),
-    ("HDF 3 mm orqa devor", MaterialCategory.SHEET, MeasurementUnit.PIECE, None, 6, (2800, 2070), 15, "9.80", 0.75),
-    ("Akril kraska oq", MaterialCategory.LIQUID, MeasurementUnit.LITER, "12", 24, None, 48, "4.35", 0.90),
-    ("Poliuretan lak, yarim mat", MaterialCategory.LIQUID, MeasurementUnit.LITER, "5", 10, None, 25, "7.90", 0.80),
-    ("Gruntovka", MaterialCategory.LIQUID, MeasurementUnit.KILOGRAM, "25", 25, None, 50, "2.10", 0.70),
-    ("PVX lenta 22 mm oq", MaterialCategory.LINEAR, MeasurementUnit.METER, None, 200, None, 600, "0.12", 0.80),
-    ("Shkurka P240 rulon", MaterialCategory.LINEAR, MeasurementUnit.METER, None, 20, None, 50, "0.95", 0.85),
-    ("Petlya 35 mm, yumshoq yopilish", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, None, 100, None, 200, "1.15", 0.95),
-    ("Samarez 4×16", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, None, 2000, None, 5000, "0.012", 0.70),
-    ("Tutqich 128 mm, qora", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, None, 40, None, 80, "2.60", 0.75),
-    ("Mebel oyog'i 100 mm", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, None, 32, None, 64, "1.80", 0.60),
+    ("MDF 16 mm oq", MaterialCategory.SHEET, MeasurementUnit.PIECE, 10, (2750, 1830), 30, "38.50", 0.85),
+    ("LDSP 18 mm yong'oq", MaterialCategory.SHEET, MeasurementUnit.PIECE, 8, (2800, 2070), 20, "46.00", 0.80),
+    ("Fanera 12 mm", MaterialCategory.SHEET, MeasurementUnit.PIECE, 6, (2440, 1220), 12, "27.40", 0.90),
+    ("HDF 3 mm orqa devor", MaterialCategory.SHEET, MeasurementUnit.PIECE, 6, (2800, 2070), 15, "9.80", 0.75),
+    ("Akril kraska oq", MaterialCategory.LIQUID, MeasurementUnit.LITER, 24, None, 48, "4.35", 0.90),
+    ("Poliuretan lak, yarim mat", MaterialCategory.LIQUID, MeasurementUnit.LITER, 10, None, 25, "7.90", 0.80),
+    ("Gruntovka", MaterialCategory.LIQUID, MeasurementUnit.KILOGRAM, 25, None, 50, "2.10", 0.70),
+    ("PVX lenta 22 mm oq", MaterialCategory.LINEAR, MeasurementUnit.METER, 200, None, 600, "0.12", 0.80),
+    ("Shkurka P240 rulon", MaterialCategory.LINEAR, MeasurementUnit.METER, 20, None, 50, "0.95", 0.85),
+    ("Petlya 35 mm, yumshoq yopilish", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, 100, None, 200, "1.15", 0.95),
+    ("Samarez 4×16", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, 2000, None, 5000, "0.012", 0.70),
+    ("Tutqich 128 mm, qora", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, 40, None, 80, "2.60", 0.75),
+    ("Mebel oyog'i 100 mm", MaterialCategory.HARDWARE, MeasurementUnit.PIECE, 32, None, 64, "1.80", 0.60),
 ]
 
 #: These end the run below their minimum, so the purchase list has something to show.
@@ -171,13 +171,12 @@ class Command(BaseCommand):
 
         admin = users["admin"]
         materials = []
-        for name, category, unit, container, minimum, dims, monthly, price, use in MATERIALS:
+        for name, category, unit, minimum, dims, monthly, price, use in MATERIALS:
             with mock.patch("django.utils.timezone.now", return_value=self._at(dt.date(*months[0], 1), 8)):
                 material = services.create_material(
                     name=name,
                     category=category,
                     unit_of_measure=unit,
-                    container_size=Decimal(container) if container else None,
                     minimum_threshold=Decimal(minimum),
                     length_mm=dims[0] if dims else None,
                     width_mm=dims[1] if dims else None,
@@ -192,8 +191,6 @@ class Command(BaseCommand):
                 drift = Decimal(str(1 + self.rng.uniform(-0.04, 0.06))).quantize(Decimal("0.001"))
                 unit_price = (price * drift).quantize(Decimal("0.0001"))
                 quantity = Decimal(monthly)
-                if material.unit_of_measure == MeasurementUnit.LITER and material.container_size:
-                    quantity = material.container_size * max(1, round(monthly / float(material.container_size)))
                 arrival = min(self._at(dt.date(year, month, self.rng.randint(2, 4)), 9), now - dt.timedelta(hours=1))
                 with mock.patch("django.utils.timezone.now", return_value=arrival):
                     services.record_kirim(

@@ -110,8 +110,8 @@ figures, in both the HTML pages and the API.
 
 **Kirim (arrival, admin only).** Enter the quantity and *either* the total batch price
 *or* the unit price; the other is derived (`unit = total / quantity`, 4 decimal places).
-For liquids with a container size the quantity can be entered as a number of
-buckets/cans. The material's unit price becomes the **weighted average cost** of stock on
+Enter the quantity in the material's unit of measure. The material's unit price
+becomes the **weighted average cost** of stock on
 hand plus the new batch; when the shelf was empty it restarts at the batch price.
 
 **Chiqim (withdrawal).**

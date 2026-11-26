@@ -1,7 +1,5 @@
 """2. Role-based queryset filtering: each trade sees only its own materials."""
 
-from decimal import Decimal
-
 from django.db import connection
 from django.test import TestCase
 
@@ -18,7 +16,7 @@ class RoleVisibilityTests(TestCase):
         cls.admin = make_admin()
         cls.mdf = make_material("MDF 16 mm")  # SHEET -> ARRACHI, ROVERCHI
         cls.paint = make_material(
-            "Akril kraska", MaterialCategory.LIQUID, MeasurementUnit.LITER, container_size=Decimal("12")
+            "Akril kraska", MaterialCategory.LIQUID, MeasurementUnit.LITER
         )  # LIQUID -> KRASKACHI
         cls.tape = make_material("PVX lenta 22 mm", MaterialCategory.LINEAR, MeasurementUnit.METER)  # SHKURKACHI, SBORKACHI
         cls.hinge = make_material("Petlya 35 mm", MaterialCategory.HARDWARE, MeasurementUnit.PIECE)  # SBORKACHI

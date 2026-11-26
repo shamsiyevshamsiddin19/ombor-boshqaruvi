@@ -40,7 +40,7 @@ class WorkshopTestCase(TestCase):
         cls.kraskachi = make_user("kraskachi", [UserRole.KRASKACHI], full_name="Dilshod Rahimov")
         cls.mdf = make_material("MDF 16 mm oq", minimum=5)
         cls.paint = make_material(
-            "Akril kraska oq", MaterialCategory.LIQUID, MeasurementUnit.LITER, container_size=Decimal("12"), minimum=24
+            "Akril kraska oq", MaterialCategory.LIQUID, MeasurementUnit.LITER, minimum=24
         )
         stock_up(cls.mdf, cls.admin, 10, unit_price="38.50")
         stock_up(cls.paint, cls.admin, 12, unit_price="4.35")  # below its minimum of 24
@@ -216,6 +216,7 @@ class KirimViewTests(WorkshopTestCase):
         self.assertEqual(entry.total_price_usd, Decimal("80.00"))
 
     def test_kirim_quantity_with_total_price(self):
+        self.assertNotContains(self.client.get(self.url), 'name="notes"')
         response = self.client.post(
             self.url,
             {
@@ -223,7 +224,6 @@ class KirimViewTests(WorkshopTestCase):
                 "quantity": "144",
                 "price_mode": "total",
                 "price_usd": "44646",
-                "notes": "Jadval ichidagi tugmani bosganda",
             },
         )
         self.assertRedirects(response, self.url)
@@ -231,7 +231,6 @@ class KirimViewTests(WorkshopTestCase):
         self.assertEqual(entry.material, self.paint)
         self.assertEqual(entry.quantity_changed, Decimal("144"))
         self.assertEqual(entry.total_price_usd, Decimal("44646.00"))
-        self.assertEqual(entry.notes, "Jadval ichidagi tugmani bosganda")
 
     def test_missing_quantity_is_an_error(self):
         response = self.client.post(self.url, {"material": self.mdf.pk, "price_mode": "total", "price_usd": "10"})
@@ -249,19 +248,19 @@ class KirimViewTests(WorkshopTestCase):
         self.assertEqual(material.allowed_roles, [UserRole.ARRACHI, UserRole.ROVERCHI])  # category default
         self.assertEqual((material.whole_stock.length_mm, material.whole_stock.width_mm), (2440, 1220))
 
-    def test_material_form_rejects_negative_minimum_and_container_size(self):
+    def test_material_form_rejects_negative_minimum(self):
         url = reverse("inventory:material_create")
         page = self.client.get(url)
         html = page.content.decode()
         self.assertRegex(html, r'name="minimum_threshold"[^>]*min="0"')
-        self.assertRegex(html, r'name="container_size"[^>]*min="1"')
+        self.assertNotContains(page, 'name="container_size"')
 
         response = self.client.post(url, {
             "name": "Lak X", "category": "KRASKA", "unit_of_measure": MeasurementUnit.LITER,
-            "minimum_threshold": "-3", "container_size": "-12",
+            "minimum_threshold": "-3",
         })
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(set(response.context["form"].errors), {"minimum_threshold", "container_size"})
+        self.assertEqual(set(response.context["form"].errors), {"minimum_threshold"})
         self.assertFalse(BaseMaterial.objects.filter(name="Lak X").exists())
 
 

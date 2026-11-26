@@ -45,7 +45,6 @@ def make_material(
     *,
     allowed_roles=None,
     minimum=Decimal("0"),
-    container_size=None,
     length_mm=None,
     width_mm=None,
 ) -> BaseMaterial:
@@ -57,7 +56,6 @@ def make_material(
         unit_of_measure=unit,
         allowed_roles=allowed_roles,
         minimum_threshold=Decimal(minimum),
-        container_size=container_size,
         length_mm=length_mm,
         width_mm=width_mm,
     )

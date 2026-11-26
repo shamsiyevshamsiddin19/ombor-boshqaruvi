@@ -54,7 +54,6 @@ class BaseMaterialSerializer(serializers.ModelSerializer):
             "allowed_roles",
             "unit_of_measure",
             "unit_short",
-            "container_size",
             "minimum_threshold",
             "unit_price_usd",
             "quantity",
@@ -116,7 +115,7 @@ class MaterialSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BaseMaterial
-        fields = ("id", "name", "category", "unit_of_measure", "unit_short", "container_size", "allowed_roles")
+        fields = ("id", "name", "category", "unit_of_measure", "unit_short", "allowed_roles")
 
 
 class WholeMaterialSerializer(HidePricesForWorkersMixin, serializers.ModelSerializer):

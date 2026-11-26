@@ -138,7 +138,6 @@
               <th class="w-[155px] min-w-[145px] text-left">{% translate "Kategoriya" %}</th>
               <th class="w-[130px] min-w-[120px] text-left">{% translate "Birlik" %}</th>
               <th class="w-[220px] min-w-[210px] text-left">{% translate "O'lchami" %}</th>
-              <th class="w-[125px] min-w-[115px] text-left">{% translate "Idish / Qadoq" %}</th>
               <th class="w-[125px] min-w-[115px] text-left">{% translate "Minimal" %}</th>
               <th class="w-[220px] min-w-[200px] text-left">{% translate "Kim ko'radi va oladi" %}</th>
               <th class="w-[100px] min-w-[90px] text-center">{% translate "Holati" %}</th>
@@ -232,23 +231,7 @@
                 </div>
               </td>
 
-              {# 5. Idish / Qadoq #}
-              <td class="px-3 py-3 align-top">
-                <div class="relative">
-                  <input type="number"
-                         name="{{ form.container_size.html_name }}"
-                         id="{{ form.container_size.id_for_label }}"
-                         min="1" max="10000000" step="1" inputmode="numeric"
-                         value="{{ form.container_size.value|default_if_none:'' }}"
-                         :disabled="!isDesktop"
-                         class="control !h-9 text-xs font-mono pr-10 w-full"
-                         placeholder="12">
-                  <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted font-medium" x-text="unitShort"></span>
-                </div>
-                {% for e in form.container_size.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-              </td>
-
-              {# 6. Minimal #}
+              {# 5. Minimal #}
               <td class="px-3 py-3 align-top">
                 <div class="relative">
                   <input type="number"
@@ -265,7 +248,7 @@
                 {% for e in form.minimum_threshold.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
 
-              {# 7. Kimlar ko'radi va oladi (Smart Multi-Select Dropdown) #}
+              {# 6. Kimlar ko'radi va oladi (Smart Multi-Select Dropdown) #}
               <td class="px-3 py-3 align-top">
                 <template x-for="rCode in selectedRoles" :key="rCode">
                   <input type="hidden" name="{{ form.allowed_roles.html_name }}" :value="rCode" :disabled="!isDesktop">
@@ -288,7 +271,7 @@
                 {% for e in form.allowed_roles.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
 
-              {# 8. Holati #}
+              {# 7. Holati #}
               <td class="px-3 py-3 align-middle text-center whitespace-nowrap">
                 {% if form.is_active %}
                   <label class="inline-flex items-center cursor-pointer select-none">
@@ -301,7 +284,7 @@
                 {% endif %}
               </td>
 
-              {# 9. Amal #}
+              {# 8. Amal #}
               <td class="px-4 py-3 align-top text-right whitespace-nowrap">
                 <button type="submit" class="btn btn-primary min-h-9 px-3.5 text-xs font-semibold shadow-xs inline-flex items-center gap-1.5">
                   {% icon "plus" 15 %}
@@ -312,7 +295,7 @@
 
             {# ---------------- SMART SUB-ROW: NEW CATEGORY ("Boshqa") ---------------- #}
             <tr x-show="category === '__other__'" {% if form.category.value != "__other__" %}x-cloak{% endif %} class="bg-raised/70 border-b border-line">
-              <td colspan="9" class="px-5 py-3">
+              <td colspan="8" class="px-5 py-3">
                 <div class="flex flex-wrap items-center gap-4">
                   <div class="flex items-center gap-2 min-w-[260px] flex-1 max-w-md {% if form.new_category.errors %}has-error{% endif %}">
                     <label class="text-xs font-semibold text-ink whitespace-nowrap" for="{{ form.new_category.id_for_label }}">{{ form.new_category.label }}:</label>
@@ -341,7 +324,7 @@
 
             {# ---------------- SECTION DIVIDER ROW ---------------- #}
             <tr class="bg-raised/70 border-t border-b border-line text-[11px] font-semibold uppercase tracking-wider text-muted select-none">
-              <td colspan="9" class="px-5 py-2.5">
+              <td colspan="8" class="px-5 py-2.5">
                 <div class="flex items-center justify-between">
                   <span class="flex items-center gap-1.5 text-muted font-medium">
                     {% icon "layers" 14 %}
@@ -371,13 +354,6 @@
               <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
                 {% if st.length_mm %}
                   {{ st.length_mm }} × {{ st.width_mm }} <span class="text-muted font-sans">{% translate "mm" %}</span>
-                {% else %}
-                  <span class="text-muted">—</span>
-                {% endif %}
-              </td>
-              <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
-                {% if m.container_size %}
-                  {{ m.container_size|qty }} <span class="text-muted font-sans">{{ m.unit_short }}</span>
                 {% else %}
                   <span class="text-muted">—</span>
                 {% endif %}
@@ -420,7 +396,7 @@
             </tr>
             {% endwith %}{% empty %}
             <tr>
-              <td colspan="9" class="px-5 py-8 text-center text-muted text-sm">
+              <td colspan="8" class="px-5 py-8 text-center text-muted text-sm">
                 {% translate "Hali material qo'shilmagan." %}
               </td>
             </tr>
@@ -501,15 +477,9 @@
           </label>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="field-label" for="m-{{ form.minimum_threshold.id_for_label }}">{{ form.minimum_threshold.label }}</label>
-            <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="1" value="{{ form.minimum_threshold.value|default_if_none:'0' }}" :disabled="isDesktop" class="control font-mono">
-          </div>
-          <div>
-            <label class="field-label" for="m-{{ form.container_size.id_for_label }}">{{ form.container_size.label }}</label>
-            <input type="number" name="{{ form.container_size.html_name }}" id="m-{{ form.container_size.id_for_label }}" min="1" step="1" value="{{ form.container_size.value|default_if_none:'' }}" :disabled="isDesktop" class="control font-mono">
-          </div>
+        <div>
+          <label class="field-label" for="m-{{ form.minimum_threshold.id_for_label }}">{{ form.minimum_threshold.label }}</label>
+          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="1" value="{{ form.minimum_threshold.value|default_if_none:'0' }}" :disabled="isDesktop" class="control font-mono">
         </div>
 
         <div x-show="showDims" x-cloak class="space-y-2 rounded-lg border border-line bg-raised/30 p-3">

@@ -41,7 +41,6 @@
         {% else %}
           <button type="button" class="chip num" @click="q = Math.min(max, 0.5)">0.5</button>
           <button type="button" class="chip num" @click="q = Math.min(max, 1)">1</button>
-          {% if m.container_size %}<button type="button" class="chip num" @click="q = Math.min(max, {{ m.container_size|unlocalize }})">{% blocktranslate with size=m.container_size|qty unit=m.unit_short %}1 idish · {{ size }} {{ unit }}{% endblocktranslate %}</button>{% endif %}
         {% endif %}
         <button type="button" class="chip" @click="q = max">{% translate "Hammasini" %}</button>
       </div>

@@ -1,7 +1,5 @@
 """Admin adds a new trade (kasb) from the Ishchilar page."""
 
-from decimal import Decimal
-
 from django.test import TestCase
 from django.urls import reverse
 
@@ -58,7 +56,7 @@ class WorkerRoleTests(TestCase):
         self.assertEqual(User.objects.get(phone="+998933334455").roles, ["PARDOZCHI"])
 
         worker = make_user("pardozchi", ["PARDOZCHI"])
-        make_material("Lak", MaterialCategory.LIQUID, MeasurementUnit.LITER, allowed_roles=["PARDOZCHI"], container_size=Decimal("5"))
+        make_material("Lak", MaterialCategory.LIQUID, MeasurementUnit.LITER, allowed_roles=["PARDOZCHI"])
         make_material("MDF 16 mm")  # sawyers and CNC operators only
         self.client.force_login(worker)
         home = self.client.get(reverse("inventory:home"))

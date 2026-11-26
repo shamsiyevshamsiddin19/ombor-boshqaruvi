@@ -378,7 +378,6 @@ class MaterialCreateView(WarehouseAdminRequiredMixin, MaterialFormContextMixin, 
                     category=data["category"],
                     unit_of_measure=data["unit_of_measure"],
                     allowed_roles=data.get("allowed_roles"),
-                    container_size=data.get("container_size"),
                     minimum_threshold=data.get("minimum_threshold") or Decimal("0"),
                     length_mm=data.get("length_mm"),
                     width_mm=data.get("width_mm"),
@@ -401,7 +400,7 @@ class MaterialUpdateView(WarehouseAdminRequiredMixin, MaterialFormContextMixin, 
         if not material.allowed_roles:
             material.allowed_roles = default_roles_for_category(material.category)
         catalogue_fields = [
-            "name", "category", "unit_of_measure", "container_size",
+            "name", "category", "unit_of_measure",
             "minimum_threshold", "allowed_roles", "is_active", "updated_at",
         ]
         with transaction.atomic():
@@ -437,7 +436,6 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
                 "label": f"{m.name} ({m.unit_short})",
                 "category": m.category,
                 "unit": m.unit_short,
-                "container": str(m.container_size) if m.container_size else None,
                 "integer": m.requires_integer_quantity,
                 "price": str(m.unit_price_usd),
                 "stock": str(getattr(getattr(m, "whole_stock", None), "quantity", "0")),
