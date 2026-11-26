@@ -414,7 +414,7 @@ class ExpenseForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": _("Masalan: Arra pichog'i, tushlik, soliq...")}),
     )
     amount_usd = forms.DecimalField(
-        label=_("Summa (USD $)"),
+        label=_("Summa (USD)"),
         min_value=Decimal("0.01"),
         max_digits=14,
         decimal_places=2,
@@ -426,7 +426,7 @@ class ExpenseForm(forms.Form):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     notes = forms.CharField(
-        label=_("Izoh"),
+        label=_("Izoh (ixtiyoriy)"),
         required=False,
         max_length=1000,
         widget=forms.TextInput(attrs={"placeholder": _("Qo'shimcha izoh...")}),
