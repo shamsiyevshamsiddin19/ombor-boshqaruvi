@@ -6,25 +6,30 @@
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
     <h1 class="font-bold text-[24px] leading-8 lg:text-[32px] lg:leading-10">{% translate "Oylik hisobot" %}</h1>
-    <p class="mt-1 text-muted" style="font-size:15px">{% if f.month %}{{ f.month|month_name|capfirst }} {{ f.month|date:"Y" }}{% else %}{% translate "Barcha davr" %}{% endif %} · {% translate "kirim, chiqim va qoldiqlar, USD" %}</p>
   </div>
   <a href="{% url 'inventory:reports_export' %}?{{ export_query }}" class="btn btn-secondary">{% icon "download" %} {% translate "CSV yuklab olish" %}</a>
 </div>
 
-<form method="get" class="form-stack mt-6 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
-  {% with hide_optional=True %}
-  <div>{% include "partials/field.html" with field=filter_form.month %}</div>
-  <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
-  <div>{% include "partials/field.html" with field=filter_form.category %}</div>
-  <div>{% include "partials/field.html" with field=filter_form.user %}</div>
-  <div>{% include "partials/field.html" with field=filter_form.material %}</div>
-  <div>{% include "partials/field.html" with field=filter_form.project %}</div>
-  {% endwith %}
-  <div class="col-span-2 flex gap-2 md:col-span-1">
-    <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
-    <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
-  </div>
-</form>
+<div x-data="{ filtersOpen: false }" class="mt-4">
+  <button @click="filtersOpen = !filtersOpen" type="button" class="flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
+    {% icon "search" 14 %} {% translate "Filtrlar" %}
+    <svg :class="filtersOpen && 'rotate-180'" class="h-4 w-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+  <form x-show="filtersOpen" x-cloak x-transition method="get" class="form-stack mt-3 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
+    {% with hide_optional=True %}
+    <div>{% include "partials/field.html" with field=filter_form.month %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.category %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.user %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.material %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.project %}</div>
+    {% endwith %}
+    <div class="col-span-2 flex gap-2 md:col-span-1">
+      <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
+      <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
+    </div>
+  </form>
+</div>
 
 <section class="panel mt-6 grid grid-cols-2 md:grid-cols-5" aria-label="{% translate "Davr bo'yicha jami" %}">
   <div class="border-b border-r border-line p-5 md:border-b-0">
@@ -49,7 +54,7 @@
   </div>
 </section>
 
-<div class="mt-6 grid grid-cols-1 gap-6">
+<div class="mt-6 grid grid-cols-1 gap-3">
   <section class="panel overflow-hidden" aria-labelledby="by-worker">
     <div class="panel-head"><h2 id="by-worker" class="panel-title">{% translate "Sarf ishchilar bo'yicha" %}</h2><p class="text-muted" style="font-size:12px">{% translate "USD, olingan materiallar qiymati" %}</p></div>
     {% if by_worker %}
