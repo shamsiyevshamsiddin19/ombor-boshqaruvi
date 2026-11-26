@@ -3,11 +3,11 @@
 {% block auth %}
 <div class="flex min-h-screen flex-col items-center px-4 py-10 sm:py-16">
   <div class="mb-8 flex w-full {% block auth_header_width %}max-w-[400px]{% endblock %} items-center justify-between gap-3">
-    <a href="{% url 'users:login' %}" class="flex items-center gap-2.5" aria-label="Profur">
-      <img src="{% static 'img/profur-icon.png' %}" alt="Profur" class="h-8 w-8 rounded-lg shadow-xs object-contain">
+    <a href="{% url 'users:login' %}" class="flex min-w-0 shrink items-center gap-2.5" aria-label="Profur">
+      <img src="{% static 'img/profur-icon.png' %}" alt="Profur" class="h-8 w-8 shrink-0 rounded-lg shadow-xs object-contain">
       <img src="{% static 'img/profur-logo-black.png' %}" alt="Profur" class="h-6 w-auto max-w-[120px] object-contain">
     </a>
-    {% include "partials/lang_switch.html" %}
+    <div class="w-[156px] shrink-0">{% include "partials/lang_switch.html" %}</div>
   </div>
   <div class="w-full {% block auth_width %}max-w-[400px]{% endblock %}">
     {% include "partials/messages.html" %}
