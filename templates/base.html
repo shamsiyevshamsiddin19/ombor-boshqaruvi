@@ -112,13 +112,15 @@
         <img src="{% static 'img/profur-logo-black.png' %}" alt="Profur" class="h-[20px] w-auto max-w-[115px] object-contain">
       </a>
 
+      {% if user.is_warehouse_admin %}
+        <a href="{% url 'inventory:dashboard' %}" class="hidden items-baseline gap-2 whitespace-nowrap sm:flex" title="{% translate 'Ombordagi butun materiallarning joriy qiymati' %}">
+          <span class="text-xs text-muted">{% translate "Ombor qiymati" %}</span>
+          <span class="num font-semibold text-ink">{{ nav_valuation_usd|usd }}</span>
+        </a>
+      {% endif %}
+
       <div class="ml-auto flex h-full items-center gap-2 sm:gap-3">
         {% if user.is_warehouse_admin %}
-          <a href="{% url 'inventory:dashboard' %}" class="hidden sm:flex items-baseline gap-2 whitespace-nowrap mr-1" title="{% translate 'Ombordagi butun materiallarning joriy qiymati' %}">
-            <span class="text-muted" style="font-size:12px">{% translate "Ombor qiymati" %}</span>
-            <span class="num font-semibold text-ink">{{ nav_valuation_usd|usd }}</span>
-          </a>
-
           {# ---- 1. Mail icon: So'rovlar (Pending requests) ---- #}
           <a href="{% url 'users:pending_users' %}"
              class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface hover:bg-raised text-ink transition-colors shadow-2xs"
