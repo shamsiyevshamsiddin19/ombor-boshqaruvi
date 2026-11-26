@@ -21,114 +21,138 @@
   <div class="border-b border-r border-line p-5 lg:border-b-0">
     <p class="text-muted">{% translate "Jami xarajat" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{{ totals.total_usd|usd }}</p>
-    <p class="mt-1 text-muted" style="font-size:12px">{% blocktranslate count n=totals.count %}<span class="num">{{ n }}</span> ta yozuv{% plural %}<span class="num">{{ n }}</span> ta yozuv{% endblocktranslate %}</p>
   </div>
   <div class="border-b border-line p-5 lg:border-b-0 lg:border-r">
     <p class="text-muted">{% translate "Nalog" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{{ totals.nalog_usd|usd }}</p>
-    <p class="mt-1 text-muted" style="font-size:12px">{% translate "soliqlar va to'lovlar" %}</p>
   </div>
   <div class="border-r border-line p-5">
     <p class="text-muted">{% translate "Produkta" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{{ totals.produkta_usd|usd }}</p>
-    <p class="mt-1 text-muted" style="font-size:12px">{% translate "oziq-ovqat va choy" %}</p>
   </div>
   <div class="p-5">
     <p class="text-muted">{% translate "Stanok" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{{ totals.stanok_usd|usd }}</p>
-    <p class="mt-1 text-muted" style="font-size:12px">{% translate "uskuna, ehtiyot qism, ta'mir" %}</p>
   </div>
 </section>
 
-{# Add Expense Form #}
-<section class="panel mt-6 p-5 shadow-xs" aria-labelledby="new-expense-title">
-  <h2 id="new-expense-title" class="panel-title mb-4">{% translate "Yangi xarajat qo'shish" %}</h2>
-  <form method="post" autocomplete="off" novalidate class="grid gap-3 md:grid-cols-[160px_minmax(0,1.4fr)_140px_150px_minmax(0,1fr)_auto] md:items-end">
-    {% csrf_token %}
-    {% include "partials/form_errors.html" %}
-    <div class="{% if form.category.errors %}has-error{% endif %}">
-      <label class="field-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
-      {{ form.category }}
-      {% for e in form.category.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
-    </div>
-    <div class="{% if form.title.errors %}has-error{% endif %}">
-      <label class="field-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
-      {{ form.title }}
-      {% for e in form.title.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
-    </div>
-    <div class="{% if form.amount_usd.errors %}has-error{% endif %}">
-      <label class="field-label" for="{{ form.amount_usd.id_for_label }}">{{ form.amount_usd.label }}</label>
-      {{ form.amount_usd }}
-      {% for e in form.amount_usd.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
-    </div>
-    <div class="{% if form.expense_date.errors %}has-error{% endif %}">
-      <label class="field-label" for="{{ form.expense_date.id_for_label }}">{{ form.expense_date.label }}</label>
-      {{ form.expense_date }}
-      {% for e in form.expense_date.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
-    </div>
-    <div class="{% if form.notes.errors %}has-error{% endif %}">
-      <label class="field-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
-      {{ form.notes }}
-      {% for e in form.notes.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
-    </div>
-    <div>
-      <button type="submit" class="btn btn-primary min-h-10 w-full md:w-auto px-4 text-xs font-semibold">
-        {% icon "plus" 16 %} {% translate "Saqlash" %}
-      </button>
+{# Filters (collapsible, like the monthly report) #}
+<div x-data="{ filtersOpen: false }" class="mt-6">
+  <button @click="filtersOpen = !filtersOpen" type="button" class="flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
+    {% icon "search" 14 %} {% translate "Filtrlar" %}
+    <svg :class="filtersOpen && 'rotate-180'" class="h-4 w-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+  <form x-show="filtersOpen" x-cloak x-transition method="get" class="mt-3 flex flex-wrap items-end gap-3" aria-label="{% translate 'Filtrlar' %}">
+    {% with hide_optional=True %}
+    <div class="w-44">{% include "partials/field.html" with field=filter_form.month %}</div>
+    <div class="w-44">{% include "partials/field.html" with field=filter_form.category %}</div>
+    {% endwith %}
+    <div class="flex gap-2">
+      <button type="submit" class="btn btn-primary min-h-10">{% translate "Ko'rsatish" %}</button>
+      <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
     </div>
   </form>
-</section>
+</div>
 
-{# Filter Bar #}
-<form method="get" class="mt-6 flex flex-wrap items-end gap-3" aria-label="{% translate 'Filtrlar' %}">
-  <div class="w-44">{% include "partials/field.html" with field=filter_form.month %}</div>
-  <div class="w-44">{% include "partials/field.html" with field=filter_form.category %}</div>
-  <div class="flex gap-2">
-    <button type="submit" class="btn btn-primary min-h-10">{% translate "Ko'rsatish" %}</button>
-    <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
-  </div>
-</form>
-
-{# Expense Table #}
+{# Unified Excel Data Grid: new-expense row + history, like Kirim / Qoldiq qo'shish #}
 <section class="panel mt-4 overflow-hidden shadow-xs" aria-labelledby="expense-list-title">
   <div class="panel-head border-b border-line px-5 py-3.5">
     <h2 id="expense-list-title" class="panel-title">{% translate "Xarajatlar ro'yxati" %}</h2>
     <p class="text-muted text-xs">{% translate "tarixda saqlanadi" %}</p>
   </div>
 
-  {% if expenses %}
+  {% include "partials/form_errors.html" %}
+
+  {# Desktop Excel Table #}
   <div class="hidden md:block overflow-x-auto">
-    <table class="grid-table">
-      <thead>
-        <tr>
-          <th class="w-[120px] text-left">{% translate "Sana" %}</th>
-          <th class="w-[130px] text-left">{% translate "Turi" %}</th>
-          <th class="min-w-[200px] text-left">{% translate "Nomi" %}</th>
-          <th class="min-w-[180px] text-left">{% translate "Izoh" %}</th>
-          <th class="w-[150px] text-left">{% translate "Kim kiritdi" %}</th>
-          <th class="w-[140px] text-right">{% translate "Summa" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for exp in expenses %}
-        <tr class="hover:bg-raised/40 transition-colors">
-          <td class="px-5 py-3 text-xs font-mono text-muted whitespace-nowrap">{{ exp.expense_date|date:"j E, Y" }}</td>
-          <td class="px-4 py-3 whitespace-nowrap">
-            <span class="inline-flex items-center rounded border border-line/70 bg-raised px-2 py-0.5 text-xs font-medium text-ink">
-              {{ exp.category|expense_cat_label }}
-            </span>
-          </td>
-          <td class="px-4 py-3 font-medium text-ink">{{ exp.title }}</td>
-          <td class="px-4 py-3 text-xs text-muted">{{ exp.notes|default:"—" }}</td>
-          <td class="px-4 py-3 text-xs text-muted whitespace-nowrap">{{ exp.created_by.display_name }}</td>
-          <td class="px-5 py-3 text-right font-mono font-semibold text-ink whitespace-nowrap">{{ exp.amount_usd|usd }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <form method="post" autocomplete="off" novalidate>
+      {% csrf_token %}
+      <table class="grid-table">
+        <thead>
+          <tr>
+            <th class="w-[150px] text-left">{% translate "Sana" %}</th>
+            <th class="w-[150px] text-left">{% translate "Turi" %}</th>
+            <th class="min-w-[220px] text-left">{% translate "Nomi" %}</th>
+            <th class="min-w-[200px] text-left">{% translate "Izoh" %}</th>
+            <th class="w-[150px] text-left">{% translate "Kim kiritdi" %}</th>
+            <th class="w-[130px] text-right">{% translate "Summa" %}</th>
+            <th class="w-[140px] text-right">{% translate "Amal" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {# ---------------- ROW 1: THE ACTIVE INPUT ROW ---------------- #}
+          <tr class="bg-accent/[0.04] hover:bg-accent/[0.07] transition-colors border-b-2 border-accent/30">
+            <td class="px-3 py-3 align-middle">
+              {{ form.expense_date }}
+              {% for e in form.expense_date.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
+            </td>
+            <td class="px-3 py-3 align-middle">
+              {{ form.category }}
+              {% for e in form.category.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
+            </td>
+            <td class="px-3 py-3 align-middle">
+              {{ form.title }}
+              {% for e in form.title.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
+            </td>
+            <td class="px-3 py-3 align-middle">
+              {{ form.notes }}
+              {% for e in form.notes.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
+            </td>
+            <td class="px-4 py-3 align-middle text-xs text-muted whitespace-nowrap">{{ request.user.display_name }}</td>
+            <td class="px-3 py-3 align-middle">
+              {{ form.amount_usd }}
+              {% for e in form.amount_usd.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
+            </td>
+            <td class="px-5 py-3 align-middle text-right whitespace-nowrap">
+              <button type="submit" class="btn btn-primary min-h-10 px-4 text-xs font-semibold shadow-xs">
+                {% icon "plus" 16 %}
+                <span>{% translate "Saqlash" %}</span>
+              </button>
+            </td>
+          </tr>
+
+          {# ---------------- EXISTING EXPENSE ROWS ---------------- #}
+          {% for exp in expenses %}
+          <tr class="hover:bg-raised/40 transition-colors">
+            <td class="px-5 py-3 text-xs font-mono text-muted whitespace-nowrap">{{ exp.expense_date|date:"j E, Y" }}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center rounded border border-line/70 bg-raised px-2 py-0.5 text-xs font-medium text-ink">
+                {{ exp.category|expense_cat_label }}
+              </span>
+            </td>
+            <td class="px-4 py-3 font-medium text-ink">{{ exp.title }}</td>
+            <td class="px-4 py-3 text-xs text-muted">{{ exp.notes|default:"—" }}</td>
+            <td class="px-4 py-3 text-xs text-muted whitespace-nowrap">{{ exp.created_by.display_name }}</td>
+            <td class="px-5 py-3 text-right font-mono font-semibold text-ink whitespace-nowrap">{{ exp.amount_usd|usd }}</td>
+            <td class="px-5 py-3"></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="px-5 py-8 text-center text-muted text-sm">
+              {% translate "Tanlangan davrda qo'shimcha xarajatlar yo'q." %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </form>
   </div>
 
-  <ul class="md:hidden divide-y divide-rule">
+  {# Mobile Form #}
+  <form method="post" autocomplete="off" novalidate class="md:hidden p-4 form-stack">
+    {% csrf_token %}
+    {% include "partials/field.html" with field=form.category %}
+    {% include "partials/field.html" with field=form.title %}
+    <div class="grid grid-cols-2 gap-3">
+      {% include "partials/field.html" with field=form.amount_usd %}
+      {% include "partials/field.html" with field=form.expense_date %}
+    </div>
+    {% include "partials/field.html" with field=form.notes %}
+    <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">{% icon "plus" 18 %} {% translate "Saqlash" %}</button>
+  </form>
+
+  {# Mobile Expense List #}
+  <ul class="md:hidden divide-y divide-rule border-t border-line">
     {% for exp in expenses %}
     <li class="p-4 flex items-start justify-between gap-3">
       <div class="min-w-0">
@@ -137,12 +161,12 @@
       </div>
       <p class="font-mono font-semibold text-ink text-sm whitespace-nowrap">{{ exp.amount_usd|usd }}</p>
     </li>
+    {% empty %}
+    <li class="p-5 text-center text-muted text-sm">{% translate "Tanlangan davrda qo'shimcha xarajatlar yo'q." %}</li>
     {% endfor %}
   </ul>
+
   {% include "partials/pagination.html" %}
-  {% else %}
-  <p class="px-5 py-8 text-center text-muted text-sm">{% translate "Tanlangan davrda qo'shimcha xarajatlar yo'q." %}</p>
-  {% endif %}
 </section>
 {% endwith %}
 {% endblock %}

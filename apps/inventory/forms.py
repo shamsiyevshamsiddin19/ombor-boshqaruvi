@@ -432,6 +432,14 @@ class ExpenseForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": _("Qo'shimcha izoh...")}),
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["category"].widget.attrs.update({"class": "control"})
+        self.fields["title"].widget.attrs.update({"class": "control"})
+        self.fields["amount_usd"].widget.attrs.update({"class": "control font-mono"})
+        self.fields["expense_date"].widget.attrs.update({"class": "control font-mono"})
+        self.fields["notes"].widget.attrs.update({"class": "control"})
+
 
 class ExpenseFilterForm(forms.Form):
     month = forms.CharField(
