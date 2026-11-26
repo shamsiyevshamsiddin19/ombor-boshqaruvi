@@ -29,7 +29,6 @@
        quantity: '{{ form.quantity.value|default_if_none:''|escapejs }}',
        mode: '{{ form.price_mode.value|default_if_none:'total'|escapejs }}',
        price: '{{ form.price_usd.value|default_if_none:''|escapejs }}',
-       notes: '{{ form.notes.value|default_if_none:''|escapejs }}',
        get filteredMaterials() {
          if (!this.category) return this.allMaterials;
          return this.allMaterials.filter(item => item.category === this.category);
@@ -100,7 +99,6 @@
               <th class="w-[140px] min-w-[130px] text-left">{% translate "Narx (USD $)" %}</th>
               <th class="w-[130px] min-w-[120px] text-right">{% translate "Partiya jami" %}</th>
               <th class="w-[150px] min-w-[140px] text-right">{% translate "Yangi o'rtacha narx" %}</th>
-              <th class="min-w-[180px] text-left">{% translate "Izoh" %}</th>
               <th class="w-[150px] min-w-[140px] text-right">{% translate "Amal" %}</th>
             </tr>
           </thead>
@@ -168,13 +166,7 @@
                 <span class="block text-[11px] text-muted font-sans font-normal" x-show="m && m.stock > 0 && avg" x-cloak x-text="'(oldingi: ' + usd(m.price, 2) + ')'"></span>
               </td>
 
-              {# 7. Izoh #}
-              <td class="px-4 py-3 align-middle">
-                <input type="text" name="{{ form.notes.html_name }}" id="{{ form.notes.id_for_label }}" maxlength="1000" x-model="notes" :disabled="!isDesktop" class="control !h-9 text-xs w-full" placeholder="{% translate "Yetkazib beruvchi, faktura raqami..." %}">
-                {% for e in form.notes.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-              </td>
-
-              {# 8. Amal #}
+              {# 7. Amal #}
               <td class="px-5 py-3 align-middle text-right whitespace-nowrap">
                 <button type="submit" class="btn btn-primary min-h-10 px-4 text-xs font-semibold shadow-xs">
                   {% icon "plus" 16 %}
@@ -185,7 +177,7 @@
 
             {# ---------------- SECTION DIVIDER ROW ---------------- #}
             <tr class="bg-raised/70 border-t border-b border-line text-[11px] font-semibold uppercase tracking-wider text-muted select-none">
-              <td colspan="8" class="px-5 py-2.5">
+              <td colspan="7" class="px-5 py-2.5">
                 <div class="flex items-center justify-between">
                   <span class="flex items-center gap-1.5 text-muted font-medium">
                     {% icon "history" 14 %}
@@ -225,16 +217,13 @@
                   <span>{{ t.created_at|date:"j E, H:i" }}</span>
                 </span>
               </td>
-              <td class="px-4 py-3 text-xs text-muted truncate max-w-[220px]" title="{{ t.notes }}">
-                {{ t.notes|default:"—" }}
-              </td>
               <td class="px-5 py-3 text-right whitespace-nowrap text-xs text-muted">
                 {{ t.user.display_name|default:t.user.username }}
               </td>
             </tr>
             {% endwith %}{% empty %}
             <tr>
-              <td colspan="8" class="px-5 py-8 text-center text-muted text-sm">
+              <td colspan="7" class="px-5 py-8 text-center text-muted text-sm">
                 {% translate "Hali kirim yozilmagan." %}
               </td>
             </tr>
@@ -292,11 +281,6 @@
           </div>
         </div>
 
-        <div>
-          <label class="field-label" for="m-{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
-          <input type="text" id="m-{{ form.notes.id_for_label }}" name="{{ form.notes.html_name }}" x-model="notes" :disabled="isDesktop" class="control text-xs" placeholder="{% translate "Yetkazib beruvchi, faktura raqami..." %}">
-        </div>
-
         <button type="submit" class="btn btn-primary btn-block min-h-10 text-xs font-semibold">
           {% icon "plus" 16 %}
           <span>{% translate "Kirimni saqlash" %}</span>
@@ -314,7 +298,7 @@
           <li class="p-4 flex items-center justify-between gap-3">
             <div class="min-w-0 flex-1">
               <p class="font-medium text-ink text-sm truncate">{{ m.name }}</p>
-              <p class="text-xs text-muted mt-0.5 font-mono">{{ t.created_at|date:"j E, H:i" }}{% if t.notes %} · {{ t.notes }}{% endif %}</p>
+              <p class="text-xs text-muted mt-0.5 font-mono">{{ t.created_at|date:"j E, H:i" }}</p>
             </div>
             <div class="text-right font-mono text-xs flex-none">
               <p class="font-bold text-ink text-sm">{{ t.total_price_usd|usd }}</p>

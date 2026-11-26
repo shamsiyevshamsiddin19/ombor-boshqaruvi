@@ -123,7 +123,6 @@ def create_material(
     category: str,
     unit_of_measure: str,
     allowed_roles: list[str] | None = None,
-    container_size: Decimal | None = None,
     minimum_threshold: Decimal = Decimal("0.00"),
     length_mm: int | None = None,
     width_mm: int | None = None,
@@ -133,7 +132,6 @@ def create_material(
         category=category,
         unit_of_measure=unit_of_measure,
         allowed_roles=list(allowed_roles) if allowed_roles else default_roles_for_category(category),
-        container_size=container_size,
         minimum_threshold=minimum_threshold or Decimal("0.00"),
     )
     material.full_clean()

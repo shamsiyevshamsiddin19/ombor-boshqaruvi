@@ -184,16 +184,6 @@ class BaseMaterial(models.Model):
         help_text="List of UserRoles permitted to view/deduct this material",
     )
     unit_of_measure = models.CharField(_("O'lchov birligi"), max_length=20, choices=MeasurementUnit.choices)
-    container_size = models.DecimalField(
-        _("Idish hajmi"),
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(Decimal("0.01"))],
-        help_text="Size per container (e.g., 12L or 25L bucket)",
-    )
-
     # Stock thresholds
     minimum_threshold = models.DecimalField(
         _("Minimal qoldiq"),
@@ -296,13 +286,6 @@ class WholeMaterial(models.Model):
     @property
     def shortfall(self) -> Decimal:
         return max(self.material.minimum_threshold - self.quantity, ZERO)
-
-    @property
-    def container_count(self) -> Decimal | None:
-        size = self.material.container_size
-        if not size:
-            return None
-        return (self.quantity / size).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
     @property
     def sheet_area_mm2(self) -> int | None:

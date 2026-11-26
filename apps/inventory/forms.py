@@ -91,15 +91,10 @@ class MaterialForm(forms.ModelForm):
         label=_("List eni"), required=False, min_value=1, max_value=MAX_MM,
         help_text=_("Masalan 1830 mm (yoki 183 sm)."),
     )
-    # Whole numbers only in the form; the model columns stay decimal so existing data is untouched.
+    # Show the threshold as a whole number while keeping the stored decimal field.
     minimum_threshold = forms.IntegerField(
         label=_("Minimal qoldiq"), min_value=0, max_value=10**9, initial=0,
         help_text=_("Miqdor shundan kam bo'lsa, xarid ro'yxatida ko'rinadi."),
-        widget=forms.NumberInput(attrs={"step": "1", "inputmode": "numeric"}),
-    )
-    container_size = forms.IntegerField(
-        label=_("Idish hajmi"), required=False, min_value=1, max_value=10**7,
-        help_text=_("Masalan, 12 litrli chelak uchun 12. Kirimda idish soni bilan hisoblash uchun."),
         widget=forms.NumberInput(attrs={"step": "1", "inputmode": "numeric"}),
     )
 
@@ -109,7 +104,6 @@ class MaterialForm(forms.ModelForm):
             "name",
             "category",
             "unit_of_measure",
-            "container_size",
             "minimum_threshold",
             "allowed_roles",
             "is_active",
@@ -128,11 +122,9 @@ class MaterialForm(forms.ModelForm):
             self.fields["length_mm"].initial = stock.length_mm
             self.fields["width_mm"].initial = stock.width_mm
         self.fields["unit_of_measure"].choices = [("", _("Tanlang")), *MeasurementUnit.choices]
-        # Show stored whole values without the ".00" the decimal columns carry.
-        for name in ("minimum_threshold", "container_size"):
-            value = getattr(self.instance, name, None) if self.instance.pk else None
-            if value is not None and value == value.to_integral_value():
-                self.initial[name] = int(value)
+        threshold = self.instance.minimum_threshold
+        if self.instance.pk and threshold == threshold.to_integral_value():
+            self.initial["minimum_threshold"] = int(threshold)
         if not self.instance.pk:
             self.fields.pop("is_active")
 
@@ -236,12 +228,6 @@ class KirimForm(forms.Form):
     price_usd = forms.DecimalField(
         label=_("Narx (USD $)"), min_value=Decimal("0"), max_digits=14, decimal_places=4
     )
-    notes = forms.CharField(
-        label=_("Izoh"),
-        required=False,
-        max_length=1000,
-        widget=forms.Textarea(attrs={"rows": 2, "placeholder": _("Yetkazib beruvchi, faktura raqami...")}),
-    )
 
     def clean(self):
         cleaned = super().clean()
@@ -257,7 +243,6 @@ class KirimForm(forms.Form):
             "material": data["material"],
             "quantity": data["quantity"],
             price_key: data["price_usd"],
-            "notes": data.get("notes", ""),
         }
 
 

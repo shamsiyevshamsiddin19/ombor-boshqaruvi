@@ -86,7 +86,6 @@
               <th class="w-[140px] min-w-[120px] text-left">{% translate "O'lchami" %}</th>
               <th class="w-[130px] min-w-[110px] text-right">{% translate "Omborda" %}</th>
               <th class="w-[80px] min-w-[70px] text-left">{% translate "Birlik" %}</th>
-              <th class="w-[140px] min-w-[120px] text-right">{% translate "Idish / Qadoq" %}</th>
               <th class="w-[130px] min-w-[110px] text-right">{% translate "Minimal" %}</th>
               {% if user.is_warehouse_admin %}
               <th class="w-[140px] min-w-[120px] text-right">{% translate "Qiymati" %}</th>
@@ -129,28 +128,19 @@
                 {{ m.unit_short }}
               </td>
 
-              {# 6. Idish / Qadoq #}
-              <td class="num px-4 py-3.5 text-right text-xs text-muted whitespace-nowrap">
-                {% if stock.container_count %}
-                  <span>≈ <strong class="font-medium text-ink">{{ stock.container_count|qty }}</strong> {% translate "idish" %}</span>
-                {% else %}
-                  <span class="text-muted/50">—</span>
-                {% endif %}
-              </td>
-
-              {# 7. Minimal #}
+              {# 6. Minimal #}
               <td class="num px-4 py-3.5 text-right text-xs text-muted whitespace-nowrap">
                 {{ m.minimum_threshold|qty }} {{ m.unit_short }}
               </td>
 
-              {# 8. Qiymati #}
+              {# 7. Qiymati #}
               {% if user.is_warehouse_admin %}
               <td class="num px-5 py-3.5 text-right font-medium text-ink whitespace-nowrap">
                 {{ stock.total_value_usd|usd }}
               </td>
               {% endif %}
 
-              {# 9. Holati #}
+              {# 8. Holati #}
               <td class="px-4 py-3.5 text-center whitespace-nowrap">
                 {% if stock.quantity <= 0 %}
                   <span class="pill pill-neutral">{% translate "Tugagan" %}</span>
@@ -161,7 +151,7 @@
                 {% endif %}
               </td>
 
-              {# 10. Amal #}
+              {# 9. Amal #}
               <td class="px-5 py-3.5 text-right whitespace-nowrap">
                 {% if user.is_warehouse_admin %}
                   <div class="inline-flex items-center gap-1.5 justify-end">
@@ -215,9 +205,6 @@
             <div>
               <span class="num font-semibold text-ink text-[17px]">{{ stock.quantity|qty }}</span>
               <span class="text-muted text-xs">{{ m.unit_short }}</span>
-              {% if stock.container_count %}
-                <span class="num text-muted text-xs ml-1">(≈ {{ stock.container_count|qty }} {% translate "idish" %})</span>
-              {% endif %}
               {% if user.is_warehouse_admin %}
                 <span class="num text-xs text-muted block mt-0.5">{{ stock.total_value_usd|usd }}</span>
               {% endif %}
