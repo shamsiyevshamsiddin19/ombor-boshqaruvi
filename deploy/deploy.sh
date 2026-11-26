@@ -40,21 +40,29 @@ ln -sfn "$RELEASE_DIR" "$APP_ROOT/app.new"
 mv -Tf "$APP_ROOT/app.new" "$APP_ROOT/app"
 echo "Symlink: app → $(basename "$RELEASE_DIR")"
 
-sudo systemctl restart wms
-
 health_ok=false
-for _ in $(seq 1 30); do
-  code=$(curl -s -o /dev/null -w '%{http_code}' -H 'X-Forwarded-Proto: https' \
-    "http://127.0.0.1:$APP_PORT/accounts/login/" || true)
-  if [ "$code" = 200 ]; then
-    health_ok=true
-    break
-  fi
-  sleep 1
-done
+health_code=""
+login_code=""
+if sudo systemctl restart wms; then
+  for _ in $(seq 1 30); do
+    health_code=$(curl -s --max-time 3 -o /dev/null -w '%{http_code}' -H 'X-Forwarded-Proto: https' \
+      "http://127.0.0.1:$APP_PORT/healthz/" || true)
+    if [ "$health_code" = 200 ]; then
+      login_code=$(curl -s --max-time 3 -o /dev/null -w '%{http_code}' -H 'X-Forwarded-Proto: https' \
+        "http://127.0.0.1:$APP_PORT/accounts/login/" || true)
+      if [ "$login_code" = 200 ]; then
+        health_ok=true
+        break
+      fi
+    fi
+    sleep 1
+  done
+else
+  echo "Failed to restart wms for the new release." >&2
+fi
 
 if $health_ok; then
-  echo "Deployed: login page answers 200."
+  echo "Deployed: health and login checks both returned 200."
   # Prune old releases, keeping the N most recent.
   if [ -d "$RELEASES_DIR" ]; then
     cd "$RELEASES_DIR"
@@ -68,7 +76,7 @@ if $health_ok; then
 fi
 
 # Health check failed — roll back to previous release if available.
-echo "Health check failed (last status: ${code:-none})" >&2
+echo "Release verification failed (health: ${health_code:-none}, login: ${login_code:-none})." >&2
 if [ -n "$PREV_RELEASE" ] && [ -d "$PREV_RELEASE" ] && [ "$PREV_RELEASE" != "$RELEASE_DIR" ]; then
   echo "Rolling back to $(basename "$PREV_RELEASE")..." >&2
   ln -sfn "$PREV_RELEASE" "$APP_ROOT/app.new"

@@ -265,16 +265,18 @@ redirect there. Static files are served by WhiteNoise.
 
 | Path on the server | What |
 |---|---|
-| `/var/www/wms/app` | Code, synced by CI (`deploy/rsync-exclude.txt` lists what is skipped) |
+| `/var/www/wms/app` | Symlink to the active release |
+| `/var/www/wms/releases/` | Versioned copies uploaded by CI |
 | `/var/www/wms/venv` | Python virtualenv (created by `deploy/deploy.sh`) |
 | `/var/www/wms/.env` | Production settings and secrets (mode 600, never in git) |
 | `/usr/local/bin/wms-manage` | `manage.py` with the production env, e.g. `wms-manage createsuperuser` |
 
-**CI/CD** (`.github/workflows/ci-cd.yml`): every push and pull request runs Django checks,
-a missing-migrations check and the full test suite against PostgreSQL 16. A push to
-`main` that passes is then synced to the server with rsync over SSH and
-`deploy/deploy.sh` runs there: install requirements, `migrate`, `collectstatic`, restart
-`wms`, and fail the job unless the login page answers 200.
+**CI/CD** (`.github/workflows/ci-cd.yml`) runs Ruff, Django and translation checks, and
+the full test suite against PostgreSQL 16 for pull requests and pushes to `main`. A
+passing revision at the head of `main` is uploaded to a new release directory over
+SSH. The deploy script installs requirements, migrates the database, collects static
+files, and activates the release. If the service fails to start or its health and
+login checks fail, the script reactivates the previous code release when available.
 
 Repository secrets used by the deploy job: `DEPLOY_HOST`, `DEPLOY_USER`,
 `DEPLOY_SSH_KEY` (a deploy-only key whose public half is in the server's
