@@ -92,10 +92,7 @@
 {# Expense Table #}
 <section class="panel mt-4 overflow-hidden shadow-xs" aria-labelledby="expense-list-title">
   <div class="panel-head border-b border-line px-5 py-3.5">
-    <h2 id="expense-list-title" class="panel-title">
-      {% translate "Xarajatlar ro'yxati" %}
-      <span class="num font-normal text-muted">{{ page_obj.paginator.count|default:0 }}</span>
-    </h2>
+    <h2 id="expense-list-title" class="panel-title">{% translate "Xarajatlar ro'yxati" %}</h2>
     <p class="text-muted text-xs">{% translate "tarixda saqlanadi" %}</p>
   </div>
 
