@@ -91,6 +91,7 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
                 "offcuts": offcuts[:200],
                 "query": query,
                 "category": category,
+                "show_dimensions": category != "KRASKA",
                 "tab": tab if tab in ("whole", "offcuts") else "whole",
                 "categories": [(code, name) for code, name in category_choices() if code in visible_categories],
                 "can_add_offcut": selectors.offcut_capable_materials(user).exists(),

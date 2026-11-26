@@ -109,6 +109,15 @@ class HomeTests(WorkshopTestCase):
         self.assertEqual([s.material.name for s in response.context["whole_stock"]], ["Akril kraska oq"])
         response = self.client.get(reverse("inventory:home"), {"category": MaterialCategory.SHEET})
         self.assertEqual([s.material.name for s in response.context["whole_stock"]], ["MDF 16 mm oq"])
+        self.assertContains(response, "O'lchami</th>")
+        self.assertNotContains(response, ">Birlik</th>")
+
+        self.paint.category = "KRASKA"
+        self.paint.save(update_fields=["category"])
+        response = self.client.get(reverse("inventory:home"), {"category": self.paint.category})
+        self.assertNotContains(response, "O'lchami</th>")
+        self.assertNotContains(response, ">Birlik</th>")
+        self.assertRegex(response.content.decode(), r'>12</span>\s*<span class="text-xs text-muted">L</span>')
 
 
 class OldimTests(WorkshopTestCase):
