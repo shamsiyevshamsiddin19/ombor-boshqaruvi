@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load wms i18n %}
-{% block title %}{% translate "Mening tarixim" %}{% endblock %}
+{% block title %}{% if user.is_warehouse_admin %}{% translate "Barcha tarix" %}{% else %}{% translate "Mening tarixim" %}{% endif %}{% endblock %}
 {% block content %}
 <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
   <div>
-    <h1 class="font-bold text-[24px] leading-8 lg:text-[30px] lg:leading-9 text-ink">{% translate "Mening tarixim" %}</h1>
+    <h1 class="font-bold text-[24px] leading-8 lg:text-[30px] lg:leading-9 text-ink">{% if user.is_warehouse_admin %}{% translate "Barcha tarix" %}{% else %}{% translate "Mening tarixim" %}{% endif %}</h1>
     <p class="mt-0.5 text-muted" style="font-size:14px">
-      {% translate "Siz olgan materiallar va qo'shgan qoldiqlar" %} · {% blocktranslate count n=page_obj.paginator.count|default:0 %}jami <span class="num">{{ n }}</span> ta yozuv{% plural %}jami <span class="num">{{ n }}</span> ta yozuv{% endblocktranslate %}
+      {% if user.is_warehouse_admin %}{% translate "Barcha ishchilarning harakatlari" %}{% else %}{% translate "Siz olgan materiallar va qo'shgan qoldiqlar" %}{% endif %} · {% blocktranslate count n=page_obj.paginator.count|default:0 %}jami <span class="num">{{ n }}</span> ta yozuv{% plural %}jami <span class="num">{{ n }}</span> ta yozuv{% endblocktranslate %}
     </p>
   </div>
   <a href="{% url 'inventory:home' %}" class="btn btn-secondary min-h-10 px-3.5 text-xs font-medium">
@@ -16,7 +16,7 @@
 
 <div class="panel mt-5 overflow-hidden shadow-xs">
   {% if transactions %}
-    {% include "inventory/_txn_rows.html" with show_user=False show_price=False %}
+    {% include "inventory/_txn_rows.html" with show_user=user.is_warehouse_admin show_price=user.is_warehouse_admin %}
     {% include "partials/pagination.html" %}
   {% else %}
     <div class="px-5 py-8 text-center text-muted text-sm">

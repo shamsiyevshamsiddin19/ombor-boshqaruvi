@@ -26,16 +26,17 @@
     </a>
   </li>
   {% endif %}
+  {% if user.is_warehouse_admin %}{% translate "Barcha tarix" as history_label %}{% else %}{% translate "Mening tarixim" as history_label %}{% endif %}
   <li>
     <a class="nav-item relative"
        href="{% url 'inventory:my_history' %}"
-       title="{% translate "Mening tarixim" %}"
-       data-tooltip="{% translate "Mening tarixim" %}"
+       title="{{ history_label }}"
+       data-tooltip="{{ history_label }}"
        @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "my_history" %}aria-current="page"{% endif %}>
       {% icon "clock" 18 "flex-none" %}
-      <span class="truncate" :class="{ 'lg:hidden': collapsed }">{% translate "Mening tarixim" %}</span>
+      <span class="truncate" :class="{ 'lg:hidden': collapsed }">{{ history_label }}</span>
     </a>
   </li>
 </ul>

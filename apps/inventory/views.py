@@ -235,12 +235,17 @@ class OffcutWithdrawView(StockTakerRequiredMixin, FormView):
 
 
 class MyHistoryView(ApprovedUserRequiredMixin, ListView):
+    """Admins see everyone's ledger; other workers see only their own entries."""
+
     template_name = "inventory/my_history.html"
     context_object_name = "transactions"
     paginate_by = 30
 
     def get_queryset(self):
-        return InventoryTransaction.objects.filter(user=self.request.user).select_related("material")
+        qs = InventoryTransaction.objects.select_related("material", "user")
+        if not self.request.user.is_warehouse_admin:
+            qs = qs.filter(user=self.request.user)
+        return qs
 
 
 # ---------------------------------------------------------------------------
