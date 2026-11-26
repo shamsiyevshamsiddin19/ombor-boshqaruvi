@@ -113,10 +113,11 @@
     </div>
   </aside>
 
-  {# Collapsed-sidebar tooltip: fixed-position so it escapes the sidebar's overflow-hidden #}
-  <div x-show="navTooltip.show" x-cloak x-transition.opacity.duration.100ms
-       class="fixed z-[70] rounded-md bg-[#18181b] px-2.5 py-1.5 text-xs font-medium text-white shadow-lg pointer-events-none"
-       :style="{ top: navTooltip.top + 'px', left: navTooltip.left + 'px', transform: 'translateY(-50%)' }"
+  {# Collapsed-sidebar tooltip: fixed, stays in the DOM, fades/scales via opacity+transform #}
+  <div x-cloak
+       class="fixed z-[70] rounded-md bg-[#18181b] px-2.5 py-1.5 text-xs font-medium text-white shadow-lg pointer-events-none transition-[opacity,transform] duration-150 ease-out"
+       :class="navTooltip.show ? 'opacity-100' : 'opacity-0'"
+       :style="{ top: navTooltip.top + 'px', left: navTooltip.left + 'px', transform: navTooltip.show ? 'translateY(-50%) scale(1)' : 'translateY(-50%) scale(0.92)' }"
        x-text="navTooltip.text"></div>
 
   <div class="flex min-w-0 flex-col">
