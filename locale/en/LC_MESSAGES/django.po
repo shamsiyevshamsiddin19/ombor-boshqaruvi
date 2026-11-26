@@ -1214,6 +1214,10 @@ msgstr "Nothing is below minimum stock right now. Materials that run low will sh
 msgid "Oxirgi harakatlar"
 msgstr "Recent activity"
 
+#: templates/inventory/_recent_transactions.html
+msgid "Barchasini ko'rish"
+msgstr "View all"
+
 #: templates/inventory/dashboard.html:177 templates/inventory/home.html:318 templates/inventory/home.html:343 templates/inventory/offcut_form.html:208
 msgid "Qoldiq"
 msgstr "Offcut"

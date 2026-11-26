@@ -269,7 +269,7 @@ class DashboardView(WarehouseAdminRequiredMixin, TemplateView):
                     "down": [float(f.chiqim_usd) for f in flows],
                 },
                 "low_stock": selectors.low_stock_items(),
-                "recent_transactions": InventoryTransaction.objects.select_related("material", "user")[:10],
+                "recent_transactions": selectors.filter_transactions()[:5],
                 "material_count": BaseMaterial.objects.filter(is_active=True).count(),
                 "offcut_count": LeftoverOffcut.objects.filter(material__is_active=True).count(),
                 "offcut_value_usd": selectors.estimated_offcut_value_usd(),
@@ -482,7 +482,7 @@ class ReportView(WarehouseAdminRequiredMixin, ListView):
 
     def get_filter_form(self) -> ReportFilterForm:
         data = self.request.GET.copy()
-        if not any(data.get(key) for key in ReportFilterForm.base_fields):
+        if "month" not in data and not any(data.get(key) for key in ReportFilterForm.base_fields):
             data["month"] = timezone.localdate().strftime("%Y-%m")
         return ReportFilterForm(data)
 

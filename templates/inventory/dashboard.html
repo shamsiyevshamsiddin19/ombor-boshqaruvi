@@ -3,7 +3,6 @@
 {% block title %}{% translate "Panel" %}{% endblock %}
 {% block content %}
 {% with low_count=low_stock|length %}
-{# Grid: canvas 1440 − 230 sidebar − 2×29 gutters = 1152 = 744 main + 24 gap + 384 rail #}
 
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div class="min-w-0">
@@ -15,9 +14,7 @@
   </div>
 </div>
 
-<div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_384px]">
-  {# ===================== Main column ===================== #}
-  <div class="grid min-w-0 gap-6">
+<div class="mt-6 grid min-w-0 grid-cols-1 gap-6">
 
     {# KPI strip: one container split by dividers #}
     <section class="panel grid grid-cols-2 md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]" aria-label="{% translate "Asosiy ko'rsatkichlar" %}">
@@ -161,32 +158,8 @@
         <p class="border-t border-rule px-5 py-6 text-muted">{% translate "Hozir hech narsa minimal qoldiqdan kam emas. Material kamayganda shu yerda ko'rinadi." %}</p>
       {% endif %}
     </section>
-  </div>
 
-  {# ===================== Rail ===================== #}
-  <div class="grid min-w-0 gap-6">
-    <section aria-labelledby="recent-title">
-      <div class="panel overflow-hidden">
-        <div class="panel-head"><h2 id="recent-title" class="panel-title">{% translate "Oxirgi harakatlar" %}</h2></div>
-        {% if recent_transactions %}
-        <ul>
-          {% for t in recent_transactions|slice:":6" %}
-          <li class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-t border-rule px-5 py-2.5">
-            <div class="min-w-0">
-              <p class="truncate font-medium">{{ t.material.name }}</p>
-              <p class="truncate text-muted" style="font-size:13px">{% if t.transaction_type == "KIRIM" %}{% translate "Kirim" %}{% elif t.transaction_type == "CHIQIM" %}{% translate "Chiqim" %}{% else %}{% translate "Qoldiq" %}{% endif %} · {{ t.user.display_name }} · {{ t.created_at|date:"j E, H:i" }}</p>
-            </div>
-            <p class="num text-right"><span class="font-semibold">{% if t.quantity_changed > 0 %}+{% else %}−{% endif %}{{ t.quantity_changed|absval|qty }}</span> <span class="text-muted">{% if t.is_offcut %}{% translate "dona" %}{% else %}{{ t.material.unit_short }}{% endif %}</span></p>
-          </li>
-          {% endfor %}
-        </ul>
-        <div class="border-t border-rule px-5 py-3"><a class="btn btn-ghost -ml-3.5" href="{% url 'inventory:reports' %}">{% translate "Oylik hisobot" %}</a></div>
-        {% else %}
-          <p class="border-t border-rule px-5 py-5 text-muted">{% translate "Hali harakat yo'q. Birinchi kirimni kiriting." %}</p>
-        {% endif %}
-      </div>
-    </section>
-  </div>
+    {% include "inventory/_recent_transactions.html" %}
 </div>
 {% endwith %}
 {% endblock %}
