@@ -285,6 +285,24 @@ class DashboardAndReportTests(WorkshopTestCase):
         self.assertContains(response, "$437.20")
         self.assertContains(response, "Akril kraska oq")
 
+    def test_dashboard_shows_five_recent_transactions_and_links_to_all_periods(self):
+        created = [
+            services.withdraw_whole_material(material=self.mdf, user=self.arrachi, quantity=1)
+            for _ in range(6)
+        ]
+        response = self.client.get(reverse("inventory:dashboard"))
+        self.assertEqual(list(response.context["recent_transactions"]), list(reversed(created[1:])))
+        self.assertContains(response, f'href="{reverse("inventory:reports")}?month="')
+
+    def test_report_with_explicit_empty_month_includes_earlier_periods(self):
+        with frozen_at(2000, 1, 10):
+            old = services.withdraw_whole_material(material=self.mdf, user=self.arrachi, quantity=1)
+
+        current_report = self.client.get(reverse("inventory:reports"))
+        self.assertNotIn(old, current_report.context["transactions"])
+        all_periods = self.client.get(reverse("inventory:reports"), {"month": ""})
+        self.assertIn(old, all_periods.context["transactions"])
+
     def test_report_filters_by_worker(self):
         services.withdraw_whole_material(material=self.paint, user=self.kraskachi, quantity=2)
         services.withdraw_whole_material(material=self.mdf, user=self.arrachi, quantity=1)

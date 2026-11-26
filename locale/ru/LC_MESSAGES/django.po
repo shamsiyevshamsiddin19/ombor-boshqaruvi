@@ -1217,6 +1217,10 @@ msgstr "Сейчас ничего не ниже минимального ост�
 msgid "Oxirgi harakatlar"
 msgstr "Последние движения"
 
+#: templates/inventory/_recent_transactions.html
+msgid "Barchasini ko'rish"
+msgstr "Смотреть все"
+
 #: templates/inventory/dashboard.html:177 templates/inventory/home.html:318 templates/inventory/home.html:343 templates/inventory/offcut_form.html:208
 msgid "Qoldiq"
 msgstr "Обрезок"

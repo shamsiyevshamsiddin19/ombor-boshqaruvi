@@ -9,10 +9,11 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.utils.translation import pgettext_lazy
 
-from apps.inventory.models import category_label, expense_category_label, unit_short_label
+from apps.inventory.models import category_label, expense_category_label, transaction_type_label, unit_short_label
 from apps.users.models import role_label as _role_label
 
 register = template.Library()
+register.filter("transaction_label", transaction_type_label)
 
 
 def _to_decimal(value) -> Decimal | None:

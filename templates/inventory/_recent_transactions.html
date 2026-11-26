@@ -1,0 +1,54 @@
+{% load wms i18n %}
+<section class="panel min-w-0 overflow-hidden" aria-labelledby="recent-title">
+  <div class="panel-head flex-wrap">
+    <h2 id="recent-title" class="panel-title">{% translate "Oxirgi harakatlar" %}</h2>
+    <a class="btn btn-ghost text-sm" href="{% url 'inventory:reports' %}?month=">{% translate "Barchasini ko'rish" %}</a>
+  </div>
+  {% if recent_transactions %}
+    <table class="grid-table hidden table-fixed md:table">
+      <thead>
+        <tr>
+          <th scope="col" class="w-[145px]">{% translate "Vaqti" %}</th>
+          <th scope="col">{% translate "Material nomi" %}</th>
+          <th scope="col" class="w-[140px]">{% translate "Amal" %}</th>
+          <th scope="col" class="w-[160px]">{% translate "Ishchi" %}</th>
+          <th scope="col" class="w-[140px] text-right">{% translate "Miqdor" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in recent_transactions %}
+        <tr>
+          <td class="num text-xs text-muted">
+            <time datetime="{{ t.created_at|date:'c' }}">{{ t.created_at|date:"j E, H:i" }}</time>
+          </td>
+          <td class="font-medium wrap-anywhere">{{ t.material.name }}</td>
+          <td>{{ t.transaction_type|transaction_label }}{% if t.is_offcut and t.transaction_type == "CHIQIM" %} · {% translate "qoldiq" %}{% endif %}</td>
+          <td class="wrap-anywhere">{{ t.user.display_name }}</td>
+          <td class="num text-right">
+            <span class="font-semibold">{% if t.quantity_changed > 0 %}+{% else %}−{% endif %}{{ t.quantity_changed|absval|qty }}</span>
+            <span class="text-xs text-muted">{% if t.is_offcut %}{% translate "dona" %}{% else %}{{ t.unit_of_measure|default:t.material.unit_of_measure|unit_label }}{% endif %}</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <ul class="divide-y divide-rule border-t border-line md:hidden">
+      {% for t in recent_transactions %}
+      <li class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1 px-4 py-3">
+        <p class="font-medium wrap-anywhere">{{ t.material.name }}</p>
+        <p class="num text-right">
+          <span class="font-semibold">{% if t.quantity_changed > 0 %}+{% else %}−{% endif %}{{ t.quantity_changed|absval|qty }}</span>
+          <span class="text-xs text-muted">{% if t.is_offcut %}{% translate "dona" %}{% else %}{{ t.unit_of_measure|default:t.material.unit_of_measure|unit_label }}{% endif %}</span>
+        </p>
+        <p class="col-span-2 text-xs text-muted wrap-anywhere">
+          {{ t.transaction_type|transaction_label }}{% if t.is_offcut and t.transaction_type == "CHIQIM" %} · {% translate "qoldiq" %}{% endif %} · {{ t.user.display_name }} ·
+          <time datetime="{{ t.created_at|date:'c' }}">{{ t.created_at|date:"j E, H:i" }}</time>
+        </p>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="border-t border-rule px-5 py-5 text-muted">{% translate "Hali harakat yo'q. Birinchi kirimni kiriting." %}</p>
+  {% endif %}
+</section>
