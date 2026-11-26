@@ -22,6 +22,7 @@ from .models import (
     default_roles_for_category,
     expense_category_choices,
     localized_category_name,
+    offcut_category_codes,
     transaction_type_choices,
 )
 from .selectors import offcut_capable_materials
@@ -91,11 +92,10 @@ class MaterialForm(forms.ModelForm):
         label=_("List eni"), required=False, min_value=1, max_value=MAX_MM,
         help_text=_("Masalan 1830 mm (yoki 183 sm)."),
     )
-    # Show the threshold as a whole number while keeping the stored decimal field.
-    minimum_threshold = forms.IntegerField(
-        label=_("Minimal qoldiq"), min_value=0, max_value=10**9, initial=0,
+    minimum_threshold = forms.DecimalField(
+        label=_("Minimal qoldiq"), min_value=0, max_value=10**9, initial=0, max_digits=12, decimal_places=2,
         help_text=_("Miqdor shundan kam bo'lsa, xarid ro'yxatida ko'rinadi."),
-        widget=forms.NumberInput(attrs={"step": "1", "inputmode": "numeric"}),
+        widget=forms.NumberInput(attrs={"step": "0.01", "inputmode": "decimal"}),
     )
 
     class Meta:
@@ -118,7 +118,7 @@ class MaterialForm(forms.ModelForm):
         if self.instance.pk:
             self.fields["category"].choices = material_category_choices(include_code=self.instance.category)
         stock = getattr(self.instance, "whole_stock", None) if self.instance.pk else None
-        if stock is not None:
+        if stock is not None and self.instance.supports_offcuts:
             self.fields["length_mm"].initial = stock.length_mm
             self.fields["width_mm"].initial = stock.width_mm
         self.fields["unit_of_measure"].choices = [("", _("Tanlang")), *MeasurementUnit.choices]
@@ -135,6 +135,14 @@ class MaterialForm(forms.ModelForm):
         category = cleaned.get("category")
         if category and category != OTHER_CATEGORY and not cleaned.get("allowed_roles") and not default_roles_for_category(category):
             self.add_error("allowed_roles", _("Bu kategoriya uchun kamida bitta kasbni belgilang."))
+        allows_dimensions = (
+            bool(cleaned.get("new_category_supports_offcuts")) if self.pending_category_name
+            else category in offcut_category_codes()
+        )
+        if not allows_dimensions:
+            for name in ("length_mm", "width_mm"):
+                self.errors.pop(name, None)
+                cleaned[name] = None
         length, width = cleaned.get("length_mm"), cleaned.get("width_mm")
         if bool(length) != bool(width):
             self.add_error("width_mm" if length else "length_mm", _("Uzunlik va enni birga kiriting."))
@@ -191,11 +199,6 @@ class MaterialForm(forms.ModelForm):
             is_active=True,
         )
 
-    def save_stock_dimensions(self, material: BaseMaterial) -> None:
-        stock, _ = WholeMaterial.objects.get_or_create(material=material)
-        stock.length_mm = self.cleaned_data.get("length_mm")
-        stock.width_mm = self.cleaned_data.get("width_mm")
-        stock.save(update_fields=["length_mm", "width_mm", "updated_at"])
 
 
 class KirimForm(forms.Form):
@@ -219,30 +222,28 @@ class KirimForm(forms.Form):
         decimal_places=2,
         widget=forms.NumberInput(attrs={"step": "0.01", "inputmode": "decimal"}),
     )
-    price_mode = forms.ChoiceField(
-        label=_("Narx turi"),
-        choices=[(PRICE_TOTAL, _("Optom narx")), (PRICE_UNIT, _("Dona narxi"))],
-        widget=forms.RadioSelect(attrs={"x-model": "mode"}),
-        initial=PRICE_TOTAL,
-    )
+    # Older clients may still post a unit price. The page only asks for the batch total.
+    price_mode = forms.ChoiceField(choices=[(PRICE_TOTAL, PRICE_TOTAL), (PRICE_UNIT, PRICE_UNIT)], required=False)
+    idempotency_key = forms.UUIDField(required=False, widget=forms.HiddenInput)
     price_usd = forms.DecimalField(
-        label=_("Narx (USD $)"), min_value=Decimal("0"), max_digits=14, decimal_places=4
+        label=_("Partiya jami"), min_value=Decimal("0"), max_digits=14, decimal_places=4
     )
 
     def clean(self):
         cleaned = super().clean()
         price = cleaned.get("price_usd")
-        if cleaned.get("price_mode") == self.PRICE_TOTAL and price is not None and price != price.quantize(Decimal("0.01")):
-            self.add_error("price_usd", _("Optom narx ko'pi bilan 2 xonali kasr bo'lishi mumkin."))
+        if cleaned.get("price_mode") != self.PRICE_UNIT and price is not None and price != price.quantize(Decimal("0.01")):
+            self.add_error("price_usd", _("Partiya jami ko'pi bilan 2 xonali kasr bo'lishi mumkin."))
         return cleaned
 
     def service_kwargs(self) -> dict:
         data = self.cleaned_data
-        price_key = "total_price_usd" if data["price_mode"] == self.PRICE_TOTAL else "unit_price_usd"
+        price_key = "unit_price_usd" if data["price_mode"] == self.PRICE_UNIT else "total_price_usd"
         return {
             "material": data["material"],
             "quantity": data["quantity"],
             price_key: data["price_usd"],
+            "idempotency_key": data.get("idempotency_key"),
         }
 
 

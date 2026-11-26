@@ -16,7 +16,7 @@
 
 <div class="panel mt-5 overflow-hidden shadow-xs">
   {% if transactions %}
-    {% include "inventory/_txn_rows.html" with show_user=user.is_warehouse_admin show_price=user.is_warehouse_admin %}
+    {% include "inventory/_txn_rows.html" with show_user=user.is_warehouse_admin show_price=user.is_warehouse_admin show_reverse=user.is_warehouse_admin %}
     {% include "partials/pagination.html" %}
   {% else %}
     <div class="px-5 py-8 text-center text-muted text-sm">

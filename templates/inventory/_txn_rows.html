@@ -17,7 +17,8 @@
           <th class="w-[130px] min-w-[110px] text-right">{% translate "Birlik narxi" %}</th>
           <th class="w-[140px] min-w-[120px] text-right">{% translate "Jami" %}</th>
         {% endif %}
-        <th class="min-w-[200px] text-left">{% translate "Izoh" %}</th>
+        <th class="min-w-[150px] text-left">{% translate "Izoh" %}</th>
+        {% if show_reverse %}<th class="text-right">{% translate "Amal" %}</th>{% endif %}
       </tr>
     </thead>
     <tbody>
@@ -38,7 +39,7 @@
           {% elif t.transaction_type == "CHIQIM" %}
             <span class="pill pill-neutral text-xs">{% translate "Chiqim" %}{% if t.is_offcut %} · {% translate "qoldiq" %}{% endif %}</span>
           {% else %}
-            <span class="pill pill-neutral text-xs">{% translate "Qoldiq qo'shildi" %}</span>
+            <span class="pill pill-neutral text-xs">{{ t.transaction_type|transaction_label }}</span>
           {% endif %}
         </td>
 
@@ -88,6 +89,14 @@
         <td class="text-xs text-muted" title="{{ t.notes|default:'' }}">
           {{ t.notes|default:"—" }}
         </td>
+        {% if show_reverse %}
+        <td class="text-right">
+          {% if t.reversal %}<span class="text-xs text-muted">{% translate "Qaytarilgan" %}</span>
+          {% elif t.transaction_type != "REVERSAL" and t.material.is_active %}
+            <a class="btn btn-secondary min-h-8 px-2 text-xs" href="{% url 'inventory:reverse_transaction' t.pk %}">{% translate "Qaytarish" %}</a>
+          {% endif %}
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -112,7 +121,7 @@
         {% elif t.transaction_type == "CHIQIM" %}
           <span class="pill pill-neutral text-xs">{% translate "Chiqim" %}{% if t.is_offcut %} · {% translate "qoldiq" %}{% endif %}</span>
         {% else %}
-          <span class="pill pill-neutral text-xs">{% translate "Qoldiq qo'shildi" %}</span>
+          <span class="pill pill-neutral text-xs">{{ t.transaction_type|transaction_label }}</span>
         {% endif %}
       </div>
     </div>
@@ -139,6 +148,12 @@
         {% endif %}
       </div>
     </div>
+    {% if show_reverse %}
+      {% if t.reversal %}<span class="text-xs text-muted">{% translate "Qaytarilgan" %}</span>
+      {% elif t.transaction_type != "REVERSAL" and t.material.is_active %}
+        <a class="btn btn-secondary min-h-8 self-end px-2 text-xs" href="{% url 'inventory:reverse_transaction' t.pk %}">{% translate "Qaytarish" %}</a>
+      {% endif %}
+    {% endif %}
   </li>
   {% endfor %}
 </ul>

@@ -343,7 +343,8 @@
     const tick = (v) => (v > 0 ? '+' : v < 0 ? MINUS : '') + (tickFormat || format)(Math.abs(v));
     const draw = () => {
       const { s, w, h } = frame(el, heightOf(height));
-      const hiUp = Math.max(0, ...up), hiDown = Math.max(0, ...down);
+      const hiUp = Math.max(0, ...up, ...down.map((value) => -value));
+      const hiDown = Math.max(0, ...down, ...up.map((value) => -value));
       const yt = ticks(-hiDown, hiUp || 1, 4); const stp = yt[1] - yt[0]; if (hiDown > 0 && yt[0] >= -hiDown) yt.unshift(+(yt[0] - stp).toFixed(10));
       const padL = 12 + Math.max(...yt.map((v) => measure(s, tick(v), 12))), padB = 26;
       const band = (w - padL) / labels.length, bw = Math.max(2, band * 0.62);
@@ -359,8 +360,18 @@
       for (const it of N.items) if (it.at != null) it.end = y(up[it.at] || 0) - 4;
       labels.forEach((lab, i) => {
         const o = partial === i ? 0.5 : null;
-        if (up[i] > 0) { const r = paintRect(g, { ...(marked(i, 'above') ? st.mark : st.above), opacity: o }, x(i) - bw / 2, y(up[i]), bw, Math.max(0, y(0) - y(up[i]) - 1)); titled(r, `${lab}: ${above} ${format(up[i])}`, {}); }
-        if (down[i] > 0) { const r = paintRect(g, { ...(marked(i, 'below') ? st.mark : st.below), opacity: o }, x(i) - bw / 2, y(0) + 1, bw, Math.max(0, y(-down[i]) - y(0) - 1)); titled(r, `${lab}: ${below} ${format(down[i])}`, {}); }
+        const sameSide = up[i] * down[i] < 0;
+        const width = sameSide ? bw / 2 : bw;
+        for (const [side, endpoint, raw, label, offset] of [
+          ['above', up[i], up[i], above, 0],
+          ['below', -down[i], down[i], below, sameSide ? width : 0],
+        ]) {
+          if (!endpoint) continue;
+          const top = Math.min(y(0), y(endpoint));
+          const bar = paintRect(g, { ...(marked(i, side) ? st.mark : st[side]), opacity: o },
+            x(i) - bw / 2 + offset, top, width, Math.abs(y(0) - y(endpoint)));
+          titled(bar, `${lab}: ${label} ${format(raw)}`, {});
+        }
       });
       svg('line', { x1: padL, x2: w, y1: y(0), y2: y(0), stroke: ink, 'stroke-width': 1, opacity: 0.8, 'shape-rendering': 'crispEdges' }, g);
       references(g, el, reference, { y, padL, w, boxes: labels.map((_, i) => ({ x0: x(i) - bw / 2, x1: x(i) + bw / 2, y0: y(up[i]), y1: y(-down[i]) })) });
@@ -369,8 +380,8 @@
     };
     draw(); watch(el, draw); settle(draw);
     const items = [];
-    if (up.some((v) => v > 0)) items.push({ label: above, draw: rectSwatch(st.above) });
-    if (down.some((v) => v > 0)) items.push({ label: below, draw: rectSwatch(st.below) });
+    if (up.some((v) => v !== 0)) items.push({ label: above, draw: rectSwatch(st.above) });
+    if (down.some((v) => v !== 0)) items.push({ label: below, draw: rectSwatch(st.below) });
     if (mark.length && markLabel) items.push({ label: markLabel, draw: rectSwatch(st.mark) });
     return { get svg() { return el.querySelector(':scope > svg'); }, legend: legendEl(items, legend) };
   }

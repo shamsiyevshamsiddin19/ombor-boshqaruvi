@@ -21,230 +21,219 @@ msgstr "Dimensions (length and width) must be provided together."
 msgid "Ombor"
 msgstr "Warehouse"
 
-#: apps/inventory/forms.py:111
+#: apps/inventory/forms.py:112
 msgid "O'chirilsa, ishchilar materialni ko'rmaydi; tarix saqlanadi."
 msgstr "If turned off, workers no longer see the material; its history is kept."
 
-#: apps/inventory/forms.py:136
+#: apps/inventory/forms.py:137
 msgid "Bu kategoriya uchun kamida bitta kasbni belgilang."
 msgstr "Select at least one trade for this category."
 
-#: apps/inventory/forms.py:139
+#: apps/inventory/forms.py:148
 msgid "Uzunlik va enni birga kiriting."
 msgstr "Enter the length and width together."
 
-#: apps/inventory/forms.py:142
+#: apps/inventory/forms.py:151
 #, python-format
 msgid "Uzunlik %(max)s sm dan oshmasligi kerak."
 msgstr "Length must not exceed %(max)s cm."
 
-#: apps/inventory/forms.py:144
+#: apps/inventory/forms.py:153
 #, python-format
 msgid "Eni %(max)s sm dan oshmasligi kerak."
 msgstr "Width must not exceed %(max)s cm."
 
-#: apps/inventory/forms.py:152
+#: apps/inventory/forms.py:161
 msgid "Suyuqliklar uchun litr, kg yoki dona tanlang."
 msgstr "For liquids, choose litres, kg or pieces."
 
-#: apps/inventory/forms.py:158
+#: apps/inventory/forms.py:167
 msgid "Yangi kategoriya nomini yozing."
 msgstr "Enter the new category name."
 
-#: apps/inventory/forms.py:209 templates/inventory/material_list.html:36
+#: apps/inventory/forms.py:213 templates/inventory/material_list.html:36
 msgid "Barcha kategoriyalar"
 msgstr "All categories"
 
-#: apps/inventory/forms.py:212 apps/inventory/forms.py:277 apps/inventory/forms.py:333 apps/inventory/views.py:631
-#: templates/inventory/kirim_form.html:96 templates/inventory/offcut_form.html:60
+#: apps/inventory/forms.py:216 apps/inventory/forms.py:280 apps/inventory/forms.py:336 apps/inventory/views.py:674
+#: templates/inventory/kirim_form.html:98 templates/inventory/kirim_form.html:209 templates/inventory/offcut_form.html:60
 msgid "Material"
 msgstr "Material"
 
-#: apps/inventory/forms.py:212 apps/inventory/forms.py:277 templates/inventory/kirim_form.html:111 templates/inventory/kirim_form.html:240
+#: apps/inventory/forms.py:216 apps/inventory/forms.py:280 templates/inventory/kirim_form.html:111 templates/inventory/kirim_form.html:166
 msgid "Materialni tanlang"
 msgstr "Select a material"
 
-#: apps/inventory/forms.py:215 apps/inventory/models.py:257 apps/inventory/views.py:633 templates/inventory/_recent_transactions.html:15
-#: templates/inventory/_txn_rows.html:15 templates/inventory/kirim_form.html:97
+#: apps/inventory/forms.py:219 apps/inventory/models.py:257 apps/inventory/views.py:676 templates/inventory/_recent_transactions.html:15
+#: templates/inventory/_txn_rows.html:15 templates/inventory/kirim_form.html:99 templates/inventory/kirim_form.html:210
 msgid "Miqdor"
 msgstr "Quantity"
 
-#: apps/inventory/forms.py:222 templates/inventory/kirim_form.html:98
-msgid "Narx turi"
-msgstr "Price type"
+#: apps/inventory/forms.py:229 templates/inventory/kirim_form.html:100 templates/inventory/kirim_form.html:212
+msgid "Partiya jami"
+msgstr "Batch total"
 
-#: apps/inventory/forms.py:223 templates/inventory/kirim_form.html:143 templates/inventory/kirim_form.html:206 templates/inventory/kirim_form.html:263
-msgid "Dona narxi"
-msgstr "Price per piece"
+#: apps/inventory/forms.py:236
+msgid "Partiya jami ko'pi bilan 2 xonali kasr bo'lishi mumkin."
+msgstr "The batch total can have at most two decimal places."
 
-#: apps/inventory/forms.py:223 templates/inventory/kirim_form.html:139 templates/inventory/kirim_form.html:206 templates/inventory/kirim_form.html:259
-msgid "Optom narx"
-msgstr "Wholesale price"
-
-#: apps/inventory/forms.py:228 templates/inventory/kirim_form.html:99
-msgid "Narx (USD $)"
-msgstr "Price (USD $)"
-
-#: apps/inventory/forms.py:234
-msgid "Optom narx ko'pi bilan 2 xonali kasr bo'lishi mumkin."
-msgstr "The wholesale price can have at most 2 decimal places."
-
-#: apps/inventory/forms.py:249
+#: apps/inventory/forms.py:252
 msgid "Qancha oldingiz?"
 msgstr "How much did you take?"
 
-#: apps/inventory/forms.py:252 apps/inventory/forms.py:303
+#: apps/inventory/forms.py:255 apps/inventory/forms.py:306
 msgid "Loyiha / buyurtma"
 msgstr "Project / order"
 
-#: apps/inventory/forms.py:255 apps/inventory/forms.py:306
+#: apps/inventory/forms.py:258 apps/inventory/forms.py:309
 msgid "— tanlang (ixtiyoriy) —"
 msgstr "— Select (optional) —"
 
-#: apps/inventory/forms.py:258 apps/inventory/forms.py:308 apps/inventory/models.py:302 apps/inventory/models.py:352
-#: apps/inventory/models.py:557 apps/inventory/views.py:599 apps/inventory/views.py:640 templates/inventory/_txn_rows.html:20
-#: templates/inventory/expenses.html:80
+#: apps/inventory/forms.py:261 apps/inventory/forms.py:311 apps/inventory/models.py:302 apps/inventory/models.py:352
+#: apps/inventory/models.py:565 apps/inventory/views.py:642 apps/inventory/views.py:683 templates/inventory/_txn_rows.html:20
+#: templates/inventory/expenses.html:75
 msgid "Izoh"
 msgstr "Note"
 
-#: apps/inventory/forms.py:261
+#: apps/inventory/forms.py:264
 msgid "Buyurtma yoki mijoz nomi"
 msgstr "Order or customer name"
 
-#: apps/inventory/forms.py:279 apps/inventory/models.py:263 apps/inventory/models.py:299 templates/inventory/offcut_form.html:61
+#: apps/inventory/forms.py:282 apps/inventory/models.py:263 apps/inventory/models.py:299 templates/inventory/offcut_form.html:61
 msgid "Uzunligi (mm)"
 msgstr "Length (mm)"
 
-#: apps/inventory/forms.py:280 apps/inventory/models.py:264 apps/inventory/models.py:300 templates/inventory/offcut_form.html:62
+#: apps/inventory/forms.py:283 apps/inventory/models.py:264 apps/inventory/models.py:300 templates/inventory/offcut_form.html:62
 msgid "Eni (mm)"
 msgstr "Width (mm)"
 
-#: apps/inventory/forms.py:281 templates/inventory/offcut_form.html:63
+#: apps/inventory/forms.py:284 templates/inventory/offcut_form.html:63
 msgid "Soni (dona)"
 msgstr "Quantity (pcs)"
 
-#: apps/inventory/forms.py:283
+#: apps/inventory/forms.py:286
 msgid "Joylashuvi / izoh"
 msgstr "Location / note"
 
-#: apps/inventory/forms.py:286
+#: apps/inventory/forms.py:289
 msgid "Masalan: 2-stellaj, yuqori polka"
 msgstr "For example: rack 2, top shelf"
 
-#: apps/inventory/forms.py:301
+#: apps/inventory/forms.py:304
 msgid "Necha dona oldingiz?"
 msgstr "How many pieces did you take?"
 
-#: apps/inventory/forms.py:320 apps/inventory/forms.py:408 templates/inventory/dashboard.html:61
+#: apps/inventory/forms.py:323 apps/inventory/forms.py:411 templates/inventory/dashboard.html:61
 msgid "Oy"
 msgstr "Month"
 
-#: apps/inventory/forms.py:323
+#: apps/inventory/forms.py:326
 msgid "Harakat turi"
 msgstr "Movement type"
 
-#: apps/inventory/forms.py:329 apps/inventory/views.py:639 templates/inventory/_recent_transactions.html:14 templates/inventory/_txn_rows.html:13
+#: apps/inventory/forms.py:332 apps/inventory/views.py:682 templates/inventory/_recent_transactions.html:14 templates/inventory/_txn_rows.html:13
 #: templates/users/pending_users.html:26 templates/users/user_list.html:52
 msgid "Ishchi"
 msgstr "Worker"
 
-#: apps/inventory/forms.py:336 apps/inventory/models.py:464 apps/inventory/views.py:638
+#: apps/inventory/forms.py:339 apps/inventory/models.py:466 apps/inventory/views.py:681
 msgid "Loyiha"
 msgstr "Project"
 
-#: apps/inventory/forms.py:348 apps/inventory/forms.py:423
+#: apps/inventory/forms.py:351 apps/inventory/forms.py:426
 msgid "Oyni YYYY-MM ko'rinishida kiriting."
 msgstr "Enter the month as YYYY-MM."
 
-#: apps/inventory/forms.py:36
+#: apps/inventory/forms.py:37
 msgid "Boshqa"
 msgstr "Other"
 
-#: apps/inventory/forms.py:36 apps/inventory/forms.py:123
+#: apps/inventory/forms.py:37 apps/inventory/forms.py:124
 msgid "Tanlang"
 msgstr "Select"
 
-#: apps/inventory/forms.py:369 apps/inventory/forms.py:411
+#: apps/inventory/forms.py:372 apps/inventory/forms.py:414
 msgid "Xarajat turi"
 msgstr "Expense type"
 
-#: apps/inventory/forms.py:374
+#: apps/inventory/forms.py:377
 msgid "Nomi / nima uchun"
 msgstr "Title / description"
 
-#: apps/inventory/forms.py:376
+#: apps/inventory/forms.py:379
 msgid "Masalan: Arra pichog'i, tushlik, soliq..."
 msgstr "E.g. Saw blade, lunch, tax..."
 
-#: apps/inventory/forms.py:379 apps/inventory/views.py:599
+#: apps/inventory/forms.py:382 apps/inventory/views.py:642
 msgid "Summa (USD)"
 msgstr "Amount (USD)"
 
-#: apps/inventory/forms.py:386 apps/inventory/models.py:556 apps/inventory/views.py:599 apps/inventory/views.py:629
-#: templates/inventory/expenses.html:77
+#: apps/inventory/forms.py:389 apps/inventory/models.py:564 apps/inventory/views.py:642 apps/inventory/views.py:672
+#: templates/inventory/expenses.html:72
 msgid "Sana"
 msgstr "Date"
 
-#: apps/inventory/forms.py:391
+#: apps/inventory/forms.py:394
 msgid "Izoh (ixtiyoriy)"
 msgstr "Note (optional)"
 
-#: apps/inventory/forms.py:394
+#: apps/inventory/forms.py:397
 msgid "Qo'shimcha izoh..."
 msgstr "Additional notes..."
 
-#: apps/inventory/forms.py:48 apps/inventory/forms.py:330 apps/inventory/forms.py:333 apps/inventory/forms.py:338
-#: apps/inventory/forms.py:323 apps/inventory/forms.py:413
+#: apps/inventory/forms.py:49 apps/inventory/forms.py:333 apps/inventory/forms.py:336 apps/inventory/forms.py:341
+#: apps/inventory/forms.py:326 apps/inventory/forms.py:416
 msgid "Barchasi"
 msgstr "All"
 
-#: apps/inventory/forms.py:63 apps/inventory/forms.py:207 apps/inventory/forms.py:326 apps/inventory/models.py:178
-#: apps/inventory/views.py:632 templates/inventory/dashboard.html:85 templates/inventory/home.html:45 templates/inventory/home.html:85
-#: templates/inventory/home.html:263 templates/inventory/material_form.html:138 templates/inventory/material_list.html:35 templates/inventory/material_list.html:59
+#: apps/inventory/forms.py:64 apps/inventory/forms.py:211 apps/inventory/forms.py:329 apps/inventory/models.py:178
+#: apps/inventory/views.py:675 templates/inventory/dashboard.html:85 templates/inventory/home.html:45 templates/inventory/home.html:85
+#: templates/inventory/home.html:264 templates/inventory/kirim_form.html:81 templates/inventory/material_form.html:136 templates/inventory/material_list.html:35
+#: templates/inventory/material_list.html:59
 msgid "Kategoriya"
 msgstr "Category"
 
-#: apps/inventory/forms.py:65
+#: apps/inventory/forms.py:66
 msgid "Yangi kategoriya nomi"
 msgstr "New category name"
 
-#: apps/inventory/forms.py:66 templates/inventory/material_form.html:308 templates/inventory/material_form.html:472
+#: apps/inventory/forms.py:67 templates/inventory/material_form.html:301 templates/inventory/material_form.html:467
 msgid "Masalan: Oyna va ko'zgu"
 msgstr "For example: Glass and mirrors"
 
-#: apps/inventory/forms.py:69
+#: apps/inventory/forms.py:70
 msgid "O'lcham (list) va qoldiq yuritiladi"
 msgstr "Supports dimensions (sheet) and offcuts"
 
-#: apps/inventory/forms.py:71
+#: apps/inventory/forms.py:72
 msgid "Belgilansa, list o'lchami (uzunlik × eni) va kesilgan qoldiqlar qo'shiladi."
 msgstr "When checked, sheet size (length × width) and offcuts are enabled."
 
-#: apps/inventory/forms.py:74
+#: apps/inventory/forms.py:75
 msgid "Qaysi kasblar ko'ra oladi va oladi"
 msgstr "Which trades can see and take it"
 
-#: apps/inventory/forms.py:78
+#: apps/inventory/forms.py:79
 msgid "Bo'sh qoldirilsa, kategoriya bo'yicha standart kasblar belgilanadi."
 msgstr "If left empty, the category's default trades are selected."
 
-#: apps/inventory/forms.py:81 templates/inventory/material_form.html:219 templates/inventory/material_form.html:487
+#: apps/inventory/forms.py:82 templates/inventory/material_form.html:217 templates/inventory/material_form.html:482
 msgid "O'lcham birligi"
 msgstr "Dimension unit"
 
-#: apps/inventory/forms.py:87
+#: apps/inventory/forms.py:88
 msgid "List uzunligi"
 msgstr "Sheet length"
 
-#: apps/inventory/forms.py:88
+#: apps/inventory/forms.py:89
 msgid "Faqat o'lchamli materiallar uchun, masalan 2750 mm (yoki 275 sm)."
 msgstr "Only for sized materials, e.g. 2750 mm (or 275 cm)."
 
-#: apps/inventory/forms.py:91
+#: apps/inventory/forms.py:92
 msgid "List eni"
 msgstr "Sheet width"
 
-#: apps/inventory/forms.py:92
+#: apps/inventory/forms.py:93
 msgid "Masalan 1830 mm (yoki 183 sm)."
 msgstr "E.g. 1830 mm (or 183 cm)."
 
@@ -282,7 +271,7 @@ msgstr "Allowed trades"
 msgid "O'lchov birligi"
 msgstr "Unit of measure"
 
-#: apps/inventory/models.py:198 apps/inventory/views.py:635
+#: apps/inventory/models.py:198 apps/inventory/views.py:678
 msgid "Birlik narxi (USD)"
 msgstr "Unit price (USD)"
 
@@ -327,7 +316,7 @@ msgctxt "category"
 msgid "Kraska"
 msgstr "Paint"
 
-#: apps/inventory/models.py:301 templates/inventory/home.html:265
+#: apps/inventory/models.py:301 templates/inventory/home.html:266
 msgid "Soni"
 msgstr "Quantity"
 
@@ -386,19 +375,19 @@ msgctxt "category"
 msgid "Upakovka"
 msgstr "Packaging"
 
-#: apps/inventory/models.py:377 templates/inventory/_txn_rows.html:37 templates/inventory/_txn_rows.html:111 templates/inventory/dashboard.html:61
-#: templates/inventory/dashboard.html:123 templates/inventory/dashboard.html:143 templates/inventory/dashboard.html:168 templates/inventory/home.html:164
-#: templates/inventory/home.html:219 templates/inventory/kirim_form.html:3 templates/inventory/kirim_form.html:14 templates/inventory/material_form.html:392
-#: templates/inventory/material_list.html:139 templates/inventory/reports.html:40 templates/partials/bottom_nav.html:5
+#: apps/inventory/models.py:377 templates/inventory/_txn_rows.html:38 templates/inventory/_txn_rows.html:120 templates/inventory/dashboard.html:61
+#: templates/inventory/dashboard.html:123 templates/inventory/dashboard.html:143 templates/inventory/dashboard.html:168 templates/inventory/home.html:163
+#: templates/inventory/home.html:218 templates/inventory/kirim_form.html:3 templates/inventory/kirim_form.html:14 templates/inventory/material_form.html:386
+#: templates/inventory/material_list.html:133 templates/inventory/reports.html:36 templates/partials/bottom_nav.html:5
 msgid "Kirim"
 msgstr "Stock in"
 
-#: apps/inventory/models.py:378 templates/inventory/_txn_rows.html:39 templates/inventory/_txn_rows.html:113 templates/inventory/dashboard.html:61
+#: apps/inventory/models.py:378 templates/inventory/_txn_rows.html:40 templates/inventory/_txn_rows.html:122 templates/inventory/dashboard.html:61
 #: templates/inventory/dashboard.html:168
 msgid "Chiqim"
 msgstr "Stock out"
 
-#: apps/inventory/models.py:379 templates/inventory/_txn_rows.html:41 templates/inventory/_txn_rows.html:115 templates/inventory/reports.html:56
+#: apps/inventory/models.py:379 templates/inventory/reports.html:52
 msgid "Qoldiq qo'shildi"
 msgstr "Offcut added"
 
@@ -436,11 +425,11 @@ msgctxt "unit"
 msgid "Santimetr"
 msgstr "Centimetre"
 
-#: apps/inventory/models.py:481
+#: apps/inventory/models.py:483
 msgid "ombor harakati"
 msgstr "stock movement"
 
-#: apps/inventory/models.py:482
+#: apps/inventory/models.py:484
 msgid "ombor harakatlari"
 msgstr "stock movements"
 
@@ -449,27 +438,27 @@ msgctxt "unit short"
 msgid "m²"
 msgstr "m²"
 
-#: apps/inventory/models.py:528
-msgctxt "expense_category"
-msgid "Nalog"
-msgstr "Tax"
-
-#: apps/inventory/models.py:529
-msgctxt "expense_category"
-msgid "Produkta"
-msgstr "Groceries / Food"
-
 #: apps/inventory/models.py:53
 msgctxt "unit short"
 msgid "L"
 msgstr "L"
 
-#: apps/inventory/models.py:530
+#: apps/inventory/models.py:536
+msgctxt "expense_category"
+msgid "Nalog"
+msgstr "Tax"
+
+#: apps/inventory/models.py:537
+msgctxt "expense_category"
+msgid "Produkta"
+msgstr "Groceries / Food"
+
+#: apps/inventory/models.py:538
 msgctxt "expense_category"
 msgid "Stanok"
 msgstr "Machinery"
 
-#: apps/inventory/models.py:531
+#: apps/inventory/models.py:539
 msgctxt "expense_category"
 msgid "Boshqa"
 msgstr "Other"
@@ -479,21 +468,21 @@ msgctxt "unit short"
 msgid "kg"
 msgstr "kg"
 
-#: apps/inventory/models.py:548 apps/inventory/views.py:599 apps/inventory/views.py:630 templates/inventory/_txn_rows.html:9
-#: templates/inventory/expenses.html:78
-msgid "Turi"
-msgstr "Type"
-
-#: apps/inventory/models.py:549 apps/inventory/views.py:599
-msgid "Xarajat nomi"
-msgstr "Expense name"
-
 #: apps/inventory/models.py:55
 msgctxt "unit short"
 msgid "m"
 msgstr "m"
 
-#: apps/inventory/models.py:551
+#: apps/inventory/models.py:556 apps/inventory/views.py:642 apps/inventory/views.py:673 templates/inventory/_txn_rows.html:9
+#: templates/inventory/expenses.html:73
+msgid "Turi"
+msgstr "Type"
+
+#: apps/inventory/models.py:557 apps/inventory/views.py:642
+msgid "Xarajat nomi"
+msgstr "Expense name"
+
+#: apps/inventory/models.py:559
 msgid "Summa (USD $)"
 msgstr "Amount (USD $)"
 
@@ -502,25 +491,25 @@ msgctxt "unit short"
 msgid "sm"
 msgstr "cm"
 
-#: apps/inventory/models.py:565
-msgid "qo'shimcha xarajat"
-msgstr "operating expense"
-
-#: apps/inventory/models.py:566
-msgid "qo'shimcha xarajatlar"
-msgstr "operating expenses"
-
 #: apps/inventory/models.py:57
 msgctxt "unit short"
 msgid "dona"
 msgstr "pcs"
+
+#: apps/inventory/models.py:573
+msgid "qo'shimcha xarajat"
+msgstr "operating expense"
+
+#: apps/inventory/models.py:574
+msgid "qo'shimcha xarajatlar"
+msgstr "operating expenses"
 
 #: apps/inventory/models.py:81 apps/users/models.py:29
 msgid "Kod"
 msgstr "Code"
 
 #: apps/inventory/models.py:82 apps/inventory/models.py:177 apps/inventory/models.py:349 apps/users/models.py:30
-#: templates/inventory/expenses.html:79 templates/inventory/project_list.html:23
+#: templates/inventory/expenses.html:74 templates/inventory/project_list.html:23
 msgid "Nomi"
 msgstr "Name"
 
@@ -536,8 +525,8 @@ msgstr "Supports dimensions and offcuts"
 msgid "Standart kasblar"
 msgstr "Default trades"
 
-#: apps/inventory/models.py:86 apps/inventory/models.py:206 apps/inventory/models.py:351 templates/inventory/material_form.html:280
-#: templates/inventory/material_form.html:283 templates/inventory/material_form.html:381 templates/inventory/material_list.html:124 templates/users/user_list.html:103
+#: apps/inventory/models.py:86 apps/inventory/models.py:206 apps/inventory/models.py:351 templates/inventory/material_form.html:273
+#: templates/inventory/material_form.html:276 templates/inventory/material_form.html:374 templates/inventory/material_list.html:117 templates/users/user_list.html:103
 #: templates/users/user_list.html:144
 msgid "Faol"
 msgstr "Active"
@@ -550,130 +539,178 @@ msgstr "category"
 msgid "kategoriyalar"
 msgstr "categories"
 
-#: apps/inventory/services.py:107 apps/users/permissions.py:59
+#: apps/inventory/services.py:112 apps/users/permissions.py:59
 msgid "Administrator ombordan material olmaydi — buni ishchi bajaradi."
 msgstr "Administrators do not withdraw material — workers take it."
 
-#: apps/inventory/services.py:173
+#: apps/inventory/services.py:158
+msgid "Zaxirasi yoki tarixi bor materialning birligini almashtirib bo'lmaydi."
+msgstr "The unit cannot be changed for a material with stock or movement history."
+
+#: apps/inventory/services.py:160
+msgid "Omborda zaxirasi yoki qoldig'i bor materialni arxivlab bo'lmaydi."
+msgstr "A material with stock or offcuts cannot be archived."
+
+#: apps/inventory/services.py:162
+msgid "Qoldig'i bor materialni o'lchamsiz kategoriyaga o'tkazib bo'lmaydi."
+msgstr "A material with offcuts cannot be moved to a category without dimensions."
+
+#: apps/inventory/services.py:213
+msgid "Bu kirim so'rovi boshqa ma'lumot bilan yuborilgan. Sahifani yangilang."
+msgstr "This receipt request was already sent with different details. Reload the page."
+
+#: apps/inventory/services.py:220
 msgid "Birlik narxi yoki umumiy partiya narxidan bittasini kiriting."
 msgstr "Enter either the unit price or the total batch price."
 
-#: apps/inventory/services.py:177 apps/inventory/services.py:186
+#: apps/inventory/services.py:224 apps/inventory/services.py:233
 msgid "Narx manfiy bo'lishi mumkin emas."
 msgstr "The price can't be negative."
 
-#: apps/inventory/services.py:181
+#: apps/inventory/services.py:228
 msgid "Miqdorga nisbatan narx juda past — birlik narxi nolga tushadi."
 msgstr "Price is too low relative to quantity — unit price would round to zero."
 
-#: apps/inventory/services.py:191
+#: apps/inventory/services.py:238
+msgid "Birlik narxi ruxsat etilgan chegaradan oshadi."
+msgstr "The unit price exceeds the allowed limit."
+
+#: apps/inventory/services.py:240
 #, python-format
 msgid "Partiya narxi juda katta (max %(max)s USD)."
 msgstr "Batch price is too large (max %(max)s USD)."
 
-#: apps/inventory/services.py:197
+#: apps/inventory/services.py:243
 msgid "Arxivlangan materialga kirim qilib bo'lmaydi. Avval uni faollashtiring."
 msgstr "You can't record stock in for an archived material. Make it active first."
 
-#: apps/inventory/services.py:202
+#: apps/inventory/services.py:248
 #, python-format
 msgid "Jami zaxira hajmi juda katta (max %(max)s)."
 msgstr "Total stock is too large (max %(max)s)."
 
-#: apps/inventory/services.py:243
-msgid "Bu material arxivlangan."
-msgstr "This material is archived."
-
-#: apps/inventory/services.py:246
+#: apps/inventory/services.py:293
 #, python-format
 msgid "Omborda faqat %(amount)s %(unit)s bor."
 msgstr "Only %(amount)s %(unit)s in stock."
 
-#: apps/inventory/services.py:275
+#: apps/inventory/services.py:322
 msgid "Butun son kiriting."
 msgstr "Enter a whole number."
 
-#: apps/inventory/services.py:277
+#: apps/inventory/services.py:324
 msgid "Kamida 1 dona (butun son) kiriting."
 msgstr "Enter at least 1 piece (a whole number)."
 
-#: apps/inventory/services.py:282
+#: apps/inventory/services.py:331
 msgid "Bu qoldiq allaqachon olingan."
 msgstr "This offcut has already been taken."
 
-#: apps/inventory/services.py:285
+#: apps/inventory/services.py:334
 #, python-format
 msgid "Bu qoldiqdan faqat %(count)s dona bor."
 msgstr "Only %(count)s pcs of this offcut left."
 
-#: apps/inventory/services.py:327
+#: apps/inventory/services.py:379 apps/inventory/services.py:290
+msgid "Bu material arxivlangan."
+msgstr "This material is archived."
+
+#: apps/inventory/services.py:381
 msgid "Bu turdagi material uchun qoldiq qayd etilmaydi."
 msgstr "Offcuts aren't recorded for this kind of material."
 
-#: apps/inventory/services.py:332
+#: apps/inventory/services.py:386
 msgid "Musbat butun son kiriting."
 msgstr "Enter a positive whole number."
 
-#: apps/inventory/services.py:342
+#: apps/inventory/services.py:396
 #, python-format
 msgid "Qoldiq o'lchami to'liq listdan (%(length)sx%(width)s mm) katta bo'lishi mumkin emas."
 msgstr "An offcut can't be larger than the full sheet (%(length)sx%(width)s mm)."
 
-#: apps/inventory/services.py:379
-msgid "Bu yozuv allaqachon qaytarilgan."
-msgstr "This entry has already been reversed."
-
-#: apps/inventory/services.py:381
+#: apps/inventory/services.py:434
 msgid "Qaytarish yozuvini qaytarib bo'lmaydi."
 msgstr "A reversal entry cannot be reversed."
 
-#: apps/inventory/services.py:425
+#: apps/inventory/services.py:439
+msgid "Bu yozuv allaqachon qaytarilgan."
+msgstr "This entry has already been reversed."
+
+#: apps/inventory/services.py:441
+msgid "Avval materialni faollashtiring."
+msgstr "Reactivate the material first."
+
+#: apps/inventory/services.py:471
+msgid "Bu harakatning birligi hozirgi material birligidan farq qiladi."
+msgstr "This movement uses a different unit than the current material."
+
+#: apps/inventory/services.py:474
+msgid "Qaytarish uchun ombordagi miqdor yetarli emas yoki chegaradan oshadi."
+msgstr "The reversal would leave insufficient stock or exceed the stock limit."
+
+#: apps/inventory/services.py:484
+msgid "Avval bu kirimdan keyingi butun material harakatlarini qaytaring."
+msgstr "Reverse later movements of whole stock for this material first."
+
+#: apps/inventory/services.py:491
+msgid "Qaytarishdan keyin zaxira qiymatini ishonchli hisoblab bo'lmadi."
+msgstr "The remaining stock value could not be calculated reliably after reversal."
+
+#: apps/inventory/services.py:498
+msgid "Qaytarishdan keyin birlik narxi ruxsat etilgan chegaradan oshadi."
+msgstr "The unit price after reversal exceeds the allowed limit."
+
+#: apps/inventory/services.py:530
+msgid "Qoldiqning asl yozuvi topilmadi yoki undan foydalanilgan."
+msgstr "The original offcut was not found or has been used."
+
+#: apps/inventory/services.py:574
 msgid "Noma'lum xarajat turi."
 msgstr "Unknown expense category."
 
-#: apps/inventory/services.py:428
+#: apps/inventory/services.py:577
 msgid "Xarajat nomini kiriting."
 msgstr "Enter the expense title."
 
-#: apps/inventory/services.py:431
-msgid "Summa 0 dan katta bo'lishi kerak."
-msgstr "Amount must be greater than 0."
-
-#: apps/inventory/services.py:433
-msgid "Summa ko'pi bilan 2 xonali kasr bo'lishi mumkin."
-msgstr "Amount can have at most 2 decimal places."
-
-#: apps/inventory/services.py:53 apps/inventory/services.py:51
+#: apps/inventory/services.py:58 apps/inventory/services.py:56
 msgid "Noto'g'ri raqam."
 msgstr "Invalid number."
 
-#: apps/inventory/services.py:60
+#: apps/inventory/services.py:580
+msgid "Summa 0 dan katta bo'lishi kerak."
+msgstr "Amount must be greater than 0."
+
+#: apps/inventory/services.py:582
+msgid "Summa ko'pi bilan 2 xonali kasr bo'lishi mumkin."
+msgstr "Amount can have at most 2 decimal places."
+
+#: apps/inventory/services.py:65
 msgid "Miqdor 0 dan katta bo'lishi kerak."
 msgstr "The quantity must be greater than 0."
 
-#: apps/inventory/services.py:62
+#: apps/inventory/services.py:67
 msgid "Miqdor ko'pi bilan 2 xonali kasr bo'lishi mumkin."
 msgstr "The quantity can have at most 2 decimal places."
 
-#: apps/inventory/services.py:65
+#: apps/inventory/services.py:70
 #, python-format
 msgid "%(name)s faqat butun sonda hisoblanadi (%(unit)s)."
 msgstr "“%(name)s” is counted in whole numbers only (%(unit)s)."
 
-#: apps/inventory/services.py:78 apps/users/permissions.py:52
+#: apps/inventory/services.py:83 apps/users/permissions.py:52
 msgid "Bu amal faqat administratorlar uchun."
 msgstr "Only administrators can do this."
 
-#: apps/inventory/services.py:91
+#: apps/inventory/services.py:96
 msgid "Bu material sizning kasbingiz uchun ruxsat etilmagan."
 msgstr "This material isn't available to your trade."
 
-#: apps/inventory/templatetags/wms.py:201
+#: apps/inventory/templatetags/wms.py:212
 #, python-format
 msgid "%(length)s × %(width)s mm qoldiq, list %(sheet_length)s × %(sheet_width)s mm"
 msgstr "Offcut %(length)s × %(width)s mm, sheet %(sheet_length)s × %(sheet_width)s mm"
 
-#: apps/inventory/templatetags/wms.py:203
+#: apps/inventory/templatetags/wms.py:214
 #, python-format
 msgid "%(length)s × %(width)s mm qoldiq"
 msgstr "Offcut %(length)s × %(width)s mm"
@@ -738,58 +775,62 @@ msgctxt "month"
 msgid "oktabr"
 msgstr "October"
 
-#: apps/inventory/views.py:135
+#: apps/inventory/views.py:152
 #, python-format
 msgid "Chiqim yozildi: %(name)s — %(amount)s %(unit)s. Omborda qoldi: %(left)s %(unit)s."
 msgstr "Stock out recorded: %(name)s — %(amount)s %(unit)s. Left in stock: %(left)s %(unit)s."
 
-#: apps/inventory/views.py:188
+#: apps/inventory/views.py:205
 #, python-format
 msgid "Qoldiq qo'shildi: %(name)s %(length)s×%(width)s mm — %(count)s dona."
 msgstr "Offcut added: %(name)s %(length)s×%(width)s mm — %(count)s pcs."
 
-#: apps/inventory/views.py:227
+#: apps/inventory/views.py:244
 #, python-format
 msgid "Qoldiq olindi: %(name)s %(length)s×%(width)s mm — %(count)s dona."
 msgstr "Offcut taken: %(name)s %(length)s×%(width)s mm — %(count)s pcs."
 
-#: apps/inventory/views.py:388
+#: apps/inventory/views.py:280
+msgid "Harakat qaytarildi."
+msgstr "Movement reversed."
+
+#: apps/inventory/views.py:425
 #, python-format
 msgid "“%(name)s” qo'shildi. Endi kirimni kiriting."
 msgstr "“%(name)s” added. Now record the stock in."
 
-#: apps/inventory/views.py:410 apps/inventory/views.py:708
+#: apps/inventory/views.py:447 apps/inventory/views.py:751
 #, python-format
 msgid "“%(name)s” saqlandi."
 msgstr "“%(name)s” saved."
 
-#: apps/inventory/views.py:468
+#: apps/inventory/views.py:513
 #, python-format
 msgid "Kirim yozildi: %(name)s +%(amount)s %(unit)s, %(total)s. Yangi o'rtacha narx: %(price)s."
 msgstr "Stock in recorded: %(name)s +%(amount)s %(unit)s, %(total)s. New average price: %(price)s."
 
-#: apps/inventory/views.py:568
+#: apps/inventory/views.py:611
 #, python-format
 msgid "Xarajat saqlandi: %(title)s — %(amount)s."
 msgstr "Expense saved: %(title)s — %(amount)s."
 
-#: apps/inventory/views.py:599 templates/inventory/expenses.html:81
+#: apps/inventory/views.py:642 templates/inventory/expenses.html:76 templates/inventory/kirim_form.html:214
 msgid "Kim kiritdi"
 msgstr "Recorded by"
 
-#: apps/inventory/views.py:634 templates/inventory/home.html:88 templates/inventory/material_form.html:139 templates/inventory/material_list.html:61
+#: apps/inventory/views.py:677 templates/inventory/material_form.html:137
 msgid "Birlik"
 msgstr "Unit"
 
-#: apps/inventory/views.py:636
+#: apps/inventory/views.py:679
 msgid "Jami (USD)"
 msgstr "Total (USD)"
 
-#: apps/inventory/views.py:637
+#: apps/inventory/views.py:680
 msgid "Qoldiq o'lchami (mm)"
 msgstr "Offcut size (mm)"
 
-#: apps/inventory/views.py:697
+#: apps/inventory/views.py:740
 #, python-format
 msgid "“%(name)s” loyihasi yaratildi."
 msgstr "Project “%(name)s” was created."
@@ -1031,12 +1072,12 @@ msgstr "%(name)s is approved and can now log in."
 msgid "%(name)s so'rovi rad etildi."
 msgstr "The request from %(name)s was rejected."
 
-#: apps/users/views.py:173
+#: apps/users/views.py:177
 #, python-format
 msgid "%(name)s ma'lumotlari saqlandi."
 msgstr "Details for %(name)s saved."
 
-#: apps/users/views.py:190
+#: apps/users/views.py:194
 #, python-format
 msgid "“%(name)s” kasbi qo'shildi. Endi ishchilar ro'yxatdan o'tishda uni tanlay oladi."
 msgstr "Trade “%(name)s” added. Workers can now choose it when they register."
@@ -1181,29 +1222,29 @@ msgstr "Main menu"
 msgid "Rol yo'q"
 msgstr "No role"
 
-#: templates/inventory/_recent_transactions.html:11 templates/inventory/_txn_rows.html:8 templates/inventory/home.html:268
+#: templates/inventory/_recent_transactions.html:11 templates/inventory/_txn_rows.html:8 templates/inventory/home.html:269 templates/inventory/kirim_form.html:213
 msgid "Vaqti"
 msgstr "Time"
 
 #: templates/inventory/_recent_transactions.html:12 templates/inventory/_txn_rows.html:10 templates/inventory/dashboard.html:84 templates/inventory/home.html:84
-#: templates/inventory/home.html:262 templates/inventory/material_form.html:137 templates/inventory/material_list.html:58
+#: templates/inventory/home.html:263 templates/inventory/material_form.html:135 templates/inventory/material_list.html:58
 msgid "Material nomi"
 msgstr "Material name"
 
-#: templates/inventory/_recent_transactions.html:13 templates/inventory/dashboard.html:90 templates/inventory/expenses.html:83 templates/inventory/home.html:94
-#: templates/inventory/home.html:269 templates/inventory/kirim_form.html:102 templates/inventory/material_form.html:144 templates/inventory/material_list.html:65
-#: templates/inventory/offcut_form.html:67 templates/users/pending_users.html:30 templates/users/user_list.html:56
+#: templates/inventory/_recent_transactions.html:13 templates/inventory/_txn_rows.html:21 templates/inventory/dashboard.html:90 templates/inventory/expenses.html:78
+#: templates/inventory/home.html:95 templates/inventory/home.html:270 templates/inventory/kirim_form.html:102 templates/inventory/material_form.html:142
+#: templates/inventory/material_list.html:64 templates/inventory/offcut_form.html:67 templates/users/pending_users.html:30 templates/users/user_list.html:56
 msgid "Amal"
 msgstr "Action"
 
-#: templates/inventory/_recent_transactions.html:25 templates/inventory/_recent_transactions.html:45 templates/inventory/_txn_rows.html:39 templates/inventory/_txn_rows.html:113
-#: templates/inventory/reports.html:83
+#: templates/inventory/_recent_transactions.html:25 templates/inventory/_recent_transactions.html:45 templates/inventory/_txn_rows.html:40 templates/inventory/_txn_rows.html:122
+#: templates/inventory/reports.html:79
 msgid "qoldiq"
 msgstr "offcut"
 
-#: templates/inventory/_recent_transactions.html:29 templates/inventory/_recent_transactions.html:42 templates/inventory/_txn_rows.html:73 templates/inventory/_txn_rows.html:135
-#: templates/inventory/home.html:290 templates/inventory/home.html:323 templates/inventory/offcut_form.html:6 templates/inventory/reports.html:88
-#: templates/inventory/withdraw_offcut.html:17
+#: templates/inventory/_recent_transactions.html:29 templates/inventory/_recent_transactions.html:42 templates/inventory/_txn_rows.html:74 templates/inventory/_txn_rows.html:144
+#: templates/inventory/home.html:291 templates/inventory/home.html:324 templates/inventory/offcut_form.html:6 templates/inventory/reports.html:83
+#: templates/inventory/reverse_transaction.html:8 templates/inventory/withdraw_offcut.html:17
 msgid "dona"
 msgstr "pcs"
 
@@ -1219,18 +1260,26 @@ msgstr "View all"
 msgid "Hali harakat yo'q. Birinchi kirimni kiriting."
 msgstr "No activity yet. Record the first stock in."
 
-#: templates/inventory/_txn_rows.html:11 templates/inventory/home.html:86 templates/inventory/home.html:264 templates/inventory/material_form.html:140
-#: templates/inventory/material_form.html:229 templates/inventory/material_list.html:60
+#: templates/inventory/_txn_rows.html:11 templates/inventory/home.html:87 templates/inventory/home.html:265 templates/inventory/material_form.html:138
+#: templates/inventory/material_list.html:60
 msgid "O'lchami"
 msgstr "Dimensions"
 
-#: templates/inventory/_txn_rows.html:17
+#: templates/inventory/_txn_rows.html:17 templates/inventory/kirim_form.html:211
 msgid "Birlik narxi"
 msgstr "Unit price"
 
 #: templates/inventory/_txn_rows.html:18
 msgid "Jami"
 msgstr "Total"
+
+#: templates/inventory/_txn_rows.html:94 templates/inventory/_txn_rows.html:152 templates/inventory/kirim_form.html:220 templates/inventory/kirim_form.html:235
+msgid "Qaytarilgan"
+msgstr "Reversed"
+
+#: templates/inventory/_txn_rows.html:96 templates/inventory/_txn_rows.html:154 templates/inventory/reverse_transaction.html:14
+msgid "Qaytarish"
+msgstr "Reverse"
 
 #: templates/inventory/dashboard.html:11
 #, python-format
@@ -1257,8 +1306,8 @@ msgid "Hozir hech narsa minimal qoldiqdan kam emas. Material kamayganda shu yerd
 msgstr "Nothing is below minimum stock right now. Materials that run low will show up here."
 
 #: templates/inventory/dashboard.html:168
-msgid "Oylik kirim (chiziq ustida) va chiqim (chiziq ostida)"
-msgstr "Monthly stock in (above the line) and stock out (below the line)"
+msgid "Oylik kirim va chiqim, qaytarishlar bilan"
+msgstr "Monthly receipts and withdrawals, including reversals"
 
 #: templates/inventory/dashboard.html:20
 msgid "Asosiy ko'rsatkichlar"
@@ -1339,41 +1388,41 @@ msgstr "Purchase list"
 msgid "omborda / minimal qoldiq"
 msgstr "in stock / minimum stock"
 
-#: templates/inventory/dashboard.html:86 templates/inventory/home.html:87
+#: templates/inventory/dashboard.html:86 templates/inventory/home.html:89
 msgid "Omborda"
 msgstr "In stock"
 
-#: templates/inventory/dashboard.html:87 templates/inventory/home.html:89 templates/inventory/material_form.html:141 templates/inventory/material_list.html:62
+#: templates/inventory/dashboard.html:87 templates/inventory/home.html:90 templates/inventory/material_form.html:139 templates/inventory/material_list.html:61
 msgid "Minimal"
 msgstr "Minimum"
 
-#: templates/inventory/dashboard.html:88 templates/inventory/reports.html:48
+#: templates/inventory/dashboard.html:88 templates/inventory/reports.html:44
 msgid "Farq"
 msgstr "Difference"
 
-#: templates/inventory/dashboard.html:89 templates/inventory/home.html:93 templates/inventory/material_form.html:143 templates/inventory/material_list.html:64
+#: templates/inventory/dashboard.html:89 templates/inventory/home.html:94 templates/inventory/material_form.html:141 templates/inventory/material_list.html:63
 #: templates/inventory/project_list.html:25 templates/users/user_list.html:55
 msgid "Holati"
 msgstr "Status"
 
-#: templates/inventory/expenses.html:10
+#: templates/inventory/expenses.html:10 templates/inventory/reports.html:9
 msgid "Barcha davr"
 msgstr "All time"
+
+#: templates/inventory/expenses.html:108 templates/inventory/expenses.html:150 templates/inventory/material_form.html:284 templates/inventory/material_form.html:519
+#: templates/inventory/project_form.html:16 templates/users/user_edit.html:23
+msgid "Saqlash"
+msgstr "Save"
 
 #: templates/inventory/expenses.html:11
 msgid "nalog, produkta, stanok va boshqa xarajatlar"
 msgstr "tax, food, machinery and other expenses"
 
-#: templates/inventory/expenses.html:113 templates/inventory/expenses.html:155 templates/inventory/material_form.html:291 templates/inventory/material_form.html:524
-#: templates/inventory/project_form.html:16 templates/users/user_edit.html:23
-msgid "Saqlash"
-msgstr "Save"
-
-#: templates/inventory/expenses.html:136 templates/inventory/expenses.html:169
+#: templates/inventory/expenses.html:131 templates/inventory/expenses.html:164
 msgid "Tanlangan davrda qo'shimcha xarajatlar yo'q."
 msgstr "No operating expenses in the selected period."
 
-#: templates/inventory/expenses.html:15 templates/inventory/reports.html:10
+#: templates/inventory/expenses.html:15 templates/inventory/reports.html:11
 msgid "CSV yuklab olish"
 msgstr "Download CSV"
 
@@ -1389,7 +1438,7 @@ msgstr "Total expenses"
 msgid "Nalog"
 msgstr "Tax"
 
-#: templates/inventory/expenses.html:3 templates/inventory/expenses.html:8 templates/inventory/reports.html:52
+#: templates/inventory/expenses.html:3 templates/inventory/expenses.html:8 templates/inventory/reports.html:48
 msgid "Qo'shimcha xarajatlar"
 msgstr "Operating expenses"
 
@@ -1401,32 +1450,32 @@ msgstr "Food & supplies"
 msgid "Stanok"
 msgstr "Machinery"
 
-#: templates/inventory/expenses.html:42 templates/inventory/expenses.html:47 templates/inventory/reports.html:15 templates/inventory/reports.html:20
+#: templates/inventory/expenses.html:42 templates/inventory/expenses.html:44 templates/inventory/reports.html:16 templates/inventory/reports.html:18
 msgid "Filtrlar"
 msgstr "Filters"
 
-#: templates/inventory/expenses.html:53 templates/inventory/reports.html:30
+#: templates/inventory/expenses.html:50 templates/inventory/reports.html:28
 msgid "Ko'rsatish"
 msgstr "Show"
 
-#: templates/inventory/expenses.html:54 templates/inventory/material_form.html:422 templates/inventory/reports.html:31 templates/users/user_list.html:37
+#: templates/inventory/expenses.html:51 templates/inventory/material_form.html:417 templates/inventory/reports.html:29 templates/users/user_list.html:37
 msgid "Tozalash"
 msgstr "Clear"
 
-#: templates/inventory/expenses.html:64
+#: templates/inventory/expenses.html:59
 msgid "Xarajatlar ro'yxati"
 msgstr "Expense history"
 
-#: templates/inventory/expenses.html:65
+#: templates/inventory/expenses.html:60
 msgid "tarixda saqlanadi"
 msgstr "saved in history"
 
-#: templates/inventory/expenses.html:82
+#: templates/inventory/expenses.html:77
 msgid "Summa"
 msgstr "Amount"
 
-#: templates/inventory/home.html:115 templates/inventory/home.html:190 templates/inventory/home.html:287 templates/inventory/home.html:323
-#: templates/inventory/material_form.html:356 templates/inventory/material_list.html:87 templates/inventory/material_list.html:162 templates/inventory/offcut_form.html:6
+#: templates/inventory/home.html:117 templates/inventory/home.html:189 templates/inventory/home.html:288 templates/inventory/home.html:324
+#: templates/inventory/material_form.html:349 templates/inventory/material_list.html:87 templates/inventory/material_list.html:157 templates/inventory/offcut_form.html:6
 msgid "mm"
 msgstr "mm"
 
@@ -1453,34 +1502,34 @@ msgid_plural "qoldiq"
 msgstr[0] "offcut"
 msgstr[1] "offcuts"
 
-#: templates/inventory/home.html:146 templates/inventory/home.html:172 templates/inventory/home.html:196 templates/inventory/home.html:227
+#: templates/inventory/home.html:145 templates/inventory/home.html:171 templates/inventory/home.html:195 templates/inventory/home.html:226
 msgid "Tugagan"
 msgstr "Out of stock"
 
-#: templates/inventory/home.html:148 templates/inventory/home.html:198
+#: templates/inventory/home.html:147 templates/inventory/home.html:197
 msgid "Kam qoldi"
 msgstr "Low stock"
 
-#: templates/inventory/home.html:150 templates/inventory/home.html:200
+#: templates/inventory/home.html:149 templates/inventory/home.html:199
 msgid "Yetarli"
 msgstr "In stock"
 
-#: templates/inventory/home.html:158 templates/inventory/home.html:160 templates/inventory/home.html:216 templates/inventory/material_form.html:389
-#: templates/inventory/material_list.html:135 templates/inventory/project_list.html:39 templates/users/user_list.html:113 templates/users/user_list.html:149
+#: templates/inventory/home.html:157 templates/inventory/home.html:159 templates/inventory/home.html:215 templates/inventory/material_form.html:382
+#: templates/inventory/material_list.html:128 templates/inventory/project_list.html:39 templates/users/user_list.html:113 templates/users/user_list.html:149
 msgid "Tahrirlash"
 msgstr "Edit"
 
-#: templates/inventory/home.html:168 templates/inventory/home.html:223
+#: templates/inventory/home.html:167 templates/inventory/home.html:222
 #, python-format
 msgid "%(name)s — oldim"
 msgstr "Take %(name)s"
 
-#: templates/inventory/home.html:169 templates/inventory/home.html:224 templates/inventory/home.html:306 templates/inventory/home.html:331
+#: templates/inventory/home.html:168 templates/inventory/home.html:223 templates/inventory/home.html:307 templates/inventory/home.html:332
 #: templates/inventory/offcut_form.html:212 templates/inventory/offcut_form.html:277
 msgid "Oldim"
 msgstr "Take"
 
-#: templates/inventory/home.html:191
+#: templates/inventory/home.html:190
 msgid "min"
 msgstr "min"
 
@@ -1492,7 +1541,7 @@ msgstr "Search by name"
 msgid "Kasbingiz uchun hali material qo'shilmagan."
 msgstr "No materials have been added for your trade yet."
 
-#: templates/inventory/home.html:237 templates/inventory/material_list.html:188
+#: templates/inventory/home.html:237 templates/inventory/material_list.html:185
 msgid "Qidiruv bo'yicha material topilmadi."
 msgstr "No materials match your search."
 
@@ -1504,35 +1553,35 @@ msgstr "Materials appear here once an administrator adds them."
 msgid "Birinchi materialni qo'shing"
 msgstr "Add the first material"
 
-#: templates/inventory/home.html:249 templates/inventory/offcut_form.html:151 templates/inventory/offcut_form.html:258
+#: templates/inventory/home.html:250 templates/inventory/offcut_form.html:151 templates/inventory/offcut_form.html:258
 msgid "Qoldiq materiallar"
 msgstr "Offcuts"
 
-#: templates/inventory/home.html:252
+#: templates/inventory/home.html:253
 msgid "Kesishdan qolgan, qayta ishlatsa bo'ladigan bo'laklar · rasm list o'lchamiga nisbatan"
 msgstr "Reusable pieces left over from cutting · drawn to scale against the sheet"
 
-#: templates/inventory/home.html:261 templates/inventory/offcut_form.html:65
+#: templates/inventory/home.html:262 templates/inventory/offcut_form.html:65
 msgid "Ko'rinishi"
 msgstr "Preview"
 
-#: templates/inventory/home.html:266 templates/inventory/offcut_form.html:64
+#: templates/inventory/home.html:267 templates/inventory/offcut_form.html:64
 msgid "Joylashuvi / Izoh"
 msgstr "Location / Notes"
 
-#: templates/inventory/home.html:267
+#: templates/inventory/home.html:268
 msgid "Kim qo'shgan"
 msgstr "Added by"
 
-#: templates/inventory/home.html:29 templates/inventory/home.html:162 templates/inventory/material_list.html:137 templates/inventory/material_list.html:176
+#: templates/inventory/home.html:29 templates/inventory/home.html:161 templates/inventory/material_list.html:131 templates/inventory/material_list.html:172
 msgid "Kirim qilish"
 msgstr "Receive goods"
 
-#: templates/inventory/home.html:303 templates/inventory/home.html:328 templates/inventory/offcut_form.html:208
+#: templates/inventory/home.html:304 templates/inventory/home.html:329 templates/inventory/offcut_form.html:208
 msgid "Qoldiq"
 msgstr "Offcut"
 
-#: templates/inventory/home.html:305 templates/inventory/home.html:330
+#: templates/inventory/home.html:306 templates/inventory/home.html:331
 #, python-format
 msgid "%(name)s %(length)s×%(width)s — oldim"
 msgstr "Take %(name)s %(length)s×%(width)s"
@@ -1542,24 +1591,24 @@ msgstr "Take %(name)s %(length)s×%(width)s"
 msgid "Yangi material"
 msgstr "New material"
 
-#: templates/inventory/home.html:341 templates/inventory/offcut_form.html:154 templates/inventory/offcut_form.html:220
+#: templates/inventory/home.html:343 templates/inventory/offcut_form.html:154 templates/inventory/offcut_form.html:220
 msgid "Hozircha qoldiq yo'q."
 msgstr "No offcuts yet."
 
-#: templates/inventory/home.html:341
+#: templates/inventory/home.html:343
 msgid "Qidiruv bo'yicha qoldiq topilmadi."
 msgstr "No offcuts match your search."
 
-#: templates/inventory/home.html:342
+#: templates/inventory/home.html:344
 msgid "List kesgandan keyin ishlatsa bo'ladigan bo'lak qolsa, uni qo'shing — keyingi buyurtmada shu yerdan topasiz."
 msgstr "If a usable piece is left after cutting a sheet, add it — you'll find it here for the next order."
 
-#: templates/inventory/home.html:37 templates/inventory/home.html:342 templates/inventory/offcut_form.html:3 templates/inventory/offcut_form.html:33
+#: templates/inventory/home.html:37 templates/inventory/home.html:344 templates/inventory/offcut_form.html:3 templates/inventory/offcut_form.html:33
 #: templates/partials/nav.html:19 templates/partials/nav.html:20 templates/partials/nav.html:25
 msgid "Qoldiq qo'shish"
 msgstr "Add offcut"
 
-#: templates/inventory/home.html:46 templates/inventory/material_form.html:418 templates/inventory/material_list.html:23 templates/inventory/project_list.html:16
+#: templates/inventory/home.html:46 templates/inventory/material_form.html:413 templates/inventory/material_list.html:23 templates/inventory/project_list.html:16
 msgid "Hammasi"
 msgstr "All"
 
@@ -1575,15 +1624,11 @@ msgstr "Whole materials"
 msgid "Miqdor omborda turgan to'liq birliklarda"
 msgstr "Quantity in whole units on the shelf"
 
-#: templates/inventory/home.html:91
+#: templates/inventory/home.html:92
 msgid "Qiymati"
 msgstr "Value"
 
-#: templates/inventory/kirim_form.html:100 templates/inventory/kirim_form.html:275
-msgid "Partiya jami"
-msgstr "Batch total"
-
-#: templates/inventory/kirim_form.html:101 templates/inventory/kirim_form.html:279
+#: templates/inventory/kirim_form.html:101 templates/inventory/kirim_form.html:187
 msgid "Yangi o'rtacha narx"
 msgstr "New average price"
 
@@ -1595,31 +1640,27 @@ msgstr "In stock:"
 msgid "Kelgan materialni USD narxi bilan kiriting. O'rtacha narx avtomatik qayta hisoblanadi."
 msgstr "Enter the material that arrived with its USD price. The average price is recalculated automatically."
 
-#: templates/inventory/kirim_form.html:173 templates/inventory/kirim_form.html:286
+#: templates/inventory/kirim_form.html:152 templates/inventory/kirim_form.html:194
 msgid "Kirimni saqlash"
 msgstr "Save stock in"
 
-#: templates/inventory/kirim_form.html:184 templates/inventory/kirim_form.html:294
+#: templates/inventory/kirim_form.html:203
 msgid "Oxirgi kirimlar"
 msgstr "Recent stock in"
 
-#: templates/inventory/kirim_form.html:187 templates/inventory/kirim_form.html:227
+#: templates/inventory/kirim_form.html:246
 msgid "Hali kirim yozilmagan."
 msgstr "No stock in recorded yet."
 
-#: templates/inventory/kirim_form.html:61
+#: templates/inventory/kirim_form.html:63
 msgid "Ma'lumotlarni saqlashda xatolik yuz berdi:"
 msgstr "Error saving data:"
 
-#: templates/inventory/kirim_form.html:79
-msgid "Kategoriya bo'yicha saralash:"
-msgstr "Filter by category:"
-
-#: templates/inventory/kirim_form.html:86
+#: templates/inventory/kirim_form.html:88
 msgid "ta material"
 msgstr "materials"
 
-#: templates/inventory/material_form.html:142 templates/inventory/material_form.html:416
+#: templates/inventory/material_form.html:140 templates/inventory/material_form.html:411
 msgid "Kim ko'radi va oladi"
 msgstr "Who sees and takes it"
 
@@ -1637,52 +1678,52 @@ msgstr "The price is averaged over stock in: now %(price)s / %(unit)s"
 msgid "Kartani yarating, keyin kirim bilan miqdor va narxni kiriting."
 msgstr "Create the card, then enter the quantity and price with a stock in."
 
-#: templates/inventory/material_form.html:264
+#: templates/inventory/material_form.html:257
 msgid "Kasblarni tanlang"
 msgstr "Select trades"
 
-#: templates/inventory/material_form.html:280 templates/inventory/material_form.html:383 templates/inventory/material_list.html:126 templates/inventory/material_list.html:157
+#: templates/inventory/material_form.html:273 templates/inventory/material_form.html:376 templates/inventory/material_list.html:119 templates/inventory/material_list.html:152
 msgid "Arxivda"
 msgstr "Archived"
 
-#: templates/inventory/material_form.html:291 templates/inventory/material_form.html:524
+#: templates/inventory/material_form.html:284 templates/inventory/material_form.html:519
 msgid "Saqlash va kirim"
 msgstr "Save & Kirim"
 
-#: templates/inventory/material_form.html:31 templates/users/user_edit.html:22 templates/users/worker_role_form.html:15
+#: templates/inventory/material_form.html:31 templates/inventory/reverse_transaction.html:15 templates/users/user_edit.html:22 templates/users/worker_role_form.html:15
 msgid "Bekor qilish"
 msgstr "Cancel"
 
-#: templates/inventory/material_form.html:320
+#: templates/inventory/material_form.html:313
 msgid "Belgilanmagan kasbdagi ishchilar bu materialni umuman ko'rmaydi."
 msgstr "Workers in unselected trades don't see this material at all."
 
-#: templates/inventory/material_form.html:331
+#: templates/inventory/material_form.html:324
 msgid "So'nggi materiallar"
 msgstr "Recent materials"
 
-#: templates/inventory/material_form.html:334 templates/inventory/material_form.html:400 templates/inventory/material_list.html:190
+#: templates/inventory/material_form.html:327 templates/inventory/material_form.html:395 templates/inventory/material_list.html:187
 msgid "Hali material qo'shilmagan."
 msgstr "No materials added yet."
 
-#: templates/inventory/material_form.html:420
+#: templates/inventory/material_form.html:415
 msgid "Standart"
 msgstr "Default"
 
-#: templates/inventory/material_form.html:440
+#: templates/inventory/material_form.html:435
 msgid "Tayyor"
 msgstr "Done"
 
-#: templates/inventory/material_list.html:133 templates/inventory/material_list.html:173
+#: templates/inventory/material_list.html:126 templates/inventory/material_list.html:168
 #, python-format
 msgid "%(name)s — tahrirlash"
 msgstr "Edit %(name)s"
 
-#: templates/inventory/material_list.html:189
+#: templates/inventory/material_list.html:186
 msgid "Arxivda material yo'q."
 msgstr "No archived materials."
 
-#: templates/inventory/material_list.html:194
+#: templates/inventory/material_list.html:191
 msgid "Yangi material qo'shish"
 msgstr "Add a new material"
 
@@ -1695,7 +1736,7 @@ msgstr "Active"
 msgid "Arxiv"
 msgstr "Archive"
 
-#: templates/inventory/material_list.html:63
+#: templates/inventory/material_list.html:62
 msgid "Kim oladi"
 msgstr "Who takes it"
 
@@ -1781,7 +1822,8 @@ msgstr "Create"
 msgid "Yangi loyiha"
 msgstr "New project"
 
-#: templates/inventory/project_form.html:6 templates/inventory/project_list.html:3 templates/inventory/project_list.html:7
+#: templates/inventory/project_form.html:6 templates/inventory/project_list.html:3 templates/inventory/project_list.html:7 templates/partials/nav.html:75
+#: templates/partials/nav.html:76 templates/partials/nav.html:81
 msgid "Loyihalar"
 msgstr "Projects"
 
@@ -1806,57 +1848,65 @@ msgstr "No projects yet."
 msgid "Buyurtma va loyihalar — chiqimlarni guruhlash uchun"
 msgstr "Orders and projects for grouping stock withdrawals"
 
-#: templates/inventory/reports.html:100
-msgid "o'zgartirib bo'lmaydigan jurnal"
-msgstr "permanent log"
-
-#: templates/inventory/reports.html:106
+#: templates/inventory/reports.html:101
 msgid "Tanlangan filtr bo'yicha harakat yo'q."
 msgstr "No movements match the selected filter."
 
-#: templates/inventory/reports.html:3 templates/inventory/reports.html:8 templates/partials/nav.html:87 templates/partials/nav.html:88
-#: templates/partials/nav.html:93
+#: templates/inventory/reports.html:3 templates/inventory/reports.html:8 templates/partials/nav.html:99 templates/partials/nav.html:100
+#: templates/partials/nav.html:105
 msgid "Oylik hisobot"
 msgstr "Monthly report"
 
-#: templates/inventory/reports.html:38
+#: templates/inventory/reports.html:34
 msgid "Davr bo'yicha jami"
 msgstr "Totals for the period"
 
-#: templates/inventory/reports.html:44
+#: templates/inventory/reports.html:40
 msgid "Chiqim (sarf)"
 msgstr "Stock out (usage)"
 
-#: templates/inventory/reports.html:63
+#: templates/inventory/reports.html:59
 msgid "Sarf ishchilar bo'yicha"
 msgstr "Usage by worker"
 
-#: templates/inventory/reports.html:63
+#: templates/inventory/reports.html:59
 msgid "USD, olingan materiallar qiymati"
 msgstr "USD, value of materials taken"
 
-#: templates/inventory/reports.html:69 templates/inventory/reports.html:88
+#: templates/inventory/reports.html:65 templates/inventory/reports.html:83
 #, python-format
 msgid "%(n)s marta"
 msgid_plural "%(n)s marta"
 msgstr[0] "%(n)s time"
 msgstr[1] "%(n)s times"
 
-#: templates/inventory/reports.html:73 templates/inventory/reports.html:93
+#: templates/inventory/reports.html:69 templates/inventory/reports.html:88
 msgid "Bu davrda chiqim yo'q."
 msgstr "No stock out in this period."
 
-#: templates/inventory/reports.html:77
+#: templates/inventory/reports.html:73
 msgid "Sarf materiallar bo'yicha"
 msgstr "Usage by material"
 
-#: templates/inventory/reports.html:77
+#: templates/inventory/reports.html:73
 msgid "eng qimmati birinchi"
 msgstr "most expensive first"
 
-#: templates/inventory/reports.html:99
+#: templates/inventory/reports.html:94
 msgid "Barcha harakatlar"
 msgstr "All movements"
+
+#: templates/inventory/reports.html:95
+msgid "o'zgartirib bo'lmaydigan jurnal"
+msgstr "permanent log"
+
+#: templates/inventory/reverse_transaction.html:11
+msgid "Tuzatish bugungi sana bilan tarixga qo'shiladi."
+msgstr "The correction will be added to the history with today's date."
+
+#: templates/inventory/reverse_transaction.html:3 templates/inventory/reverse_transaction.html:6
+msgid "Harakatni qaytarish"
+msgstr "Reverse movement"
 
 #: templates/inventory/withdraw_offcut.html:17
 msgid "Bor"
@@ -1943,18 +1993,18 @@ msgstr "History"
 msgid "(ixtiyoriy)"
 msgstr "(optional)"
 
+#: templates/partials/nav.html:111 templates/partials/nav.html:112 templates/partials/nav.html:117 templates/users/user_edit.html:5
+#: templates/users/user_list.html:3 templates/users/user_list.html:7 templates/users/worker_role_form.html:5
+msgid "Ishchilar"
+msgstr "Workers"
+
 #: templates/partials/nav.html:45
 msgid "Boshqaruv"
 msgstr "Management"
 
-#: templates/partials/nav.html:75 templates/partials/nav.html:76 templates/partials/nav.html:81
+#: templates/partials/nav.html:87 templates/partials/nav.html:88 templates/partials/nav.html:93
 msgid "Xarajatlar"
 msgstr "Expenses"
-
-#: templates/partials/nav.html:99 templates/partials/nav.html:100 templates/partials/nav.html:105 templates/users/user_edit.html:5
-#: templates/users/user_list.html:3 templates/users/user_list.html:7 templates/users/worker_role_form.html:5
-msgid "Ishchilar"
-msgstr "Workers"
 
 #: templates/partials/pagination.html:2
 msgid "Sahifalar"

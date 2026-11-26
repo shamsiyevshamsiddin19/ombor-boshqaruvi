@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -14,7 +15,6 @@ from ..models import (
     OperatingExpense,
     Project,
     WholeMaterial,
-    default_roles_for_category,
 )
 
 PRICE_FIELDS = ("unit_price_usd", "total_price_usd", "total_value_usd")
@@ -87,27 +87,12 @@ class BaseMaterialSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         dims = {key: validated_data.pop(key) for key in ("length_mm", "width_mm") if key in validated_data}
-        roles = validated_data.pop("allowed_roles", None)
-        validated_data.pop("unit_price_usd", None)
-        changed_fields = []
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-            changed_fields.append(key)
-        if roles is not None:
-            instance.allowed_roles = list(roles) or default_roles_for_category(instance.category)
-            changed_fields.append("allowed_roles")
-        instance.full_clean()
-        if changed_fields:
-            changed_fields.append("updated_at")
-            instance.save(update_fields=changed_fields)
-        else:
-            instance.save()
-        if dims:
-            stock, _ = WholeMaterial.objects.get_or_create(material=instance)
-            for key, value in dims.items():
-                setattr(stock, key, value)
-            stock.save()
-        return instance
+        if "allowed_roles" in validated_data:
+            validated_data["allowed_roles"] = list(validated_data["allowed_roles"])
+        try:
+            return services.update_material(instance, changes=validated_data, dimensions=dims)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.message_dict) from exc
 
 
 class MaterialSummarySerializer(serializers.ModelSerializer):
@@ -175,6 +160,7 @@ class TransactionSerializer(HidePricesForWorkersMixin, serializers.ModelSerializ
     material = MaterialSummarySerializer(read_only=True)
     user = serializers.StringRelatedField(read_only=True)
     project = ProjectSerializer(read_only=True)
+    unit_of_measure = serializers.CharField(source="movement_unit", read_only=True)
 
     class Meta:
         model = InventoryTransaction
@@ -184,6 +170,7 @@ class TransactionSerializer(HidePricesForWorkersMixin, serializers.ModelSerializ
             "material",
             "user",
             "quantity_changed",
+            "unit_of_measure",
             "unit_price_usd",
             "total_price_usd",
             "stock_after",
@@ -218,6 +205,7 @@ class KirimSerializer(serializers.Serializer):
         source="material", queryset=BaseMaterial.objects.filter(is_active=True)
     )
     quantity = serializers.DecimalField(max_digits=12, decimal_places=2, min_value=Decimal("0.01"))
+    idempotency_key = serializers.UUIDField(required=False)
     unit_price_usd = serializers.DecimalField(
         max_digits=12, decimal_places=4, min_value=Decimal("0"), required=False
     )

@@ -6,34 +6,30 @@
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
     <h1 class="font-bold text-[24px] leading-8 lg:text-[32px] lg:leading-10">{% translate "Oylik hisobot" %}</h1>
+    <p class="mt-1 text-sm text-muted">{% if filter_form.month.errors %}{{ filter_form.month.errors|striptags }}{% elif f.month %}{{ f.month|date:"F Y" }}{% else %}{% translate "Barcha davr" %}{% endif %}</p>
   </div>
   <a href="{% url 'inventory:reports_export' %}?{{ export_query }}" class="btn btn-secondary">{% icon "download" %} {% translate "CSV yuklab olish" %}</a>
 </div>
 
-<div x-data="{ filtersOpen: false }" class="mt-4">
-  <button @click="filtersOpen = !filtersOpen" type="button" class="btn btn-secondary min-h-9 px-3 text-xs font-medium">
+<details class="mt-4" {% if request.GET or filter_form.errors %}open{% endif %}>
+  <summary class="btn btn-secondary w-fit min-h-9 px-3 text-xs font-medium cursor-pointer">
     {% icon "search" 14 %} {% translate "Filtrlar" %}
-    <svg :class="filtersOpen && 'rotate-180'" class="h-3.5 w-3.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-  </button>
-  <div class="grid transition-[grid-template-rows] duration-300 ease-out" :class="filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'" x-cloak>
-    <div class="overflow-hidden">
-      <form method="get" class="form-stack mt-3 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
-        {% with hide_optional=True %}
-        <div>{% include "partials/field.html" with field=filter_form.month %}</div>
-        <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
-        <div>{% include "partials/field.html" with field=filter_form.category %}</div>
-        <div>{% include "partials/field.html" with field=filter_form.user %}</div>
-        <div>{% include "partials/field.html" with field=filter_form.material %}</div>
-        <div>{% include "partials/field.html" with field=filter_form.project %}</div>
-        {% endwith %}
-        <div class="col-span-2 flex gap-2 md:col-span-1">
-          <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
-          <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
-        </div>
-      </form>
+  </summary>
+  <form method="get" class="form-stack mt-3 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
+    {% with hide_optional=True %}
+    <div>{% include "partials/field.html" with field=filter_form.month %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.category %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.user %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.material %}</div>
+    <div>{% include "partials/field.html" with field=filter_form.project %}</div>
+    {% endwith %}
+    <div class="col-span-2 flex gap-2 md:col-span-1">
+      <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
+      <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
     </div>
-  </div>
-</div>
+  </form>
+</details>
 
 <section class="panel mt-6 grid grid-cols-2 md:grid-cols-5" aria-label="{% translate "Davr bo'yicha jami" %}">
   <div class="border-b border-r border-line p-5 md:border-b-0">
@@ -48,7 +44,7 @@
     <p class="text-muted">{% translate "Farq" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{% if totals.kirim_usd >= totals.chiqim_usd %}+{% else %}−{% endif %}{{ totals.net_abs|usd }}</p>
   </div>
-  <a href="{% url 'inventory:expenses' %}{% if filter_form.cleaned_data.month %}?month={{ filter_form.cleaned_data.month|date:'Y-m' }}{% endif %}" class="border-r border-line p-5 block hover:bg-raised/40 transition-colors">
+  <a href="{% url 'inventory:expenses' %}?month={{ f.month|date:'Y-m' }}" class="border-r border-line p-5 block hover:bg-raised/40 transition-colors">
     <p class="text-muted">{% translate "Qo'shimcha xarajatlar" %}</p>
     <p class="num mt-1 font-semibold" style="font-size:24px;line-height:32px">{{ expense_totals.total_usd|usd }}</p>
   </a>
@@ -83,9 +79,8 @@
           <p class="min-w-0 truncate font-medium">{{ row.material__name }}{% if row.is_offcut %} <span class="text-xs text-muted font-normal">({% translate "qoldiq" %})</span>{% endif %}</p>
           <p class="num whitespace-nowrap text-right"><span class="font-semibold">{{ row.total_usd|usd }}</span></p>
         </div>
-        <div class="mt-1 flex items-center gap-3">
-          <div class="h-0.5 flex-1 bg-rule"><div class="h-0.5 {% if forloop.first %}bg-ink{% else %}bg-[#9ca3af]{% endif %}" style="width: {% widthratio row.total_usd by_material.0.total_usd 100 %}%"></div></div>
-          <p class="num whitespace-nowrap text-muted" style="font-size:12px">{{ row.quantity|absval|qty }} {% if row.is_offcut %}{% translate "dona" %}{% else %}{{ row.material__unit_of_measure|unit_label }}{% endif %} · {% blocktranslate count n=row.entries %}{{ n }} marta{% plural %}{{ n }} marta{% endblocktranslate %}</p>
+        <div class="mt-1 text-right">
+          <p class="num whitespace-nowrap text-muted" style="font-size:12px">{% if row.quantity > 0 %}−{% endif %}{{ row.quantity|absval|qty }} {% if row.is_offcut %}{% translate "dona" %}{% else %}{{ row.movement_unit|unit_label }}{% endif %} · {% blocktranslate count n=row.entries %}{{ n }} marta{% plural %}{{ n }} marta{% endblocktranslate %}</p>
         </div>
       </li>
       {% endfor %}

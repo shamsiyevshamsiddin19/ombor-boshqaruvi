@@ -1,9 +1,9 @@
-{% load i18n %}{% if page_obj.paginator.num_pages > 1 %}
+{% load i18n wms %}{% if page_obj.paginator.num_pages > 1 %}
 <nav class="flex items-center justify-between gap-3 px-5 py-4" aria-label="{% translate 'Sahifalar' %}">
   <p class="num text-muted">{{ page_obj.start_index }}–{{ page_obj.end_index }} / {{ page_obj.paginator.count }}</p>
   <div class="flex gap-2">
-    {% if page_obj.has_previous %}<a class="btn btn-secondary" href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% translate "Oldingi" %}</a>{% endif %}
-    {% if page_obj.has_next %}<a class="btn btn-secondary" href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% translate "Keyingi" %}</a>{% endif %}
+    {% if page_obj.has_previous %}<a class="btn btn-secondary" href="{% page_url page_obj.previous_page_number page_key tab_key %}">{% translate "Oldingi" %}</a>{% endif %}
+    {% if page_obj.has_next %}<a class="btn btn-secondary" href="{% page_url page_obj.next_page_number page_key tab_key %}">{% translate "Keyingi" %}</a>{% endif %}
   </div>
 </nav>
 {% endif %}

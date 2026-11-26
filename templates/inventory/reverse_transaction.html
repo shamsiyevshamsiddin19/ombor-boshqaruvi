@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n wms %}
+{% block title %}{% translate "Harakatni qaytarish" %}{% endblock %}
+{% block content %}
+<div class="max-w-xl">
+  <h1 class="font-bold text-[24px]">{% translate "Harakatni qaytarish" %}</h1>
+  <p class="mt-2 font-semibold">{{ entry.material.name }} · {{ entry.quantity_changed|qty }}
+    {% if entry.is_offcut %}{% translate "dona" %}{% else %}{{ entry.unit_of_measure|default:entry.material.unit_of_measure|unit_label }}{% endif %}
+  </p>
+  <p class="mt-1 text-sm text-muted">{{ entry.transaction_type|transaction_label }} · {{ entry.created_at|date:"j E Y, H:i" }}</p>
+  <p class="mt-4 text-sm">{% translate "Tuzatish bugungi sana bilan tarixga qo'shiladi." %}</p>
+  <form method="post" class="mt-5 flex flex-wrap gap-2">
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">{% translate "Qaytarish" %}</button>
+    <a class="btn btn-secondary" href="{% url 'inventory:my_history' %}">{% translate "Bekor qilish" %}</a>
+  </form>
+</div>
+{% endblock %}

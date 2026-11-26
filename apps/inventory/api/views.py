@@ -1,7 +1,9 @@
 import datetime as dt
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -157,7 +159,10 @@ class KirimAPIView(APIView):
     def post(self, request):
         payload = KirimSerializer(data=request.data)
         payload.is_valid(raise_exception=True)
-        entry = services.record_kirim(user=request.user, **payload.validated_data)
+        try:
+            entry = services.record_kirim(user=request.user, **payload.validated_data)
+        except DjangoValidationError as exc:
+            raise ValidationError(exc.message_dict if hasattr(exc, "error_dict") else exc.messages) from exc
         return Response(TransactionSerializer(entry, context={"request": request}).data, status=status.HTTP_201_CREATED)
 
 

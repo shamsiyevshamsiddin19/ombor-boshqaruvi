@@ -108,9 +108,9 @@ figures, in both the HTML pages and the API.
 
 ## Business rules
 
-**Kirim (arrival, admin only).** Enter the quantity and *either* the total batch price
-*or* the unit price; the other is derived (`unit = total / quantity`, 4 decimal places).
-Enter the quantity in the material's unit of measure. The material's unit price
+**Kirim (arrival, admin only).** On the website, enter the quantity and total batch price.
+The unit price is derived (`unit = total / quantity`, 4 decimal places). The API also
+accepts a unit price as an alternative. The material's unit price
 becomes the **weighted average cost** of stock on
 hand plus the new batch; when the shelf was empty it restarts at the batch price.
 
@@ -174,7 +174,7 @@ for workers. Service-layer validation errors come back as 400 with field keys.
 | `GET /api/offcuts/` · `POST /api/offcuts/` | trade | List / log an offcut `{material_id, length_mm, width_mm, quantity, notes}` |
 | `POST /api/offcuts/<id>/withdraw/` | trade | `{quantity, notes}` |
 | `GET /api/transactions/?month=YYYY-MM&type=&category=&material=&user=` | approved | Ledger (workers: own entries only). Read-only: no PUT/PATCH/DELETE |
-| `POST /api/kirim/` | admin | `{material_id, quantity, unit_price_usd \| total_price_usd, notes}` |
+| `POST /api/kirim/` | admin | `{material_id, quantity, unit_price_usd \| total_price_usd, notes, idempotency_key?}` |
 | `GET /api/dashboard/` | admin | Valuation, current month, last 6 months, low-stock list |
 | `GET/POST/PATCH /api/materials/` | admin | Material catalogue (no DELETE; archive with `is_active=false`) |
 | `GET /api/pending-users/` · `POST …/<id>/approve/` · `POST …/<id>/reject/` | admin | Approval queue; `approve` accepts optional `{roles: [...]}` |
