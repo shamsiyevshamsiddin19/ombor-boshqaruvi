@@ -52,15 +52,13 @@
        selectedRoles: JSON.parse(document.getElementById('initial-roles').textContent || '[]'),
        rolesTouched: {% if material %}true{% else %}false{% endif %},
        newSupportsOffcuts: {% if form.new_category_supports_offcuts.value %}true{% else %}false{% endif %},
-       forceDims: {% if form.length_mm.value %}true{% else %}false{% endif %},
        dimUnit: '{{ form.dim_unit.value|default_if_none:'mm'|escapejs }}',
        isActive: {% if form.is_active and not form.is_active.value %}false{% else %}true{% endif %},
        rolesOpen: false,
        dropdownStyle: '',
        get showDims() {
          return this.offcutCats.includes(this.category)
-           || (this.category === '__other__' && this.newSupportsOffcuts)
-           || this.forceDims;
+           || (this.category === '__other__' && this.newSupportsOffcuts);
        },
        get unitShort() {
          return this.unitLabels[this.unit] || '';
@@ -195,13 +193,13 @@
               <td class="px-3 py-3 align-top">
                 <div x-show="showDims" x-cloak class="space-y-1.5">
                   <div class="flex items-center gap-1">
-                    <input type="hidden" name="{{ form.dim_unit.html_name }}" :value="dimUnit" :disabled="!isDesktop">
+                    <input type="hidden" name="{{ form.dim_unit.html_name }}" :value="dimUnit" :disabled="!isDesktop || !showDims">
                     <input type="number"
                            name="{{ form.length_mm.html_name }}"
                            id="{{ form.length_mm.id_for_label }}"
                            min="1" max="100000" inputmode="numeric"
                            value="{{ form.length_mm.value|default_if_none:'' }}"
-                           :disabled="!isDesktop"
+                           :disabled="!isDesktop || !showDims"
                            class="control !h-9 text-xs font-mono px-2 w-[72px]"
                            :placeholder="dimUnit === 'sm' ? '275' : '2750'">
                     <span class="text-xs text-muted select-none">×</span>
@@ -210,7 +208,7 @@
                            id="{{ form.width_mm.id_for_label }}"
                            min="1" max="100000" inputmode="numeric"
                            value="{{ form.width_mm.value|default_if_none:'' }}"
-                           :disabled="!isDesktop"
+                           :disabled="!isDesktop || !showDims"
                            class="control !h-9 text-xs font-mono px-2 w-[72px]"
                            :placeholder="dimUnit === 'sm' ? '183' : '1830'">
                     <button type="button"
@@ -223,12 +221,7 @@
                   {% for e in form.length_mm.errors %}<p class="field-error text-xs">{{ e }}</p>{% endfor %}
                   {% for e in form.width_mm.errors %}<p class="field-error text-xs">{{ e }}</p>{% endfor %}
                 </div>
-                <div x-show="!showDims" class="flex items-center justify-between h-9 px-1 text-xs text-muted">
-                  <span>—</span>
-                  <button type="button" @click="forceDims = true" class="text-[11px] text-muted hover:text-ink underline decoration-dotted cursor-pointer">
-                    + {% translate "O'lchami" %}
-                  </button>
-                </div>
+                <span x-show="!showDims" class="text-muted">—</span>
               </td>
 
               {# 5. Minimal #}
@@ -237,7 +230,7 @@
                   <input type="number"
                          name="{{ form.minimum_threshold.html_name }}"
                          id="{{ form.minimum_threshold.id_for_label }}"
-                         min="0" max="1000000000" step="1" inputmode="numeric"
+                         min="0" max="1000000000" step="0.01" inputmode="decimal"
                          value="{{ form.minimum_threshold.value|default_if_none:'0' }}"
                          :disabled="!isDesktop"
                          class="control !h-9 text-xs font-mono pr-10 w-full"
@@ -352,7 +345,7 @@
                 {{ m.unit_short }}
               </td>
               <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
-                {% if st.length_mm %}
+                {% if m.category in offcut_categories and st.length_mm %}
                   {{ st.length_mm }} × {{ st.width_mm }} <span class="text-muted font-sans">{% translate "mm" %}</span>
                 {% else %}
                   <span class="text-muted">—</span>
@@ -388,9 +381,11 @@
                   <a href="{% url 'inventory:material_edit' m.pk %}" class="btn btn-secondary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
                     {% icon "edit" 13 %} <span>{% translate "Tahrirlash" %}</span>
                   </a>
+                  {% if m.is_active %}
                   <a href="{% url 'inventory:kirim' %}?material={{ m.pk }}" class="btn btn-primary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
                     {% icon "plus" 13 %} <span>{% translate "Kirim" %}</span>
                   </a>
+                  {% endif %}
                 </div>
               </td>
             </tr>
@@ -479,23 +474,23 @@
 
         <div>
           <label class="field-label" for="m-{{ form.minimum_threshold.id_for_label }}">{{ form.minimum_threshold.label }}</label>
-          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="1" value="{{ form.minimum_threshold.value|default_if_none:'0' }}" :disabled="isDesktop" class="control font-mono">
+          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="0.01" inputmode="decimal" value="{{ form.minimum_threshold.value|default_if_none:'0' }}" :disabled="isDesktop" class="control font-mono">
         </div>
 
         <div x-show="showDims" x-cloak class="space-y-2 rounded-lg border border-line bg-raised/30 p-3">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-muted">{% translate "O'lcham birligi" %}</span>
             <button type="button" @click="dimUnit = dimUnit === 'mm' ? 'sm' : 'mm'" class="chip-sm font-mono" x-text="dimUnit"></button>
-            <input type="hidden" name="{{ form.dim_unit.html_name }}" :value="dimUnit" :disabled="isDesktop">
+            <input type="hidden" name="{{ form.dim_unit.html_name }}" :value="dimUnit" :disabled="isDesktop || !showDims">
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="field-label">{{ form.length_mm.label }} (<span x-text="dimUnit"></span>)</label>
-              <input type="number" name="{{ form.length_mm.html_name }}" min="1" value="{{ form.length_mm.value|default_if_none:'' }}" :disabled="isDesktop" class="control font-mono">
+              <input type="number" name="{{ form.length_mm.html_name }}" min="1" value="{{ form.length_mm.value|default_if_none:'' }}" :disabled="isDesktop || !showDims" class="control font-mono">
             </div>
             <div>
               <label class="field-label">{{ form.width_mm.label }} (<span x-text="dimUnit"></span>)</label>
-              <input type="number" name="{{ form.width_mm.html_name }}" min="1" value="{{ form.width_mm.value|default_if_none:'' }}" :disabled="isDesktop" class="control font-mono">
+              <input type="number" name="{{ form.width_mm.html_name }}" min="1" value="{{ form.width_mm.value|default_if_none:'' }}" :disabled="isDesktop || !showDims" class="control font-mono">
             </div>
           </div>
         </div>

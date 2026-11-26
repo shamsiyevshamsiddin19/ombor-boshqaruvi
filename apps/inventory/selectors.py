@@ -12,8 +12,21 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from django.db import connection
-from django.db.models import BigIntegerField, Count, DecimalField, ExpressionWrapper, F, Q, QuerySet, Sum, Value
-from django.db.models.functions import Cast, Coalesce, Round, TruncMonth
+from django.db.models import (
+    BigIntegerField,
+    Case,
+    Count,
+    DecimalField,
+    ExpressionWrapper,
+    F,
+    IntegerField,
+    Q,
+    QuerySet,
+    Sum,
+    Value,
+    When,
+)
+from django.db.models.functions import Cast, Coalesce, NullIf, Round, TruncMonth
 from django.utils import timezone
 
 from .models import (
@@ -192,14 +205,36 @@ def month_bounds(year: int, month: int) -> tuple[dt.datetime, dt.datetime]:
     return start, end
 
 
-def _flow_aggregates(qs: QuerySet[InventoryTransaction]) -> dict:
-    return qs.aggregate(
-        kirim_usd=Coalesce(Sum("total_price_usd", filter=Q(transaction_type=TransactionType.KIRIM)), ZERO_MONEY),
-        chiqim_usd=Coalesce(Sum("total_price_usd", filter=Q(transaction_type=TransactionType.CHIQIM)), ZERO_MONEY),
-        kirim_count=Count("id", filter=Q(transaction_type=TransactionType.KIRIM)),
-        chiqim_count=Count("id", filter=Q(transaction_type=TransactionType.CHIQIM)),
+def _movement_type(kind):
+    return Q(transaction_type=kind) | Q(transaction_type=TransactionType.REVERSAL, reversed_entry__transaction_type=kind)
+
+
+def _movement_count(kind):
+    return Coalesce(Sum(Case(
+        When(transaction_type=TransactionType.REVERSAL, reversed_entry__transaction_type=kind, then=Value(-1)),
+        When(transaction_type=kind, then=Value(1)),
+        default=Value(0), output_field=IntegerField(),
+    )), Value(0))
+
+
+def _movement_amount():
+    return Case(
+        When(transaction_type=TransactionType.REVERSAL, then=-F("total_price_usd")),
+        default=F("total_price_usd"), output_field=MONEY,
     )
 
+
+def _flow_fields():
+    return {
+        "kirim_usd": Coalesce(Sum(_movement_amount(), filter=_movement_type(TransactionType.KIRIM)), ZERO_MONEY),
+        "chiqim_usd": Coalesce(Sum(_movement_amount(), filter=_movement_type(TransactionType.CHIQIM)), ZERO_MONEY),
+        "kirim_count": _movement_count(TransactionType.KIRIM),
+        "chiqim_count": _movement_count(TransactionType.CHIQIM),
+    }
+
+
+def _flow_aggregates(qs: QuerySet[InventoryTransaction]) -> dict:
+    return qs.aggregate(**_flow_fields())
 
 def monthly_flow(year: int, month: int) -> MonthFlow:
     start, end = month_bounds(year, month)
@@ -229,12 +264,7 @@ def recent_month_flows(months: int = 6, *, today: dt.date | None = None) -> list
         InventoryTransaction.objects.filter(created_at__gte=start, created_at__lt=end)
         .annotate(month=TruncMonth("created_at"))
         .values("month")
-        .annotate(
-            kirim_usd=Coalesce(Sum("total_price_usd", filter=Q(transaction_type=TransactionType.KIRIM)), ZERO_MONEY),
-            chiqim_usd=Coalesce(Sum("total_price_usd", filter=Q(transaction_type=TransactionType.CHIQIM)), ZERO_MONEY),
-            kirim_count=Count("id", filter=Q(transaction_type=TransactionType.KIRIM)),
-            chiqim_count=Count("id", filter=Q(transaction_type=TransactionType.CHIQIM)),
-        )
+        .annotate(**_flow_fields())
     )
     by_month = {}
     for row in rows:
@@ -270,6 +300,7 @@ def filter_transactions(
     material_id: int | None = None,
     transaction_type: str = "",
     project_id: int | None = None,
+    include_corrections: bool = False,
 ) -> QuerySet[InventoryTransaction]:
     qs = qs if qs is not None else InventoryTransaction.objects.all()
     qs = qs.select_related("material", "user")
@@ -279,11 +310,14 @@ def filter_transactions(
     if category:
         qs = qs.filter(material__category=category)
     if user_id:
-        qs = qs.filter(user_id=user_id)
+        if include_corrections:
+            qs = qs.filter(Q(reversed_entry__isnull=True, user_id=user_id) | Q(reversed_entry__user_id=user_id))
+        else:
+            qs = qs.filter(user_id=user_id)
     if material_id:
         qs = qs.filter(material_id=material_id)
     if transaction_type:
-        qs = qs.filter(transaction_type=transaction_type)
+        qs = qs.filter(_movement_type(transaction_type)) if include_corrections else qs.filter(transaction_type=transaction_type)
     if project_id:
         qs = qs.filter(project_id=project_id)
     return qs
@@ -291,7 +325,7 @@ def filter_transactions(
 
 def transaction_totals(qs: QuerySet[InventoryTransaction]) -> dict:
     data = _flow_aggregates(qs.order_by())
-    data["offcut_count"] = qs.filter(transaction_type=TransactionType.OFFCUT_DEPOSIT).count()
+    data["offcut_count"] = qs.order_by().aggregate(count=_movement_count(TransactionType.OFFCUT_DEPOSIT))["count"]
     data["kirim_usd"] = Decimal(data["kirim_usd"]).quantize(Decimal("0.01"))
     data["chiqim_usd"] = Decimal(data["chiqim_usd"]).quantize(Decimal("0.01"))
     data["net_usd"] = data["kirim_usd"] - data["chiqim_usd"]
@@ -302,13 +336,14 @@ def transaction_totals(qs: QuerySet[InventoryTransaction]) -> dict:
 def consumption_by_material(qs: QuerySet[InventoryTransaction]) -> QuerySet:
     """Chiqim aggregated per material, offcuts grouped separately from whole stock."""
     return (
-        qs.filter(transaction_type=TransactionType.CHIQIM)
+        qs.filter(_movement_type(TransactionType.CHIQIM))
         .order_by()
-        .values("material_id", "material__name", "material__category", "material__unit_of_measure", "is_offcut")
+        .annotate(movement_unit=Coalesce(NullIf("unit_of_measure", Value("")), "material__unit_of_measure"))
+        .values("material_id", "material__name", "material__category", "movement_unit", "is_offcut")
         .annotate(
             quantity=Sum("quantity_changed"),
-            total_usd=Coalesce(Sum("total_price_usd"), ZERO_MONEY),
-            entries=Count("id"),
+            total_usd=Coalesce(Sum(_movement_amount()), ZERO_MONEY),
+            entries=_movement_count(TransactionType.CHIQIM),
         )
         .order_by("-total_usd", "material__name", "is_offcut")
     )
@@ -316,10 +351,14 @@ def consumption_by_material(qs: QuerySet[InventoryTransaction]) -> QuerySet:
 
 def consumption_by_worker(qs: QuerySet[InventoryTransaction]) -> QuerySet:
     return (
-        qs.filter(transaction_type=TransactionType.CHIQIM)
+        qs.filter(_movement_type(TransactionType.CHIQIM))
         .order_by()
-        .values("user_id", "user__username", "user__full_name")
-        .annotate(total_usd=Coalesce(Sum("total_price_usd"), ZERO_MONEY), entries=Count("id"))
+        .values(
+            worker_id=Coalesce("reversed_entry__user_id", "user_id"),
+            user__username=Coalesce("reversed_entry__user__username", "user__username"),
+            user__full_name=Coalesce("reversed_entry__user__full_name", "user__full_name"),
+        )
+        .annotate(total_usd=Coalesce(Sum(_movement_amount()), ZERO_MONEY), entries=_movement_count(TransactionType.CHIQIM))
         .order_by("-total_usd")
     )
 

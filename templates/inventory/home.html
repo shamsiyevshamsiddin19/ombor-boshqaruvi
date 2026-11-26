@@ -2,7 +2,7 @@
 {% load wms i18n %}
 {% block title %}{% translate "Ombor" %}{% endblock %}
 {% block content %}
-{% with whole_count=whole_stock|length offcut_count=offcuts|length %}
+{% with whole_count=whole_page.paginator.count offcut_count=offcut_page.paginator.count %}
 <div x-data="{ tab: '{{ tab }}' }">
 
   <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -10,7 +10,7 @@
       <h1 class="font-bold text-[24px] leading-8 lg:text-[30px] lg:leading-9 text-ink">{% translate "Ombor" %}</h1>
       <p class="mt-0.5 text-muted" style="font-size:14px">
         {% if user.is_warehouse_admin %}{% translate "Barcha materiallar" %}{% else %}{% blocktranslate with roles=user.worker_roles|role_list %}{{ roles }} uchun materiallar{% endblocktranslate %}{% endif %}
-        · <span class="num font-medium text-ink">{{ whole_count }}</span> {% blocktranslate context "count" count n=whole_count %}material{% plural %}material{% endblocktranslate %}, <span class="num font-medium text-ink">{{ offcut_count }}</span> {% blocktranslate context "count" count n=offcut_count %}qoldiq{% plural %}qoldiq{% endblocktranslate %}
+        · <span class="num font-medium text-ink">{{ whole_count }}</span> {% blocktranslate context "count" count n=whole_count %}material{% plural %}material{% endblocktranslate %}{% if show_offcuts %}, <span class="num font-medium text-ink">{{ offcut_count }}</span> {% blocktranslate context "count" count n=offcut_count %}qoldiq{% plural %}qoldiq{% endblocktranslate %}{% endif %}
       </p>
     </div>
 
@@ -61,7 +61,7 @@
   {# ---- Tabs (phone and tablet); on desktop both sections are shown, whole above offcuts ---- #}
   <div class="mt-5 flex gap-6 border-b border-line lg:hidden" role="tablist">
     <a href="{% query_with tab='whole' %}" class="tab" role="tab" :aria-selected="tab === 'whole'" aria-selected="{% if tab == 'whole' %}true{% else %}false{% endif %}" @click.prevent="tab = 'whole'">{% translate "Butun materiallar" %} <span class="num text-muted">{{ whole_count }}</span></a>
-    <a href="{% query_with tab='offcuts' %}" class="tab" role="tab" :aria-selected="tab === 'offcuts'" aria-selected="{% if tab == 'offcuts' %}true{% else %}false{% endif %}" @click.prevent="tab = 'offcuts'">{% translate "Qoldiqlar" %} <span class="num text-muted">{{ offcut_count }}</span></a>
+    {% if show_offcuts %}<a href="{% query_with tab='offcuts' %}" class="tab" role="tab" :aria-selected="tab === 'offcuts'" aria-selected="{% if tab == 'offcuts' %}true{% else %}false{% endif %}" @click.prevent="tab = 'offcuts'">{% translate "Qoldiqlar" %} <span class="num text-muted">{{ offcut_count }}</span></a>{% endif %}
   </div>
 
   {# ================= Butun materiallar ================= #}
@@ -113,7 +113,7 @@
               {% if show_dimensions %}
               {# O'lchami #}
               <td class="num px-4 py-3.5 whitespace-nowrap text-ink">
-                {% if stock.length_mm %}
+                {% if m.category in dimension_categories and stock.length_mm %}
                   <span>{{ stock.length_mm }} × {{ stock.width_mm }} <span class="text-xs text-muted">{% translate "mm" %}</span></span>
                 {% else %}
                   <span class="text-muted/60">—</span>
@@ -186,8 +186,8 @@
               <p class="font-medium text-ink text-[15px] truncate">{{ m.name }}</p>
               <p class="text-xs text-muted mt-0.5">
                 {{ m.category|cat_label }}
-                {% if show_dimensions and stock.length_mm %} · {{ stock.length_mm }}×{{ stock.width_mm }} {% translate "mm" %}{% endif %}
-                · {% translate "min" %} {{ m.minimum_threshold|qty }}
+                {% if m.category in dimension_categories and stock.length_mm %} · {{ stock.length_mm }}×{{ stock.width_mm }} {% translate "mm" %}{% endif %}
+                · {% translate "min" %} {{ m.minimum_threshold|qty }} {{ m.unit_short }}
               </p>
             </div>
             <div class="flex-none">
@@ -231,6 +231,7 @@
         {% endwith %}{% endfor %}
       </ul>
 
+      {% include "partials/pagination.html" with page_obj=whole_page page_key="whole_page" tab_key="whole" %}
       {% else %}
         <div class="border-t border-rule px-5 py-8">
           <p class="font-medium">{% if query or category %}{% translate "Qidiruv bo'yicha material topilmadi." %}{% else %}{% translate "Kasbingiz uchun hali material qo'shilmagan." %}{% endif %}</p>
@@ -241,6 +242,7 @@
   </section>
 
   {# ================= Qoldiq materiallar ================= #}
+  {% if show_offcuts %}
   <section class="{% if tab == 'offcuts' %}block{% else %}hidden lg:block{% endif %} lg:mt-6" :class="tab === 'offcuts' ? 'block' : 'hidden lg:block'" aria-labelledby="offcut-title">
     <div class="panel mt-4 overflow-hidden lg:mt-0 shadow-xs">
       <div class="panel-head border-b border-line px-5 py-3.5 hidden lg:flex">
@@ -335,6 +337,7 @@
         {% endwith %}{% endfor %}
       </ul>
 
+      {% include "partials/pagination.html" with page_obj=offcut_page page_key="offcut_page" tab_key="offcuts" %}
       {% else %}
         <div class="border-t border-rule px-5 py-8">
           <p class="font-medium">{% if query or category %}{% translate "Qidiruv bo'yicha qoldiq topilmadi." %}{% else %}{% translate "Hozircha qoldiq yo'q." %}{% endif %}</p>
@@ -343,6 +346,7 @@
       {% endif %}
     </div>
   </section>
+  {% endif %}
 </div>
 {% endwith %}
 {% endblock %}

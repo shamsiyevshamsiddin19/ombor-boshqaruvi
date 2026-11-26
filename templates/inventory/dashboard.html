@@ -165,13 +165,13 @@
 {% endblock %}
 
 {% block scripts %}
-{% translate "Kirim" as t_in %}{% translate "Chiqim" as t_out %}{% translate "Oylik kirim (chiziq ustida) va chiqim (chiziq ostida)" as t_chart %}
+{% translate "Kirim" as t_in %}{% translate "Chiqim" as t_out %}{% translate "Oylik kirim va chiqim, qaytarishlar bilan" as t_chart %}
 <script src="{% static 'vendor/charts.js' %}"></script>
 <script>
   (function () {
     var el = document.getElementById('flow-chart');
     var data = JSON.parse(document.getElementById('flow-data').textContent);
-    var usd = function (v) { return '$' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 }); };
+    var usd = function (v) { return (v < 0 ? '−' : '') + '$' + Math.abs(v).toLocaleString('en-US', { maximumFractionDigits: 0 }); };
     var draw = function () {
       Charts.diverging(el, {
         labels: data.labels, up: data.up, down: data.down,

@@ -37,26 +37,21 @@
 </section>
 
 {# Filters (collapsible, like the monthly report) #}
-<div x-data="{ filtersOpen: false }" class="mt-6">
-  <button @click="filtersOpen = !filtersOpen" type="button" class="btn btn-secondary min-h-9 px-3 text-xs font-medium">
+<details class="mt-4" {% if request.GET or filter_form.errors %}open{% endif %}>
+  <summary class="btn btn-secondary w-fit min-h-9 px-3 text-xs font-medium cursor-pointer">
     {% icon "search" 14 %} {% translate "Filtrlar" %}
-    <svg :class="filtersOpen && 'rotate-180'" class="h-3.5 w-3.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-  </button>
-  <div class="grid transition-[grid-template-rows] duration-300 ease-out" :class="filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'" x-cloak>
-    <div class="overflow-hidden">
-      <form method="get" class="mt-3 flex flex-wrap items-end gap-3" aria-label="{% translate 'Filtrlar' %}">
-        {% with hide_optional=True %}
-        <div class="w-44">{% include "partials/field.html" with field=filter_form.month %}</div>
-        <div class="w-44">{% include "partials/field.html" with field=filter_form.category %}</div>
-        {% endwith %}
-        <div class="flex gap-2">
-          <button type="submit" class="btn btn-primary min-h-10">{% translate "Ko'rsatish" %}</button>
-          <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
-        </div>
-      </form>
+  </summary>
+  <form method="get" class="mt-3 flex flex-wrap items-end gap-3" aria-label="{% translate 'Filtrlar' %}">
+    {% with hide_optional=True %}
+    <div class="w-44">{% include "partials/field.html" with field=filter_form.month %}</div>
+    <div class="w-44">{% include "partials/field.html" with field=filter_form.category %}</div>
+    {% endwith %}
+    <div class="flex gap-2">
+      <button type="submit" class="btn btn-primary min-h-10">{% translate "Ko'rsatish" %}</button>
+      <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
     </div>
-  </div>
-</div>
+  </form>
+</details>
 
 {# Unified Excel Data Grid: new-expense row + history, like Kirim / Qoldiq qo'shish #}
 <section class="panel mt-4 overflow-hidden shadow-xs" aria-labelledby="expense-list-title">
@@ -145,13 +140,13 @@
   {# Mobile Form #}
   <form method="post" autocomplete="off" novalidate class="md:hidden p-4 form-stack">
     {% csrf_token %}
-    {% include "partials/field.html" with field=form.category %}
-    {% include "partials/field.html" with field=form.title %}
+    {% include "partials/field.html" with field=mobile_form.category %}
+    {% include "partials/field.html" with field=mobile_form.title %}
     <div class="grid grid-cols-2 gap-3">
-      {% include "partials/field.html" with field=form.amount_usd %}
-      {% include "partials/field.html" with field=form.expense_date %}
+      {% include "partials/field.html" with field=mobile_form.amount_usd %}
+      {% include "partials/field.html" with field=mobile_form.expense_date %}
     </div>
-    {% include "partials/field.html" with field=form.notes %}
+    {% include "partials/field.html" with field=mobile_form.notes %}
     <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">{% icon "plus" 18 %} {% translate "Saqlash" %}</button>
   </form>
 

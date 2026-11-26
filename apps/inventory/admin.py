@@ -25,6 +25,13 @@ class BaseMaterialAdmin(admin.ModelAdmin):
     readonly_fields = ("unit_price_usd", "created_at", "updated_at")
     inlines = [WholeMaterialInline]
 
+    def get_readonly_fields(self, request, obj=None):
+        fields = super().get_readonly_fields(request, obj)
+        return (*fields, "category", "unit_of_measure", "is_active") if obj else fields
+
+    def get_inline_instances(self, request, obj=None):
+        return super().get_inline_instances(request, obj) if obj and obj.supports_offcuts else []
+
     def has_delete_permission(self, request, obj=None):
         return False  # archive instead; the ledger references materials
 

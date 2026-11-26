@@ -27,24 +27,26 @@
        category: '{{ form.category.value|default_if_none:''|escapejs }}',
        material: '{{ form.material.value|default_if_none:''|escapejs }}',
        quantity: '{{ form.quantity.value|default_if_none:''|escapejs }}',
-       mode: '{{ form.price_mode.value|default_if_none:'total'|escapejs }}',
        price: '{{ form.price_usd.value|default_if_none:''|escapejs }}',
        get filteredMaterials() {
          if (!this.category) return this.allMaterials;
          return this.allMaterials.filter(item => item.category === this.category);
        },
        onCategoryChange() {
-         if (this.category && this.material && this.m && this.m.category !== this.category) {
-           this.material = '';
-         }
+         const url = new URL(window.location.href);
+         url.searchParams.delete('material');
+         if (this.category) url.searchParams.set('category', this.category);
+         else url.searchParams.delete('category');
+         window.location.assign(url);
        },
        get m() { return this.meta[this.material] || null; },
        get qty() { return Number(this.quantity) || 0; },
        get p() { return Number(this.price) || 0; },
-       get total() { return this.mode === 'total' ? this.p : this.p * this.qty; },
-       get unit() { return this.qty ? (this.mode === 'total' ? this.p / this.qty : this.p) : 0; },
-       get stock() { return this.m ? Number(this.m.stock) : 0; },
-       get avg() { if (!this.m || !this.qty) return null; const old = this.stock * Number(this.m.price); return (this.stock + this.qty > 0) ? (old + this.total) / (this.stock + this.qty) : this.unit; },
+       get avg() {
+         if (!this.m || this.qty <= 0 || this.price === '' || this.p < 0) return null;
+         const stock = Number(this.m.stock);
+         return (stock * Number(this.m.price) + this.p) / (stock + this.qty);
+       },
        usd(v, d = 2) { return '$' + Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
        n(v) { return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
      }"
@@ -52,7 +54,7 @@
 
   <form method="post" autocomplete="off" novalidate>
     {% csrf_token %}
-    <input type="hidden" name="{{ form.price_mode.html_name }}" :value="mode">
+    {{ form.idempotency_key }}
     {% include "partials/form_errors.html" %}
     {% if form.errors %}
     <div class="mb-4 rounded-lg border border-[#f3c0ba] bg-neg-bg px-4 py-3 text-neg-ink text-xs shadow-xs" role="alert">
@@ -76,7 +78,7 @@
     {# Category Filter Toolbar (TZ 2.2: Kategoriya -> Tovar turi) #}
     <div class="mb-3 flex flex-wrap items-center gap-3 rounded-lg border border-line bg-surface px-4 py-2.5 shadow-2xs">
       <label class="text-xs font-semibold text-muted uppercase tracking-wider whitespace-nowrap" for="kirim-category">
-        {% translate "Kategoriya bo'yicha saralash:" %}
+        {% translate "Kategoriya" %}
       </label>
       <select id="kirim-category" name="{{ form.category.html_name }}" x-model="category" @change="onCategoryChange()" class="control !h-8 !w-auto min-w-[200px] text-xs sm:text-sm">
         {% for value, label in form.category.field.choices %}
@@ -95,9 +97,7 @@
             <tr>
               <th class="min-w-[240px] text-left">{% translate "Material" %}</th>
               <th class="w-[170px] min-w-[150px] text-left">{% translate "Miqdor" %}</th>
-              <th class="w-[150px] min-w-[140px] text-left">{% translate "Narx turi" %}</th>
-              <th class="w-[140px] min-w-[130px] text-left">{% translate "Narx (USD $)" %}</th>
-              <th class="w-[130px] min-w-[120px] text-right">{% translate "Partiya jami" %}</th>
+              <th class="w-[130px] min-w-[120px] text-left">{% translate "Partiya jami" %}</th>
               <th class="w-[150px] min-w-[140px] text-right">{% translate "Yangi o'rtacha narx" %}</th>
               <th class="w-[150px] min-w-[140px] text-right">{% translate "Amal" %}</th>
             </tr>
@@ -131,39 +131,18 @@
                 {% for e in form.quantity.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
 
-              {# 3. Narx turi #}
-              <td class="px-3 py-3 align-middle">
-                <div class="inline-flex rounded border border-control p-0.5 bg-surface shadow-2xs">
-                  <label class="cursor-pointer px-2.5 py-1 text-xs rounded transition-colors" :class="mode === 'total' ? 'bg-ink text-white font-semibold shadow-xs' : 'text-muted hover:text-ink'">
-                    <input type="radio" name="{{ form.price_mode.html_name }}" value="total" x-model="mode" :disabled="!isDesktop" class="sr-only">
-                    {% translate "Optom narx" %}
-                  </label>
-                  <label class="cursor-pointer px-2.5 py-1 text-xs rounded transition-colors" :class="mode === 'unit' ? 'bg-ink text-white font-semibold shadow-xs' : 'text-muted hover:text-ink'">
-                    <input type="radio" name="{{ form.price_mode.html_name }}" value="unit" x-model="mode" :disabled="!isDesktop" class="sr-only">
-                    {% translate "Dona narxi" %}
-                  </label>
-                </div>
-              </td>
-
               {# 4. Kiritilgan narx #}
               <td class="px-3 py-3 align-middle">
                 <div class="relative">
                   <span class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">$</span>
-                  <input type="number" name="{{ form.price_usd.html_name }}" id="{{ form.price_usd.id_for_label }}" :step="mode === 'total' ? '0.01' : '0.0001'" min="0" inputmode="decimal" :disabled="!isDesktop" required class="control !h-9 text-xs font-mono pl-6 pr-2.5 w-full" x-model="price" placeholder="0.00">
+                  <input type="number" name="{{ form.price_usd.html_name }}" id="{{ form.price_usd.id_for_label }}" step="0.01" min="0" inputmode="decimal" :disabled="!isDesktop" required class="control !h-9 text-xs font-mono pl-6 pr-2.5 w-full" x-model="price" placeholder="0.00">
                 </div>
                 {% for e in form.price_usd.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
 
-              {# 5. Partiya jami #}
-              <td class="px-4 py-3 align-middle text-right whitespace-nowrap font-mono">
-                <span class="text-[14px] font-bold text-ink" x-text="p ? usd(total) : '—'"></span>
-                <span class="block text-[11px] text-muted font-sans font-normal" x-show="qty > 0 && mode === 'total'" x-text="usd(unit, 4) + ' / ' + (m ? m.unit : '')" x-cloak></span>
-              </td>
-
               {# 6. Yangi o'rtacha narx #}
               <td class="px-4 py-3 align-middle text-right whitespace-nowrap font-mono">
-                <span class="text-[13.5px] font-semibold text-accent" x-text="avg ? usd(avg, 4) : '—'"></span>
-                <span class="block text-[11px] text-muted font-sans font-normal" x-show="m && m.stock > 0 && avg" x-cloak x-text="'(oldingi: ' + usd(m.price, 2) + ')'"></span>
+                <span class="text-[13.5px] font-semibold text-accent" x-text="avg !== null ? usd(avg, 4) : '—'"></span>
               </td>
 
               {# 7. Amal #}
@@ -175,59 +154,6 @@
               </td>
             </tr>
 
-            {# ---------------- SECTION DIVIDER ROW ---------------- #}
-            <tr class="bg-raised/70 border-t border-b border-line text-[11px] font-semibold uppercase tracking-wider text-muted select-none">
-              <td colspan="7" class="px-5 py-2.5">
-                <div class="flex items-center justify-between">
-                  <span class="flex items-center gap-1.5 text-muted font-medium">
-                    {% icon "history" 14 %}
-                    <span>{% translate "Oxirgi kirimlar" %}</span>
-                  </span>
-                  <span class="text-xs text-muted font-normal lowercase">
-                    {% if recent_kirim %}{{ recent_kirim|length }} ta{% else %}{% translate "Hali kirim yozilmagan." %}{% endif %}
-                  </span>
-                </div>
-              </td>
-            </tr>
-
-            {# ---------------- EXISTING KIRIM ROWS ---------------- #}
-            {% for t in recent_kirim %}{% with m=t.material %}
-            <tr class="hover:bg-raised/40 transition-colors">
-              <td class="px-4 py-3 font-medium text-ink">
-                <span class="block text-[14px] leading-snug">{{ m.name }}</span>
-                <span class="inline-flex items-center rounded border border-line/70 bg-raised px-1.5 py-0.5 text-[10px] font-medium text-muted mt-0.5">
-                  {{ m.category|cat_label }}
-                </span>
-              </td>
-              <td class="px-3 py-3 text-left whitespace-nowrap font-mono text-[13.5px] font-semibold text-positive">
-                +{{ t.quantity_changed|qty }} <span class="text-xs text-muted font-sans font-normal">{{ m.unit_short }}</span>
-              </td>
-              <td class="px-3 py-3 whitespace-nowrap">
-                <span class="pill pill-neutral text-xs">{% if t.unit_price_usd %}{% translate "Dona narxi" %}{% else %}{% translate "Optom narx" %}{% endif %}</span>
-              </td>
-              <td class="px-3 py-3 text-left whitespace-nowrap font-mono text-xs text-muted">
-                {{ t.unit_price_usd|usd:4 }}
-              </td>
-              <td class="px-4 py-3 text-right whitespace-nowrap font-mono text-[13.5px] font-semibold text-ink">
-                {{ t.total_price_usd|usd }}
-              </td>
-              <td class="px-4 py-3 text-right whitespace-nowrap text-xs text-muted font-mono">
-                <span class="inline-flex items-center gap-1.5 justify-end">
-                  {% icon "clock" 13 "text-muted flex-none" %}
-                  <span>{{ t.created_at|date:"j E, H:i" }}</span>
-                </span>
-              </td>
-              <td class="px-5 py-3 text-right whitespace-nowrap text-xs text-muted">
-                {{ t.user.display_name|default:t.user.username }}
-              </td>
-            </tr>
-            {% endwith %}{% empty %}
-            <tr>
-              <td colspan="7" class="px-5 py-8 text-center text-muted text-sm">
-                {% translate "Hali kirim yozilmagan." %}
-              </td>
-            </tr>
-            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -247,37 +173,19 @@
         </div>
 
         <div>
-          <label class="field-label" for="m-{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
+          <label class="field-label" for="m-{{ form.quantity.id_for_label }}">{{ form.quantity.label }} <span class="text-muted" x-text="m ? m.unit : ''"></span></label>
           <input type="number" id="m-{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop" class="control font-mono" x-model="quantity" placeholder="100">
         </div>
 
         <div>
-          <label class="field-label" id="m-price-mode-label">{{ form.price_mode.label }}</label>
-          <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="m-price-mode-label">
-            <label class="choice-tile cursor-pointer" :class="{ 'border-accent bg-accent-soft text-accent-ink font-semibold': mode === 'total' }">
-              <input type="radio" name="{{ form.price_mode.html_name }}" value="total" x-model="mode" :disabled="isDesktop" class="sr-only">
-              <span class="text-xs">{% translate "Optom narx" %}</span>
-            </label>
-            <label class="choice-tile cursor-pointer" :class="{ 'border-accent bg-accent-soft text-accent-ink font-semibold': mode === 'unit' }">
-              <input type="radio" name="{{ form.price_mode.html_name }}" value="unit" x-model="mode" :disabled="isDesktop" class="sr-only">
-              <span class="text-xs">{% translate "Dona narxi" %}</span>
-            </label>
-          </div>
-        </div>
-
-        <div>
           <label class="field-label" for="m-{{ form.price_usd.id_for_label }}">{{ form.price_usd.label }}</label>
-          <input type="number" id="m-{{ form.price_usd.id_for_label }}" name="{{ form.price_usd.html_name }}" :step="mode === 'total' ? '0.01' : '0.0001'" min="0" :disabled="isDesktop" class="control font-mono" x-model="price" placeholder="0.00">
+          <input type="number" id="m-{{ form.price_usd.id_for_label }}" name="{{ form.price_usd.html_name }}" step="0.01" min="0" :disabled="isDesktop" class="control font-mono" x-model="price" placeholder="0.00">
         </div>
 
-        <div class="p-3 rounded border border-line/60 bg-raised/50 flex items-center justify-between font-mono text-xs" x-show="p" x-cloak>
-          <div>
-            <span class="text-muted">{% translate "Partiya jami" %}:</span>
-            <strong class="text-ink ml-1" x-text="usd(total)"></strong>
-          </div>
+        <div class="p-3 rounded border border-line/60 bg-raised/50 font-mono text-xs" x-show="avg !== null" x-cloak>
           <div>
             <span class="text-muted">{% translate "Yangi o'rtacha narx" %}:</span>
-            <strong class="text-accent ml-1" x-text="avg ? usd(avg, 4) : '—'"></strong>
+            <strong class="text-accent ml-1" x-text="avg !== null ? usd(avg, 4) : '—'"></strong>
           </div>
         </div>
 
@@ -287,30 +195,55 @@
         </button>
       </div>
 
-      {# Mobile Recent Receipts List #}
-      {% if recent_kirim %}
-      <div class="lg:hidden border-t border-line">
-        <div class="px-4 py-2 bg-raised/70 text-[11px] font-semibold uppercase tracking-wider text-muted">
-          {% translate "Oxirgi kirimlar" %}
-        </div>
-        <ul class="list-rows divide-y divide-rule">
-          {% for t in recent_kirim %}{% with m=t.material %}
-          <li class="p-4 flex items-center justify-between gap-3">
-            <div class="min-w-0 flex-1">
-              <p class="font-medium text-ink text-sm truncate">{{ m.name }}</p>
-              <p class="text-xs text-muted mt-0.5 font-mono">{{ t.created_at|date:"j E, H:i" }}</p>
-            </div>
-            <div class="text-right font-mono text-xs flex-none">
-              <p class="font-bold text-ink text-sm">{{ t.total_price_usd|usd }}</p>
-              <p class="text-accent font-semibold mt-0.5">+{{ t.quantity_changed|qty }} {{ m.unit_short }}</p>
-            </div>
-          </li>
-          {% endwith %}{% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
     </div>
   </form>
 </div>
+
+<section class="panel mt-5 overflow-hidden" aria-labelledby="recent-receipts">
+  <div class="panel-head"><h2 id="recent-receipts" class="panel-title">{% translate "Oxirgi kirimlar" %}</h2></div>
+  {% if recent_kirim %}
+  <div class="hidden md:block overflow-x-auto">
+    <table class="grid-table">
+      <thead>
+        <tr>
+          <th class="text-left">{% translate "Material" %}</th>
+          <th class="text-right">{% translate "Miqdor" %}</th>
+          <th class="text-right">{% translate "Birlik narxi" %}</th>
+          <th class="text-right">{% translate "Partiya jami" %}</th>
+          <th class="text-left">{% translate "Vaqti" %}</th>
+          <th class="text-left">{% translate "Kim kiritdi" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in recent_kirim %}
+        <tr>
+          <td class="font-medium">{{ t.material.name }}{% if t.reversal %} <span class="pill pill-neutral text-xs">{% translate "Qaytarilgan" %}</span>{% endif %}</td>
+          <td class="text-right whitespace-nowrap num">+{{ t.quantity_changed|qty }} {{ t.unit_of_measure|default:t.material.unit_of_measure|unit_label }}</td>
+          <td class="text-right whitespace-nowrap num">{{ t.unit_price_usd|usd:4 }}</td>
+          <td class="text-right whitespace-nowrap num">{{ t.total_price_usd|usd }}</td>
+          <td class="whitespace-nowrap text-muted">{{ t.created_at|date:"j E, H:i" }}</td>
+          <td>{{ t.user.display_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <ul class="list-rows md:hidden divide-y divide-rule">
+    {% for t in recent_kirim %}
+    <li class="p-4 flex items-center justify-between gap-3">
+      <div class="min-w-0 flex-1">
+        <p class="font-medium">{{ t.material.name }}{% if t.reversal %} <span class="pill pill-neutral text-xs">{% translate "Qaytarilgan" %}</span>{% endif %}</p>
+        <p class="text-xs text-muted">{{ t.created_at|date:"j E, H:i" }} · {{ t.user.display_name }}</p>
+      </div>
+      <div class="text-right num">
+        <p class="font-semibold">{{ t.total_price_usd|usd }}</p>
+        <p class="text-xs">+{{ t.quantity_changed|qty }} {{ t.unit_of_measure|default:t.material.unit_of_measure|unit_label }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="p-5 text-muted">{% translate "Hali kirim yozilmagan." %}</p>
+  {% endif %}
+</section>
 {% endblock %}

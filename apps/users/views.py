@@ -15,7 +15,7 @@ from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from . import services
 from .forms import LoginForm, RoleAssignmentForm, UserAdminEditForm, WorkerRegistrationForm, WorkerRoleForm
-from .models import User, WorkerRole
+from .models import PHONE_DIGITS, PHONE_PREFIX, User, WorkerRole
 from .permissions import WarehouseAdminRequiredMixin
 
 
@@ -142,8 +142,12 @@ class UserListView(WarehouseAdminRequiredMixin, ListView):
             # A phone may be typed with spaces or without the +998 prefix.
             digits = re.sub(r"\D", "", query)
             match = Q(full_name__istartswith=query) | Q(username__istartswith=query)
-            if digits:
-                match |= Q(phone__startswith=digits)
+            if digits and re.fullmatch(r"[+\d\s().-]+", query):
+                if query.startswith("+") or (digits.startswith("998") and len(digits) != PHONE_DIGITS):
+                    prefix = "+" + digits
+                else:
+                    prefix = PHONE_PREFIX + digits.removeprefix("0")
+                match |= Q(phone__startswith=prefix)
             qs = qs.filter(match)
         return qs
 

@@ -3,27 +3,6 @@
 from django.db import migrations, models
 
 
-def backfill_units(apps, schema_editor):
-    InventoryTransaction = apps.get_model("inventory", "InventoryTransaction")
-    BaseMaterial = apps.get_model("inventory", "BaseMaterial")
-    units = dict(BaseMaterial.objects.values_list("pk", "unit_of_measure"))
-    txns = InventoryTransaction.objects.filter(unit_of_measure="")
-    for txn in txns.iterator(chunk_size=500):
-        unit = "PIECE" if txn.is_offcut else units.get(txn.material_id, "")
-        if unit:
-            txn.unit_of_measure = unit
-    # bulk update in batches
-    batch = []
-    for txn in InventoryTransaction.objects.filter(unit_of_measure="").iterator(chunk_size=500):
-        txn.unit_of_measure = "PIECE" if txn.is_offcut else units.get(txn.material_id, "")
-        batch.append(txn)
-        if len(batch) >= 500:
-            InventoryTransaction.objects.bulk_update(batch, ["unit_of_measure"])
-            batch = []
-    if batch:
-        InventoryTransaction.objects.bulk_update(batch, ["unit_of_measure"])
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -36,5 +15,4 @@ class Migration(migrations.Migration):
             name='unit_of_measure',
             field=models.CharField(blank=True, choices=[('PIECE', 'Dona'), ('SQM', 'Kvadrat metr'), ('LITER', 'Litr'), ('KG', 'Kilogramm'), ('METER', 'Metr'), ('CM', 'Santimetr')], default='', help_text='Unit at the time of this transaction; empty on legacy rows.', max_length=20),
         ),
-        migrations.RunPython(backfill_units, lambda apps, se: apps.get_model("inventory", "InventoryTransaction").objects.all().update(unit_of_measure="")),
     ]

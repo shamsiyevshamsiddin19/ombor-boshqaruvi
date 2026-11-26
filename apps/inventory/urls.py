@@ -10,6 +10,7 @@ urlpatterns = [
     path("inventory/offcuts/add/", views.OffcutCreateView.as_view(), name="offcut_add"),
     path("inventory/offcuts/<int:pk>/withdraw/", views.OffcutWithdrawView.as_view(), name="offcut_withdraw"),
     path("inventory/history/", views.MyHistoryView.as_view(), name="my_history"),
+    path("admin-dashboard/transactions/<int:pk>/reverse/", views.ReverseTransactionView.as_view(), name="reverse_transaction"),
     # Admin dashboard
     path("admin-dashboard/", views.DashboardView.as_view(), name="dashboard"),
     path("admin-dashboard/materials/", views.MaterialListView.as_view(), name="material_list"),

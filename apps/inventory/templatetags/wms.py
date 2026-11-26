@@ -120,8 +120,19 @@ def query_with(context, **kwargs) -> str:
         else:
             params[key] = value
     params.pop("page", None)
+    params.pop("whole_page", None)
+    params.pop("offcut_page", None)
     encoded = urlencode(sorted(params.lists()), doseq=True)
     return f"?{encoded}" if encoded else "?"
+
+
+@register.simple_tag(takes_context=True)
+def page_url(context, number, page_key="", tab_key="") -> str:
+    params = context["request"].GET.copy()
+    params[page_key or "page"] = number
+    if tab_key:
+        params["tab"] = tab_key
+    return "?" + params.urlencode()
 
 
 # ---------------------------------------------------------------------------

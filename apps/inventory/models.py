@@ -445,6 +445,8 @@ class InventoryTransaction(models.Model):
     is_offcut = models.BooleanField(default=False)
     offcut_length_mm = models.IntegerField(null=True, blank=True)
     offcut_width_mm = models.IntegerField(null=True, blank=True)
+    offcut_record_id = models.PositiveBigIntegerField(null=True, blank=True)
+    stock_unit_price_before = models.DecimalField(max_digits=12, decimal_places=4, null=True, blank=True)
 
     reversed_entry = models.OneToOneField(
         "self",
@@ -515,6 +517,12 @@ class InventoryTransaction(models.Model):
 
     def delete(self, *args, **kwargs):
         raise ImmutableLedgerError("Inventory transactions are append-only and cannot be deleted.")
+
+    @property
+    def movement_unit(self) -> str:
+        if self.is_offcut:
+            return MeasurementUnit.PIECE
+        return self.unit_of_measure or self.material.unit_of_measure
 
     @property
     def quantity_abs(self) -> Decimal:

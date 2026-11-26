@@ -1,11 +1,14 @@
 import csv
 from decimal import Decimal
+from uuid import uuid4
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -84,15 +87,28 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
         whole = selectors.search_stock(selectors.visible_whole_stock(user), query=query, category=category)
         offcuts = selectors.search_stock(selectors.visible_offcuts(user), query=query, category=category)
         visible_categories = set(selectors.visible_materials(user).values_list("category", flat=True).distinct())
+        dimension_categories = offcut_category_codes()
+        whole_page = Paginator(whole.order_by("material__category", "material__name", "pk"), 50).get_page(
+            self.request.GET.get("whole_page")
+        )
+        offcut_page = Paginator(offcuts.order_by("-created_at", "-pk"), 50).get_page(
+            self.request.GET.get("offcut_page")
+        )
 
         context.update(
             {
-                "whole_stock": whole.order_by("material__category", "material__name")[:200],
-                "offcuts": offcuts[:200],
+                "whole_stock": whole_page.object_list,
+                "offcuts": offcut_page.object_list,
+                "whole_page": whole_page,
+                "offcut_page": offcut_page,
                 "query": query,
                 "category": category,
-                "show_dimensions": category != "KRASKA",
-                "tab": tab if tab in ("whole", "offcuts") else "whole",
+                "dimension_categories": dimension_categories,
+                "show_dimensions": not category or category in dimension_categories,
+                "show_offcuts": not category or category in dimension_categories or bool(offcut_page.paginator.count),
+                "tab": "offcuts" if tab == "offcuts" and (
+                    not category or category in dimension_categories or offcut_page.paginator.count
+                ) else "whole",
                 "categories": [(code, name) for code, name in category_choices() if code in visible_categories],
                 "can_add_offcut": selectors.offcut_capable_materials(user).exists(),
             }
@@ -243,10 +259,26 @@ class MyHistoryView(ApprovedUserRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        qs = InventoryTransaction.objects.select_related("material", "user")
+        qs = InventoryTransaction.objects.select_related("material", "user", "reversal")
         if not self.request.user.is_warehouse_admin:
             qs = qs.filter(user=self.request.user)
         return qs
+
+
+class ReverseTransactionView(WarehouseAdminRequiredMixin, View):
+    def get(self, request, pk):
+        entry = get_object_or_404(InventoryTransaction.objects.select_related("material"), pk=pk)
+        return TemplateResponse(request, "inventory/reverse_transaction.html", {"entry": entry})
+
+    def post(self, request, pk):
+        entry = get_object_or_404(InventoryTransaction, pk=pk)
+        try:
+            services.reverse_transaction(entry=entry, user=request.user)
+        except ValidationError as exc:
+            messages.error(request, " ".join(exc.messages))
+        else:
+            messages.success(request, _("Harakat qaytarildi."))
+        return redirect("inventory:my_history")
 
 
 # ---------------------------------------------------------------------------
@@ -307,12 +339,16 @@ class MaterialListView(WarehouseAdminRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        category = self.request.GET.get("category", "")
+        dimension_categories = offcut_category_codes()
         context.update(
             {
                 "query": self.request.GET.get("q", ""),
-                "category": self.request.GET.get("category", ""),
+                "category": category,
                 "status": self.request.GET.get("status", "active"),
                 "categories": category_choices(),
+                "dimension_categories": dimension_categories,
+                "show_dimensions": category in dimension_categories or category not in category_codes(),
             }
         )
         return context
@@ -397,17 +433,17 @@ class MaterialUpdateView(WarehouseAdminRequiredMixin, MaterialFormContextMixin, 
     context_object_name = "material"
 
     def form_valid(self, form):
-        material = form.save(commit=False)
-        if not material.allowed_roles:
-            material.allowed_roles = default_roles_for_category(material.category)
-        catalogue_fields = [
-            "name", "category", "unit_of_measure",
-            "minimum_threshold", "allowed_roles", "is_active", "updated_at",
-        ]
-        with transaction.atomic():
-            form.create_pending_category()
-            material.save(update_fields=catalogue_fields)
-            form.save_stock_dimensions(material)
+        try:
+            with transaction.atomic():
+                form.create_pending_category()
+                material = services.update_material(
+                    self.object,
+                    changes={field: form.cleaned_data[field] for field in form.Meta.fields},
+                    dimensions={field: form.cleaned_data.get(field) for field in ("length_mm", "width_mm")},
+                )
+        except ValidationError as exc:
+            apply_service_errors(form, exc)
+            return self.form_invalid(form)
         messages.success(self.request, _("“%(name)s” saqlandi.") % {"name": material.name})
         return redirect("inventory:material_list")
 
@@ -420,6 +456,10 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
 
     def get_initial(self):
         initial = super().get_initial()
+        initial["idempotency_key"] = uuid4()
+        category = self.request.GET.get("category", "")
+        if category in category_codes():
+            initial["category"] = category
         material_id = self.request.GET.get("material")
         if material_id and material_id.isdigit():
             material = BaseMaterial.objects.filter(pk=int(material_id), is_active=True).first()
@@ -430,7 +470,9 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        category = context["form"]["category"].value()
         materials = context["form"].fields["material"].queryset.select_related("whole_stock")
+        dimension_categories = offcut_category_codes()
         context["material_meta"] = {
             str(m.pk): {
                 "name": m.name,
@@ -442,7 +484,8 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
                 "stock": str(getattr(getattr(m, "whole_stock", None), "quantity", "0")),
                 "dims": (
                     f"{m.whole_stock.length_mm} × {m.whole_stock.width_mm} mm"
-                    if getattr(getattr(m, "whole_stock", None), "length_mm", None)
+                    if m.category in dimension_categories
+                    and getattr(getattr(m, "whole_stock", None), "length_mm", None)
                     and getattr(getattr(m, "whole_stock", None), "width_mm", None)
                     else ""
                 ),
@@ -453,9 +496,10 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
             {"id": str(m.pk), "label": f"{m.name} ({m.unit_short})", "category": m.category}
             for m in materials
         ]
-        context["recent_kirim"] = (
-            InventoryTransaction.objects.kirim().select_related("material", "user")[:10]
-        )
+        recent = InventoryTransaction.objects.kirim().select_related("material", "user", "reversal")
+        if category in category_codes():
+            recent = recent.filter(material__category=category)
+        context["recent_kirim"] = recent[:10]
         return context
 
     def form_valid(self, form):
@@ -474,7 +518,8 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
                 "price": f"${entry.material.unit_price_usd:,.4f}",
             },
         )
-        return redirect("inventory:kirim")
+        category = form.cleaned_data.get("category")
+        return redirect(f"{reverse('inventory:kirim')}?category={category}" if category else "inventory:kirim")
 
 
 class ReportView(WarehouseAdminRequiredMixin, ListView):
@@ -492,13 +537,11 @@ class ReportView(WarehouseAdminRequiredMixin, ListView):
 
     def get_queryset(self):
         self.filter_form = self.get_filter_form()
-        return selectors.filter_transactions(**self.filter_form.selector_kwargs())
+        return selectors.filter_transactions(include_corrections=True, **self.filter_form.selector_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.object_list
-        query_string = self.request.GET.copy()
-        query_string.pop("page", None)
         context.update(
             {
                 "filter_form": self.filter_form,
@@ -506,9 +549,8 @@ class ReportView(WarehouseAdminRequiredMixin, ListView):
                 "expense_totals": selectors.expense_totals(
                     selectors.filter_expenses(month=self.filter_form.selector_kwargs().get("month"))
                 ),
-                "by_material": selectors.consumption_by_material(qs)[:20],
-                "by_worker": selectors.consumption_by_worker(qs)[:20],
-                "query_string": query_string.urlencode(),
+                "by_material": selectors.consumption_by_material(qs),
+                "by_worker": selectors.consumption_by_worker(qs),
                 "export_query": self.filter_form.data.urlencode(),
             }
         )
@@ -526,7 +568,7 @@ class ExpenseListCreateView(WarehouseAdminRequiredMixin, ListView):
         data = self.request.GET.copy()
         if "month" not in data and "category" not in data:
             data["month"] = timezone.localdate().strftime("%Y-%m")
-        return ExpenseFilterForm(data)
+        return ExpenseFilterForm(data, auto_id="expense_filter_%s")
 
     def get_queryset(self):
         self.filter_form = self.get_filter_form()
@@ -535,14 +577,12 @@ class ExpenseListCreateView(WarehouseAdminRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.object_list
-        query_string = self.request.GET.copy()
-        query_string.pop("page", None)
         context.update(
             {
                 "form": kwargs.get("form") or ExpenseForm(),
+                "mobile_form": kwargs.get("mobile_form") or ExpenseForm(auto_id="mobile_%s"),
                 "filter_form": self.filter_form,
                 "totals": selectors.expense_totals(qs),
-                "query_string": query_string.urlencode(),
                 "export_query": self.filter_form.data.urlencode(),
             }
         )
@@ -550,6 +590,7 @@ class ExpenseListCreateView(WarehouseAdminRequiredMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         form = ExpenseForm(request.POST)
+        mobile_form = ExpenseForm(request.POST, auto_id="mobile_%s")
         if form.is_valid():
             data = form.cleaned_data
             try:
@@ -563,6 +604,7 @@ class ExpenseListCreateView(WarehouseAdminRequiredMixin, ListView):
                 )
             except ValidationError as exc:
                 apply_service_errors(form, exc)
+                apply_service_errors(mobile_form, exc)
             else:
                 messages.success(
                     request,
@@ -571,7 +613,7 @@ class ExpenseListCreateView(WarehouseAdminRequiredMixin, ListView):
                 )
                 return redirect("inventory:expenses")
         self.object_list = self.get_queryset()
-        return self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(self.get_context_data(form=form, mobile_form=mobile_form))
 
 
 def _csv_safe(value) -> str:
@@ -618,7 +660,7 @@ class ExpenseExportView(WarehouseAdminRequiredMixin, View):
 class ReportExportView(WarehouseAdminRequiredMixin, View):
     def get(self, request):
         form = ReportFilterForm(request.GET)
-        qs = selectors.filter_transactions(**form.selector_kwargs())
+        qs = selectors.filter_transactions(include_corrections=True, **form.selector_kwargs())
         month = form.cleaned_data.get("month") if form.is_valid() else None
         filename = f"ombor-harakatlari-{month:%Y-%m}.csv" if month else "ombor-harakatlari.csv"
 
@@ -649,7 +691,7 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                         _csv_safe(txn.material.name),
                         _csv_safe(txn.material.category_short),
                         f"{txn.quantity_changed}",
-                        unit_short_label(txn.unit_of_measure) if txn.unit_of_measure else txn.material.unit_short,
+                        unit_short_label(txn.movement_unit),
                         f"{txn.unit_price_usd}",
                         f"{txn.total_price_usd}",
                         f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",

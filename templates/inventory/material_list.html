@@ -57,8 +57,7 @@
         <tr>
           <th class="min-w-[220px] text-left">{% translate "Material nomi" %}</th>
           <th class="w-[140px] min-w-[120px] text-left">{% translate "Kategoriya" %}</th>
-          <th class="w-[140px] min-w-[120px] text-left">{% translate "O'lchami" %}</th>
-          <th class="w-[80px] min-w-[70px] text-left">{% translate "Birlik" %}</th>
+          {% if show_dimensions %}<th class="w-[140px] min-w-[120px] text-left">{% translate "O'lchami" %}</th>{% endif %}
           <th class="w-[130px] min-w-[110px] text-right">{% translate "Minimal" %}</th>
           <th class="min-w-[180px] text-left">{% translate "Kim oladi" %}</th>
           <th class="w-[120px] min-w-[100px] text-center">{% translate "Holati" %}</th>
@@ -80,9 +79,10 @@
             </span>
           </td>
 
-          {# 3. O'lchami #}
+          {% if show_dimensions %}
+          {# O'lchami #}
           <td class="px-4 py-3.5 whitespace-nowrap">
-            {% if stock.length_mm %}
+            {% if m.category in dimension_categories and stock.length_mm %}
               <span class="num font-mono text-[13px] text-ink">{{ stock.length_mm }} × {{ stock.width_mm }}</span>
               <span class="text-xs text-muted">{% translate "mm" %}</span>
             {% else %}
@@ -90,19 +90,12 @@
             {% endif %}
           </td>
 
-          {# 4. Birlik #}
-          <td class="px-3 py-3.5 text-muted whitespace-nowrap text-xs">
-            {{ m.unit_short }}
-          </td>
+          {% endif %}
 
           {# 5. Minimal #}
           <td class="px-4 py-3.5 text-right whitespace-nowrap">
-            {% if m.minimum_threshold > 0 %}
-              <span class="num text-[13px] text-ink font-mono">{{ m.minimum_threshold|qty }}</span>
-              <span class="text-xs text-muted">{{ m.unit_short }}</span>
-            {% else %}
-              <span class="text-muted">—</span>
-            {% endif %}
+            <span class="num text-[13px] text-ink font-mono">{{ m.minimum_threshold|qty }}</span>
+            <span class="text-xs text-muted">{{ m.unit_short }}</span>
           </td>
 
           {# 6. Kim oladi (Rollar) #}
@@ -134,10 +127,12 @@
                 {% icon "edit" 13 %}
                 <span>{% translate "Tahrirlash" %}</span>
               </a>
+              {% if m.is_active %}
               <a class="btn btn-primary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1" href="{% url 'inventory:kirim' %}?material={{ m.pk }}" title="{% translate 'Kirim qilish' %}">
                 {% icon "plus" 13 %}
                 <span>{% translate "Kirim" %}</span>
               </a>
+              {% endif %}
             </div>
           </td>
         </tr>
@@ -159,7 +154,7 @@
         </div>
         <p class="mt-0.5 truncate text-xs text-muted">
           {{ m.category|cat_label }} · {{ m.unit_short }}
-          {% if stock.length_mm %} · {{ stock.length_mm }}×{{ stock.width_mm }} {% translate "mm" %}{% endif %}
+          {% if m.category in dimension_categories and stock.length_mm %} · {{ stock.length_mm }}×{{ stock.width_mm }} {% translate "mm" %}{% endif %}
         </p>
         <div class="mt-1 flex flex-wrap gap-1">
           {% for r in m.allowed_roles %}
@@ -173,9 +168,11 @@
         <a class="btn btn-secondary min-h-8 px-2.5 text-xs font-medium" href="{% url 'inventory:material_edit' m.pk %}" aria-label="{% blocktranslate with name=m.name %}{{ name }} — tahrirlash{% endblocktranslate %}">
           {% icon "edit" 14 %}
         </a>
+        {% if m.is_active %}
         <a class="btn btn-primary min-h-8 px-2.5 text-xs font-medium" href="{% url 'inventory:kirim' %}?material={{ m.pk }}" title="{% translate 'Kirim qilish' %}">
           {% icon "plus" 14 %}
         </a>
+        {% endif %}
       </div>
     </li>
     {% endwith %}{% endfor %}
