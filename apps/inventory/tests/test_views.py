@@ -105,7 +105,7 @@ class HomeTests(WorkshopTestCase):
 
     def test_search_and_category_filter(self):
         self.client.force_login(self.admin)
-        response = self.client.get(reverse("inventory:home"), {"q": "kraska"})
+        response = self.client.get(reverse("inventory:home"), {"q": "akril"})
         self.assertEqual([s.material.name for s in response.context["whole_stock"]], ["Akril kraska oq"])
         response = self.client.get(reverse("inventory:home"), {"category": MaterialCategory.SHEET})
         self.assertEqual([s.material.name for s in response.context["whole_stock"]], ["MDF 16 mm oq"])

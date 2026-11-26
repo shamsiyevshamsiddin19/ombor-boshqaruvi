@@ -290,7 +290,7 @@ class MaterialListView(WarehouseAdminRequiredMixin, ListView):
         category = self.request.GET.get("category", "")
         status = self.request.GET.get("status", "active")
         if query:
-            qs = qs.filter(name__icontains=query)
+            qs = qs.filter(name__istartswith=query)
         if category in category_codes():
             qs = qs.filter(category=category)
         if status == "active":

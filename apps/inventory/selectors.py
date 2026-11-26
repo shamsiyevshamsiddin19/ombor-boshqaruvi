@@ -100,7 +100,7 @@ def user_can_access_material(user, material: BaseMaterial) -> bool:
 
 def search_stock(qs: QuerySet, *, query: str = "", category: str = "") -> QuerySet:
     if query:
-        qs = qs.filter(material__name__icontains=query)
+        qs = qs.filter(material__name__istartswith=query)
     if category:
         qs = qs.filter(material__category=category)
     return qs

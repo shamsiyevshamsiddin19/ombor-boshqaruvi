@@ -141,9 +141,9 @@ class UserListView(WarehouseAdminRequiredMixin, ListView):
         if query:
             # A phone may be typed with spaces or without the +998 prefix.
             digits = re.sub(r"\D", "", query)
-            match = Q(full_name__icontains=query) | Q(username__icontains=query)
+            match = Q(full_name__istartswith=query) | Q(username__istartswith=query)
             if digits:
-                match |= Q(phone__contains=digits)
+                match |= Q(phone__startswith=digits)
             qs = qs.filter(match)
         return qs
 

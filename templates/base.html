@@ -34,6 +34,15 @@
          } else {
            document.documentElement.classList.remove('sidebar-collapsed');
          }
+       },
+       navTooltip: { show: false, text: '', top: 0, left: 0 },
+       showNavTooltip(el) {
+         if (!this.collapsed) return;
+         const r = el.getBoundingClientRect();
+         this.navTooltip = { show: true, text: el.dataset.tooltip, top: r.top + r.height / 2, left: r.right + 10 };
+       },
+       hideNavTooltip() {
+         this.navTooltip.show = false;
        }
      }"
      class="min-h-screen transition-[grid-template-columns] duration-150"
@@ -103,6 +112,12 @@
       </form>
     </div>
   </aside>
+
+  {# Collapsed-sidebar tooltip: fixed-position so it escapes the sidebar's overflow-hidden #}
+  <div x-show="navTooltip.show" x-cloak x-transition.opacity.duration.100ms
+       class="fixed z-[70] rounded-md bg-[#18181b] px-2.5 py-1.5 text-xs font-medium text-white shadow-lg pointer-events-none"
+       :style="{ top: navTooltip.top + 'px', left: navTooltip.left + 'px', transform: 'translateY(-50%)' }"
+       x-text="navTooltip.text"></div>
 
   <div class="flex min-w-0 flex-col">
     {# ---- Top bar ---- #}

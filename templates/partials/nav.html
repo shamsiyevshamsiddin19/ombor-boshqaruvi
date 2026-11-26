@@ -4,26 +4,34 @@
     <a class="nav-item relative"
        href="{% url 'inventory:home' %}"
        title="{% translate "Ombor" %}"
+       data-tooltip="{% translate "Ombor" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "home" %}aria-current="page"{% endif %}>
       {% icon "box" 18 "flex-none" %}
       <span class="truncate" :class="{ 'lg:hidden': collapsed }">{% translate "Ombor" %}</span>
     </a>
   </li>
+  {% if not user.is_warehouse_admin %}
   <li>
     <a class="nav-item relative"
        href="{% url 'inventory:offcut_add' %}"
        title="{% translate "Qoldiq qo'shish" %}"
+       data-tooltip="{% translate "Qoldiq qo'shish" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "offcut_add" %}aria-current="page"{% endif %}>
       {% icon "offcut" 18 "flex-none" %}
       <span class="truncate" :class="{ 'lg:hidden': collapsed }">{% translate "Qoldiq qo'shish" %}</span>
     </a>
   </li>
+  {% endif %}
   <li>
     <a class="nav-item relative"
        href="{% url 'inventory:my_history' %}"
        title="{% translate "Mening tarixim" %}"
+       data-tooltip="{% translate "Mening tarixim" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "my_history" %}aria-current="page"{% endif %}>
       {% icon "clock" 18 "flex-none" %}
@@ -40,6 +48,8 @@
     <a class="nav-item relative"
        href="{% url 'inventory:dashboard' %}"
        title="{% translate "Panel" %}"
+       data-tooltip="{% translate "Panel" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "dashboard" %}aria-current="page"{% endif %}>
       {% icon "dashboard" 18 "flex-none" %}
@@ -50,6 +60,8 @@
     <a class="nav-item relative"
        href="{% url 'inventory:material_list' %}"
        title="{% translate "Materiallar" %}"
+       data-tooltip="{% translate "Materiallar" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "materials" %}aria-current="page"{% endif %}>
       {% icon "layers" 18 "flex-none" %}
@@ -58,18 +70,10 @@
   </li>
   <li>
     <a class="nav-item relative"
-       href="{% url 'inventory:project_list' %}"
-       title="{% translate "Loyihalar" %}"
-       :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
-       {% if nav_section == "projects" %}aria-current="page"{% endif %}>
-      {% icon "folder" 18 "flex-none" %}
-      <span class="truncate" :class="{ 'lg:hidden': collapsed }">{% translate "Loyihalar" %}</span>
-    </a>
-  </li>
-  <li>
-    <a class="nav-item relative"
        href="{% url 'inventory:expenses' %}"
        title="{% translate "Xarajatlar" %}"
+       data-tooltip="{% translate "Xarajatlar" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "expenses" %}aria-current="page"{% endif %}>
       {% icon "wallet" 18 "flex-none" %}
@@ -80,6 +84,8 @@
     <a class="nav-item relative"
        href="{% url 'inventory:reports' %}"
        title="{% translate "Oylik hisobot" %}"
+       data-tooltip="{% translate "Oylik hisobot" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "reports" %}aria-current="page"{% endif %}>
       {% icon "report" 18 "flex-none" %}
@@ -90,6 +96,8 @@
     <a class="nav-item relative"
        href="{% url 'users:user_list' %}"
        title="{% translate "Ishchilar" %}"
+       data-tooltip="{% translate "Ishchilar" %}"
+       @mouseenter="showNavTooltip(event.currentTarget)" @mouseleave="hideNavTooltip()"
        :class="{ 'lg:justify-center lg:!px-0 lg:w-10 lg:h-10 lg:mx-auto': collapsed }"
        {% if nav_section == "users" %}aria-current="page"{% endif %}>
       {% icon "users" 18 "flex-none" %}
