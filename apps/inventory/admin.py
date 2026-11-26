@@ -1,6 +1,14 @@
 from django.contrib import admin
 
-from .models import BaseMaterial, Category, InventoryTransaction, LeftoverOffcut, OperatingExpense, Project, WholeMaterial
+from .models import (
+    BaseMaterial,
+    Category,
+    InventoryTransaction,
+    LeftoverOffcut,
+    OperatingExpense,
+    Project,
+    WholeMaterial,
+)
 
 
 class WholeMaterialInline(admin.StackedInline):

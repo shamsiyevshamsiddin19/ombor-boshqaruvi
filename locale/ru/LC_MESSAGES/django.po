@@ -2197,3 +2197,66 @@ msgstr "Используйте форму слева, чтобы задать н
 #: templates/inventory/kirim_form.html
 msgid "Idish"
 msgstr "Ёмкость"
+
+#: apps/inventory/forms.py:290 apps/inventory/forms.py:341
+msgid "Loyiha / buyurtma"
+msgstr "Проект / заказ"
+
+#: apps/inventory/forms.py:293 apps/inventory/forms.py:344
+msgid "— tanlang (ixtiyoriy) —"
+msgstr "— Выберите (необязательно) —"
+
+#: apps/inventory/forms.py:374 apps/inventory/models.py:481 apps/inventory/views.py:635
+msgid "Loyiha"
+msgstr "Проект"
+
+#: apps/inventory/models.py:367 templates/inventory/project_list.html:24
+msgid "Mijoz"
+msgstr "Клиент"
+
+#: apps/inventory/models.py:377
+msgid "loyiha"
+msgstr "проект"
+
+#: apps/inventory/models.py:378
+msgid "loyihalar"
+msgstr "проекты"
+
+#: apps/inventory/views.py:694
+#, python-format
+msgid "“%(name)s” loyihasi yaratildi."
+msgstr "Проект «%(name)s» создан."
+
+#: templates/inventory/project_form.html:16
+msgid "Yaratish"
+msgstr "Создать"
+
+#: templates/inventory/project_form.html:3 templates/inventory/project_form.html:7 templates/inventory/project_list.html:10
+msgid "Yangi loyiha"
+msgstr "Новый проект"
+
+#: templates/inventory/project_form.html:6 templates/inventory/project_list.html:3 templates/inventory/project_list.html:7 templates/partials/nav.html:62
+#: templates/partials/nav.html:66
+msgid "Loyihalar"
+msgstr "Проекты"
+
+#: templates/inventory/project_form.html:7
+msgid "Loyihani tahrirlash"
+msgstr "Редактировать проект"
+
+#: templates/inventory/project_list.html:26
+msgid "Yaratildi"
+msgstr "Создан"
+
+#: templates/inventory/project_list.html:35
+msgctxt "status"
+msgid "Faol"
+msgstr "Активен"
+
+#: templates/inventory/project_list.html:47
+msgid "Hali loyiha yo'q."
+msgstr "Проектов пока нет."
+
+#: templates/inventory/project_list.html:8
+msgid "Buyurtma va loyihalar — chiqimlarni guruhlash uchun"
+msgstr "Заказы и проекты для группировки расходов материалов"

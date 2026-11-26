@@ -70,7 +70,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Check production branch head
+        id: revision
+        shell: bash
+        run: |
+          MAIN_SHA="$(git ls-remote --exit-code origin refs/heads/main | cut -f1)"
+          if [[ "$GITHUB_SHA" == "$MAIN_SHA" ]]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Skipping deployment: main has moved to $MAIN_SHA."
+          fi
+
       - name: Configure SSH
+        if: steps.revision.outputs.current == 'true'
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
@@ -89,15 +101,17 @@ jobs:
           EOF
 
       - name: Create release directory and upload code
+        if: steps.revision.outputs.current == 'true'
         run: |
-          RELEASE="$(date -u +%Y%m%d_%H%M%S)"
+          RELEASE="$(date -u +%Y%m%d_%H%M%S)-${GITHUB_SHA:0:12}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           ssh deploy-target "mkdir -p /var/www/wms/releases/$RELEASE"
           rsync -az --delete \
             --exclude-from=deploy/rsync-exclude.txt \
             ./ "deploy-target:/var/www/wms/releases/$RELEASE/"
           echo "RELEASE=$RELEASE" >> "$GITHUB_ENV"
 
-      - name: Migrate, collect static, switch symlink, restart
+      - name: Migrate, switch release, and check application health
+        if: steps.revision.outputs.current == 'true'
         run: >-
           ssh deploy-target
           "RELEASE_DIR=/var/www/wms/releases/$RELEASE
