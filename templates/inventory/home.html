@@ -14,7 +14,7 @@
       </p>
     </div>
 
-    <form method="get" role="search" class="relative w-full min-w-0 sm:w-auto sm:min-w-36 sm:max-w-sm sm:flex-1">
+    <form method="get" role="search" class="relative w-full min-w-0 sm:w-auto sm:min-w-36 sm:max-w-sm sm:flex-1 md:self-end">
       <input type="hidden" name="tab" :value="tab" value="{{ tab }}">
       {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
       <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{% icon "search" 16 %}</span>
