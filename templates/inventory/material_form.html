@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load wms i18n %}
+{% load wms i18n l10n %}
 {% block title %}{% if material %}{{ material.name }}{% else %}{% translate "Yangi material" %}{% endif %}{% endblock %}
 {% block content %}
 {{ offcut_categories|json_script:"offcut-categories" }}
@@ -231,7 +231,7 @@
                          name="{{ form.minimum_threshold.html_name }}"
                          id="{{ form.minimum_threshold.id_for_label }}"
                          min="0" max="1000000000" step="0.01" inputmode="decimal"
-                         value="{{ form.minimum_threshold.value|default_if_none:'0' }}"
+                         value="{{ form.minimum_threshold.value|default_if_none:'0'|unlocalize }}"
                          :disabled="!isDesktop"
                          class="control !h-9 text-xs font-mono pr-10 w-full"
                          placeholder="0"
@@ -474,7 +474,7 @@
 
         <div>
           <label class="field-label" for="m-{{ form.minimum_threshold.id_for_label }}">{{ form.minimum_threshold.label }}</label>
-          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="0.01" inputmode="decimal" value="{{ form.minimum_threshold.value|default_if_none:'0' }}" :disabled="isDesktop" class="control font-mono">
+          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="0.01" inputmode="decimal" value="{{ form.minimum_threshold.value|default_if_none:'0'|unlocalize }}" :disabled="isDesktop" class="control font-mono">
         </div>
 
         <div x-show="showDims" x-cloak class="space-y-2 rounded-lg border border-line bg-raised/30 p-3">

@@ -2,6 +2,7 @@ import datetime as dt
 from decimal import Decimal
 from uuid import uuid4
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
@@ -50,6 +51,8 @@ class AuditWorkflowTests(TestCase):
         self.paint.refresh_from_db()
         self.assertEqual(self.paint.minimum_threshold, Decimal("0.50"))
         self.assertIsNone(self.paint.whole_stock.length_mm)
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "ru"
+        self.assertContains(self.client.get(edit), 'value="0.50"', count=2)
         response = self.client.patch(
             f"/api/materials/{self.paint.pk}/", {"unit_of_measure": "KG"}, content_type="application/json"
         )
