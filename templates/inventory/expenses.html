@@ -38,20 +38,24 @@
 
 {# Filters (collapsible, like the monthly report) #}
 <div x-data="{ filtersOpen: false }" class="mt-6">
-  <button @click="filtersOpen = !filtersOpen" type="button" class="flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
+  <button @click="filtersOpen = !filtersOpen" type="button" class="btn btn-secondary min-h-9 px-3 text-xs font-medium">
     {% icon "search" 14 %} {% translate "Filtrlar" %}
-    <svg :class="filtersOpen && 'rotate-180'" class="h-4 w-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    <svg :class="filtersOpen && 'rotate-180'" class="h-3.5 w-3.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
   </button>
-  <form x-show="filtersOpen" x-cloak x-transition method="get" class="mt-3 flex flex-wrap items-end gap-3" aria-label="{% translate 'Filtrlar' %}">
-    {% with hide_optional=True %}
-    <div class="w-44">{% include "partials/field.html" with field=filter_form.month %}</div>
-    <div class="w-44">{% include "partials/field.html" with field=filter_form.category %}</div>
-    {% endwith %}
-    <div class="flex gap-2">
-      <button type="submit" class="btn btn-primary min-h-10">{% translate "Ko'rsatish" %}</button>
-      <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
+  <div class="grid transition-[grid-template-rows] duration-300 ease-out" :class="filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'" x-cloak>
+    <div class="overflow-hidden">
+      <form method="get" class="mt-3 flex flex-wrap items-end gap-3" aria-label="{% translate 'Filtrlar' %}">
+        {% with hide_optional=True %}
+        <div class="w-44">{% include "partials/field.html" with field=filter_form.month %}</div>
+        <div class="w-44">{% include "partials/field.html" with field=filter_form.category %}</div>
+        {% endwith %}
+        <div class="flex gap-2">
+          <button type="submit" class="btn btn-primary min-h-10">{% translate "Ko'rsatish" %}</button>
+          <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
 </div>
 
 {# Unified Excel Data Grid: new-expense row + history, like Kirim / Qoldiq qo'shish #}

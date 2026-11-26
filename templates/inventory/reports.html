@@ -11,24 +11,28 @@
 </div>
 
 <div x-data="{ filtersOpen: false }" class="mt-4">
-  <button @click="filtersOpen = !filtersOpen" type="button" class="flex items-center gap-2 text-sm text-muted hover:text-ink transition-colors">
+  <button @click="filtersOpen = !filtersOpen" type="button" class="btn btn-secondary min-h-9 px-3 text-xs font-medium">
     {% icon "search" 14 %} {% translate "Filtrlar" %}
-    <svg :class="filtersOpen && 'rotate-180'" class="h-4 w-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    <svg :class="filtersOpen && 'rotate-180'" class="h-3.5 w-3.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
   </button>
-  <form x-show="filtersOpen" x-cloak x-transition method="get" class="form-stack mt-3 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
-    {% with hide_optional=True %}
-    <div>{% include "partials/field.html" with field=filter_form.month %}</div>
-    <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
-    <div>{% include "partials/field.html" with field=filter_form.category %}</div>
-    <div>{% include "partials/field.html" with field=filter_form.user %}</div>
-    <div>{% include "partials/field.html" with field=filter_form.material %}</div>
-    <div>{% include "partials/field.html" with field=filter_form.project %}</div>
-    {% endwith %}
-    <div class="col-span-2 flex gap-2 md:col-span-1">
-      <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
-      <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
+  <div class="grid transition-[grid-template-rows] duration-300 ease-out" :class="filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'" x-cloak>
+    <div class="overflow-hidden">
+      <form method="get" class="form-stack mt-3 grid grid-cols-2 items-end gap-3 md:grid-cols-[160px_repeat(5,minmax(0,1fr))_auto]" aria-label="{% translate 'Filtrlar' %}">
+        {% with hide_optional=True %}
+        <div>{% include "partials/field.html" with field=filter_form.month %}</div>
+        <div>{% include "partials/field.html" with field=filter_form.transaction_type %}</div>
+        <div>{% include "partials/field.html" with field=filter_form.category %}</div>
+        <div>{% include "partials/field.html" with field=filter_form.user %}</div>
+        <div>{% include "partials/field.html" with field=filter_form.material %}</div>
+        <div>{% include "partials/field.html" with field=filter_form.project %}</div>
+        {% endwith %}
+        <div class="col-span-2 flex gap-2 md:col-span-1">
+          <button type="submit" class="btn btn-primary min-h-10 flex-1 md:flex-none">{% translate "Ko'rsatish" %}</button>
+          <a href="?month=" class="btn btn-ghost min-h-10">{% translate "Tozalash" %}</a>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
 </div>
 
 <section class="panel mt-6 grid grid-cols-2 md:grid-cols-5" aria-label="{% translate "Davr bo'yicha jami" %}">
