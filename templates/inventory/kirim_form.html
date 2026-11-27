@@ -12,7 +12,10 @@
   .receipt-fields > * {
     min-width: 0;
   }
-  .receipt-fields output { display: block; }
+  .receipt-fields output {
+    display: flex;
+    align-items: center;
+  }
   @media (min-width: 640px) {
     .receipt-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
