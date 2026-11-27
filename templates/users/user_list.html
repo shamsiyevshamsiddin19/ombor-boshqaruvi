@@ -48,10 +48,10 @@
     <table class="grid-table">
       <thead>
         <tr>
-          <th class="w-[180px] min-w-[160px] text-left">{% translate "Telefon raqami" %}</th>
           <th class="min-w-[220px] text-left">{% translate "Ishchi" %}</th>
+          <th class="w-[180px] min-w-[160px] text-left">{% translate "Telefon raqami" %}</th>
+          <th class="w-[160px] min-w-[140px] text-left">{% translate "Parol" %}</th>
           <th class="min-w-[220px] text-left">{% translate "Kasblari" %}</th>
-          <th class="w-[160px] min-w-[140px] text-left">{% translate "Parol holati" %}</th>
           <th class="w-[120px] min-w-[100px] text-center">{% translate "Holati" %}</th>
           <th class="w-[130px] min-w-[110px] text-right">{% translate "Amal" %}</th>
         </tr>
@@ -59,12 +59,6 @@
       <tbody>
         {% for u in users %}
         <tr class="hover:bg-raised/40 transition-colors">
-          {# 1. Telefon raqami #}
-          <td class="px-5 py-3.5 whitespace-nowrap">
-            <span class="num font-mono text-[13.5px] font-medium text-ink">{{ u.phone_display|default:u.login_id }}</span>
-          </td>
-
-          {# 2. Ishchi #}
           <td class="px-5 py-3.5">
             <div class="flex items-center gap-1.5">
               <span class="font-medium text-ink text-[14px]">{{ u.display_name }}</span>
@@ -75,6 +69,14 @@
                 <span class="rounded bg-accent/10 px-1.5 py-0.5 text-[10.5px] font-medium text-accent">Admin</span>
               {% endif %}
             </div>
+          </td>
+
+          <td class="px-5 py-3.5 whitespace-nowrap">
+            <span class="num font-mono text-[13.5px] font-medium text-ink">{{ u.phone_display|default:u.login_id }}</span>
+          </td>
+
+          <td class="px-4 py-3.5 whitespace-nowrap">
+            {% include "users/_password_action.html" %}
           </td>
 
           {# 3. Kasblari (Rollar) #}
@@ -88,11 +90,6 @@
                 <span class="text-xs text-muted">—</span>
               {% endfor %}
             </div>
-          </td>
-
-          {# 4. Parol holati #}
-          <td class="px-4 py-3.5 whitespace-nowrap">
-            <span class="text-xs text-muted">{% translate "O'rnatilgan" %}</span>
           </td>
 
           {# 5. Holati #}
@@ -129,6 +126,7 @@
           {% if u.pk == user.pk %}<span class="text-xs text-muted font-normal">{% translate "(siz)" %}</span>{% endif %}
         </div>
         <p class="mt-0.5 truncate text-xs text-muted font-mono">{{ u.phone_display|default:u.login_id }}</p>
+        {% include "users/_password_action.html" %}
         <div class="mt-1 flex flex-wrap gap-1">
           {% for r in u.roles %}
             <span class="rounded bg-surface-raised px-1 py-0.5 text-[10px] text-muted">{{ r|short_role }}</span>

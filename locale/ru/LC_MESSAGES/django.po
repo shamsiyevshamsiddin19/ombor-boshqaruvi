@@ -2310,3 +2310,27 @@ msgstr "Упаковочная плёнка"
 
 msgid "Karton burchak"
 msgstr "Картонный уголок"
+
+msgid "Administrator hisobi o'chirilmaydi."
+msgstr "Учётную запись администратора удалить нельзя."
+
+msgid "Bu ishchining ombor tarixi bor. Hisobni faolsizlantirishingiz mumkin."
+msgstr "У сотрудника есть история операций на складе. Учётную запись можно деактивировать."
+
+msgid "%(name)s hisobi o'chirildi."
+msgstr "Учётная запись «%(name)s» удалена."
+
+msgid "O'chirish"
+msgstr "Удалить"
+
+msgid "Ishchini o'chirish"
+msgstr "Удаление сотрудника"
+
+msgid "%(name)s hisobini o'chirishni tasdiqlaysizmi?"
+msgstr "Удалить учётную запись «%(name)s»?"
+
+msgid "Parol amallari"
+msgstr "Действия с паролем"
+
+msgid "Parolni yangilash"
+msgstr "Сбросить пароль"

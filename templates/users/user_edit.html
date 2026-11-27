@@ -17,12 +17,31 @@
       {% include "partials/field.html" with field=form.is_approved %}
       {% include "partials/field.html" with field=form.is_active %}
     </div>
-    {% include "partials/password_field.html" with field=form.new_password %}
-    <div class="flex flex-wrap justify-end gap-2">
-      <a href="{% url 'users:user_list' %}" class="btn btn-secondary btn-lg">{% translate "Bekor qilish" %}</a>
-      <button type="submit" class="btn btn-primary btn-lg">{% translate "Saqlash" %}</button>
+    <div id="password-reset">{% include "partials/password_field.html" with field=form.new_password %}</div>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <button type="button" class="btn btn-danger btn-lg"
+              {% if delete_blocker %}disabled aria-describedby="delete-blocker"{% else %}x-data @click="document.getElementById('worker-delete-dialog').showModal()"{% endif %}>
+        {% translate "O'chirish" %}
+      </button>
+      <div class="flex flex-wrap gap-2">
+        <a href="{% url 'users:user_list' %}" class="btn btn-secondary btn-lg">{% translate "Bekor qilish" %}</a>
+        <button type="submit" class="btn btn-primary btn-lg">{% translate "Saqlash" %}</button>
+      </div>
     </div>
+    {% if delete_blocker %}<p class="text-xs text-muted" id="delete-blocker">{{ delete_blocker }}</p>{% endif %}
   </form>
+
+  {% if not delete_blocker %}
+  <dialog id="worker-delete-dialog" class="panel m-auto w-full max-w-sm p-5 backdrop:bg-black/50" aria-labelledby="worker-delete-title">
+    <h2 id="worker-delete-title" class="panel-title">{% translate "Ishchini o'chirish" %}</h2>
+    <p class="mt-2 text-sm">{% blocktranslate with name=account.display_name %}{{ name }} hisobini o'chirishni tasdiqlaysizmi?{% endblocktranslate %}</p>
+    <form class="mt-5 flex flex-wrap justify-end gap-2" method="post" action="{% url 'users:user_delete' account.pk %}">
+      {% csrf_token %}
+      <button type="submit" formmethod="dialog" class="btn btn-secondary" autofocus>{% translate "Bekor qilish" %}</button>
+      <button type="submit" class="btn btn-danger">{% translate "O'chirish" %}</button>
+    </form>
+  </dialog>
+  {% endif %}
 
   {# ---- Kirish ma'lumotlari ---- #}
   <div class="panel p-5 sm:p-6 lg:col-span-5">

@@ -5,7 +5,7 @@ from django.contrib.auth import views as auth_views
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -168,6 +168,11 @@ class UserUpdateView(WarehouseAdminRequiredMixin, UpdateView):
         kwargs["acting_user"] = self.request.user
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["delete_blocker"] = services.worker_deletion_blocker(self.object, acting_user=self.request.user)
+        return context
+
     def form_valid(self, form):
         user = form.save(commit=False)
         if user.is_approved and user.approved_at is None:
@@ -176,6 +181,19 @@ class UserUpdateView(WarehouseAdminRequiredMixin, UpdateView):
         user.save()
         messages.success(self.request, _("%(name)s ma'lumotlari saqlandi.") % {"name": user.display_name})
         return redirect(reverse("users:user_list"))
+
+
+class WorkerDeleteView(WarehouseAdminRequiredMixin, View):
+    def post(self, request, pk):
+        try:
+            name = services.delete_worker(pk, acting_user=request.user)
+        except User.DoesNotExist as exc:
+            raise Http404 from exc
+        except ValidationError as exc:
+            messages.error(request, " ".join(exc.messages))
+            return redirect("users:user_edit", pk=pk)
+        messages.success(request, _("%(name)s hisobi o'chirildi.") % {"name": name})
+        return redirect("users:user_list")
 
 
 class WorkerRoleCreateView(WarehouseAdminRequiredMixin, CreateView):
