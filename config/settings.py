@@ -87,6 +87,10 @@ if not SECRET_KEY:
     else:
         raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is off.")
 
+# Key for the encrypted password copy admins can reveal (apps/users/password_vault.py).
+# Falls back to SECRET_KEY; changing either one makes the stored copies unreadable.
+PASSWORD_REVEAL_KEY = env("PASSWORD_REVEAL_KEY", "")
+
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]")
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 

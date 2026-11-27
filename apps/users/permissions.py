@@ -13,6 +13,21 @@ def is_warehouse_admin(user) -> bool:
     return is_approved_user(user) and user.is_warehouse_admin
 
 
+def can_manage_account(actor, target) -> bool:
+    """Whether ``actor`` may edit ``target`` or read its password.
+
+    Same boundary as the edit form: superuser accounts are for superusers only, and
+    an ordinary admin cannot touch another admin's account.
+    """
+    if not is_warehouse_admin(actor):
+        return False
+    if actor.is_superuser:
+        return True
+    if target.is_superuser:
+        return False
+    return target.pk == actor.pk or not target.is_warehouse_admin
+
+
 def can_take_stock(user) -> bool:
     """Who may take material off the shelf: approved workers, never administrators."""
     return is_approved_user(user) and not user.is_warehouse_admin

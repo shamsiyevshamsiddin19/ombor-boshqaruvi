@@ -9,6 +9,8 @@ from django.db.models.signals import post_delete, post_save
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext, pgettext_lazy
 
+from . import password_vault
+
 
 class UserRole(models.TextChoices):
     ADMIN = "ADMIN", _("Administrator")
@@ -157,6 +159,13 @@ class UserQuerySet(models.QuerySet):
 
 
 class UserManager(DjangoUserManager.from_queryset(UserQuerySet)):
+    def _create_user_object(self, username, email, password, **extra_fields):
+        # Django hashes here with make_password, bypassing User.set_password.
+        user = super()._create_user_object(username, email, password, **extra_fields)
+        if password:
+            user.password_encrypted = password_vault.encrypt(password)
+        return user
+
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_approved", True)
         extra_fields.setdefault("roles", [UserRole.ADMIN.value])
@@ -174,8 +183,9 @@ class User(AbstractUser):
         validators=[validate_phone],
         help_text=_("Tizimga shu raqam bilan kiriladi."),
     )
-    # password_plain field removed — storing plaintext passwords is a critical
-    # security risk. Admins reset passwords via the edit form instead.
+    # Never plaintext: a Fernet-encrypted copy (see ``password_vault``) that only an
+    # administrator can read back from the worker list. Login still checks the hash.
+    password_encrypted = models.TextField(blank=True, default="", editable=False)
     roles = models.JSONField(
         default=list,
         blank=True,
@@ -206,6 +216,22 @@ class User(AbstractUser):
 
     def set_password(self, raw_password):
         super().set_password(raw_password)
+        self.password_encrypted = password_vault.encrypt(raw_password) if raw_password else ""
+
+    def set_unusable_password(self):
+        super().set_unusable_password()
+        self.password_encrypted = ""
+
+    @property
+    def revealed_password(self) -> str | None:
+        """The current password in clear text, or None when no readable copy is stored."""
+        return password_vault.decrypt(self.password_encrypted)
+
+    @property
+    def password_mask(self) -> str:
+        """One ``*`` per character of the password; empty when it cannot be known."""
+        password = self.revealed_password
+        return "*" * len(password) if password else ""
 
     # --- Phone ------------------------------------------------------------
     @property

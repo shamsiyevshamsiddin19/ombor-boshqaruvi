@@ -159,3 +159,47 @@
   {% endif %}
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+  // Eye button in the password column (templates/users/_password_action.html).
+  // The password is fetched only when an admin presses the eye, never embedded in the page.
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('passwordReveal', () => ({
+      shown: false,
+      busy: false,
+      value: '',
+      error: '',
+      get mask() { return this.$root.dataset.mask; },
+      get label() { return this.shown ? this.$root.dataset.hideLabel : this.$root.dataset.showLabel; },
+      async toggle() {
+        if (this.shown) { this.shown = false; return; }
+        if (!this.value) {
+          this.busy = true;
+          this.error = '';
+          try {
+            const token = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '';
+            const response = await fetch(this.$root.dataset.url, {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: { 'X-CSRFToken': token, Accept: 'application/json' },
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || typeof data.password !== 'string') {
+              this.error = data.error || this.$root.dataset.errorText;
+              return;
+            }
+            this.value = data.password;
+          } catch (err) {
+            this.error = this.$root.dataset.errorText;
+            return;
+          } finally {
+            this.busy = false;
+          }
+        }
+        this.shown = true;
+      },
+    }));
+  });
+</script>
+{% endblock %}

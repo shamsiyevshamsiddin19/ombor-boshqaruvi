@@ -107,12 +107,15 @@ class PhoneLoginTests(TestCase):
 
 
 class PasswordSecurityTests(TestCase):
-    """Plaintext passwords are never stored or exposed."""
+    """Plaintext passwords are never stored, and the page never carries one."""
 
-    def test_password_is_hashed_not_stored_plaintext(self):
+    def test_password_is_hashed_and_only_kept_encrypted(self):
         user = make_user("bobur", [UserRole.ARRACHI])
         self.assertTrue(user.check_password(PASSWORD))
         self.assertFalse(hasattr(user, "password_plain"))
+        self.assertNotIn(PASSWORD, user.password)
+        self.assertNotIn(PASSWORD, user.password_encrypted)
+        self.assertEqual(user.revealed_password, PASSWORD)
 
     def test_admin_sees_phone_on_the_worker_list(self):
         make_user("bobur", [UserRole.ARRACHI], phone="+998901234567", full_name="Bobur Karimov")
