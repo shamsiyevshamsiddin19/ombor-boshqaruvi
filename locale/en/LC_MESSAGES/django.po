@@ -2150,10 +2150,6 @@ msgstr "If it takes too long, tell the workshop manager."
 msgid "Kirish ma'lumotlari"
 msgstr "Login credentials"
 
-#: templates/users/user_edit.html:37
-msgid "Yangisini o'rnatish uchun chapdagi formadan foydalaning"
-msgstr "Use the form on the left to set a new one"
-
 #: templates/users/user_edit.html:7
 #, python-format
 msgid "ro'yxatdan o'tgan %(date)s"
@@ -2316,9 +2312,3 @@ msgstr "Delete worker"
 
 msgid "%(name)s hisobini o'chirishni tasdiqlaysizmi?"
 msgstr "Delete the account for %(name)s?"
-
-msgid "Parol amallari"
-msgstr "Password options"
-
-msgid "Parolni yangilash"
-msgstr "Reset password"
