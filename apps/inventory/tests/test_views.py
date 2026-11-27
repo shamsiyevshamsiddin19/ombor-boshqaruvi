@@ -119,6 +119,26 @@ class HomeTests(WorkshopTestCase):
                 self.assertEqual(groups[False], [self.paint])
                 self.assertContains(response, "Kiritilmagan")
 
+    def test_suggestions_use_prefix_and_respect_access(self):
+        make_material("Lak mat", "KRASKA", MeasurementUnit.LITER)
+        make_material("Laminate", "LMDF")
+        make_material("Xona lak", "KRASKA", MeasurementUnit.LITER)
+        url = reverse("inventory:material_suggestions")
+        self.assertEqual(self.client.get(url, {"q": "l"}).status_code, 302)
+        self.client.force_login(self.kraskachi)
+        response = self.client.get(url, {"q": "l"})
+        self.assertEqual(response.json(), {"names": ["Lak mat"]})
+        self.assertEqual(response["Cache-Control"], "private, no-store")
+        self.client.force_login(self.admin)
+        self.assertEqual(self.client.get(url, {"q": "l", "category": "LMDF"}).json(), {"names": ["Laminate"]})
+
+    def test_selecting_a_suggestion_filters_to_the_exact_name(self):
+        lak = make_material("Lak", "KRASKA", MeasurementUnit.LITER)
+        make_material("Lak mat", "KRASKA", MeasurementUnit.LITER)
+        self.client.force_login(self.admin)
+        response = self.client.get(reverse("inventory:home"), {"q": "Lak", "match": "exact"})
+        self.assertEqual([stock.material for stock in response.context["whole_stock"]], [lak])
+
     def test_search_and_category_filter(self):
         self.client.force_login(self.admin)
         response = self.client.get(reverse("inventory:home"), {"q": "akril"})
@@ -269,7 +289,8 @@ class KirimViewTests(WorkshopTestCase):
              "minimum_threshold": "6", "length_mm": "2440", "width_mm": "1220"},
         )
         material = BaseMaterial.objects.get(name="Fanera 12 mm")
-        self.assertRedirects(response, f"{self.url}?material={material.pk}")
+        self.assertRedirects(response, f"{self.url}?material={material.pk}", fetch_redirect_response=False)
+        self.assertContains(self.client.get(response.url), 'class="flash-toasts"')
         self.assertEqual(material.allowed_roles, [UserRole.ARRACHI, UserRole.ROVERCHI])  # category default
         self.assertEqual((material.whole_stock.length_mm, material.whole_stock.width_mm), (2440, 1220))
 

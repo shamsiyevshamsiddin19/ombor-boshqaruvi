@@ -2238,3 +2238,63 @@ msgstr "Price (USD)"
 
 msgid "Kiritilmagan"
 msgstr "Not entered"
+
+msgid "Nom misollari"
+msgstr "Example material names"
+
+msgid "LMDF oq mat 18 mm"
+msgstr "White matte LMDF 18 mm"
+
+msgid "LMDF eman 16 mm"
+msgstr "Oak LMDF 16 mm"
+
+msgid "LDSP oq 16 mm"
+msgstr "White LDSP 16 mm"
+
+msgid "LDSP yong‘oq 18 mm"
+msgstr "Walnut LDSP 18 mm"
+
+msgid "Qayin faner 12 mm"
+msgstr "Birch plywood 12 mm"
+
+msgid "Faner 18 mm"
+msgstr "Plywood 18 mm"
+
+msgid "DSP 16 mm"
+msgstr "Particle board 16 mm"
+
+msgid "DSP 22 mm"
+msgstr "Particle board 22 mm"
+
+msgid "Lak mat"
+msgstr "Matte varnish"
+
+msgid "Kraska oq mat"
+msgstr "Matte white paint"
+
+msgid "Akril kraska oq"
+msgstr "White acrylic paint"
+
+msgid "Oq gruntovka"
+msgstr "White primer"
+
+msgid "Yog‘och uchun gruntovka"
+msgstr "Wood primer"
+
+msgid "PVC oq 22 × 1 mm"
+msgstr "White PVC edging 22 × 1 mm"
+
+msgid "PVC eman 22 × 2 mm"
+msgstr "Oak PVC edging 22 × 2 mm"
+
+msgid "Samarez 4 × 16 mm"
+msgstr "Self-tapping screw 4 × 16 mm"
+
+msgid "Petlya 35 mm"
+msgstr "Hinge 35 mm"
+
+msgid "Qadoqlash plyonkasi"
+msgstr "Packaging film"
+
+msgid "Karton burchak"
+msgstr "Cardboard corner protector"

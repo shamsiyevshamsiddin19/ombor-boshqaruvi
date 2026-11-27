@@ -83,7 +83,8 @@
        n(v) { return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
      }">
 
-  <form method="post" autocomplete="off" novalidate>
+  <form method="post" autocomplete="off" novalidate
+        data-enter-order="material quantity price_mode price_usd">
     {% csrf_token %}
     {{ form.idempotency_key }}
     {% if form.errors %}

@@ -2250,3 +2250,63 @@ msgstr "Цена (USD)"
 
 msgid "Kiritilmagan"
 msgstr "Не указано"
+
+msgid "Nom misollari"
+msgstr "Примеры названий материалов"
+
+msgid "LMDF oq mat 18 mm"
+msgstr "ЛМДФ белый матовый 18 мм"
+
+msgid "LMDF eman 16 mm"
+msgstr "ЛМДФ дуб 16 мм"
+
+msgid "LDSP oq 16 mm"
+msgstr "ЛДСП белая 16 мм"
+
+msgid "LDSP yong‘oq 18 mm"
+msgstr "ЛДСП орех 18 мм"
+
+msgid "Qayin faner 12 mm"
+msgstr "Берёзовая фанера 12 мм"
+
+msgid "Faner 18 mm"
+msgstr "Фанера 18 мм"
+
+msgid "DSP 16 mm"
+msgstr "ДСП 16 мм"
+
+msgid "DSP 22 mm"
+msgstr "ДСП 22 мм"
+
+msgid "Lak mat"
+msgstr "Лак матовый"
+
+msgid "Kraska oq mat"
+msgstr "Краска белая матовая"
+
+msgid "Akril kraska oq"
+msgstr "Краска акриловая белая"
+
+msgid "Oq gruntovka"
+msgstr "Грунтовка белая"
+
+msgid "Yog‘och uchun gruntovka"
+msgstr "Грунтовка для дерева"
+
+msgid "PVC oq 22 × 1 mm"
+msgstr "Кромка ПВХ белая 22 × 1 мм"
+
+msgid "PVC eman 22 × 2 mm"
+msgstr "Кромка ПВХ дуб 22 × 2 мм"
+
+msgid "Samarez 4 × 16 mm"
+msgstr "Саморез 4 × 16 мм"
+
+msgid "Petlya 35 mm"
+msgstr "Петля 35 мм"
+
+msgid "Qadoqlash plyonkasi"
+msgstr "Упаковочная плёнка"
+
+msgid "Karton burchak"
+msgstr "Картонный уголок"

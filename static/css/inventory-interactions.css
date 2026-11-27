@@ -1,0 +1,55 @@
+.flash-messages {
+  display: grid;
+}
+
+.flash-messages > :not(.flash-toast) {
+  margin-bottom: .5rem;
+}
+
+.flash-messages > :not(.flash-toast):last-child {
+  margin-bottom: 1.25rem;
+}
+
+.flash-toasts {
+  position: fixed;
+  z-index: 60;
+  right: 1rem;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  width: min(24rem, calc(100% - 2rem));
+  display: grid;
+  gap: .5rem;
+}
+
+.flash-toast {
+  box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  border-radius: .5rem;
+}
+
+@media (min-width: 1024px) {
+  .flash-toasts { right: 1.5rem; bottom: 1.5rem; }
+}
+
+.material-suggestions {
+  position: fixed;
+  z-index: 60;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-line);
+  border-radius: .5rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  padding: .25rem;
+  font-size: .875rem;
+}
+
+.material-suggestion {
+  padding: .5rem .625rem;
+  border-radius: .25rem;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.material-suggestion[aria-selected="true"], .material-suggestion:hover {
+  background: var(--color-raised);
+}

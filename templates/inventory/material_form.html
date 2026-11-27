@@ -7,6 +7,7 @@
 {{ unit_labels_meta|json_script:"unit-labels-meta" }}
 {{ category_defaults|json_script:"category-defaults" }}
 {{ initial_roles|json_script:"initial-roles" }}
+{{ material_name_examples|json_script:"material-name-examples" }}
 
 {# Header #}
 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -50,7 +51,6 @@
        unit: '{{ form.unit_of_measure.value|default_if_none:''|escapejs }}',
        unitTouched: {% if form.unit_of_measure.value %}true{% else %}false{% endif %},
        selectedRoles: JSON.parse(document.getElementById('initial-roles').textContent || '[]'),
-       rolesTouched: {% if material %}true{% else %}false{% endif %},
        newSupportsOffcuts: {% if form.new_category_supports_offcuts.value %}true{% else %}false{% endif %},
        dimUnit: '{{ form.dim_unit.value|default_if_none:'mm'|escapejs }}',
        isActive: {% if form.is_active and not form.is_active.value %}false{% else %}true{% endif %},
@@ -69,17 +69,12 @@
        },
        onCategoryChange() {
          const def = this.catDefaults[this.category];
-         if (def) {
-           if (!this.isEdit && !this.rolesTouched) {
-             this.selectedRoles = [...def.roles];
-           }
-           if (!this.isEdit && !this.unitTouched && def.unit) {
-             this.unit = def.unit;
-           }
+         this.selectedRoles = def ? [...def.roles] : [];
+         if (!this.isEdit && !this.unitTouched && def && def.unit) {
+           this.unit = def.unit;
          }
        },
        toggleRole(code) {
-         this.rolesTouched = true;
          if (this.selectedRoles.includes(code)) {
            this.selectedRoles = this.selectedRoles.filter(r => r !== code);
          } else {
@@ -87,16 +82,13 @@
          }
        },
        selectAllRoles() {
-         this.rolesTouched = true;
          this.selectedRoles = this.workerRoles.map(r => r.code);
        },
        resetDefaultRoles() {
          const def = this.catDefaults[this.category];
-         this.rolesTouched = false;
          this.selectedRoles = def ? [...def.roles] : [];
        },
        clearRoles() {
-         this.rolesTouched = true;
          this.selectedRoles = [];
        },
        toggleRolesDropdown(btn) {
@@ -121,7 +113,8 @@
      @scroll.window="if (rolesOpen) rolesOpen = false;"
      @keydown.escape.window="rolesOpen = false">
 
-  <form method="post" autocomplete="off" novalidate>
+  <form method="post" autocomplete="off" novalidate
+        data-enter-order="name category new_category unit_of_measure length_mm width_mm minimum_threshold">
     {% csrf_token %}
     {% include "partials/form_errors.html" %}
 
@@ -151,10 +144,12 @@
                        name="{{ form.name.html_name }}"
                        id="{{ form.name.id_for_label }}"
                        value="{{ form.name.value|default_if_none:'' }}"
+                       data-material-example data-suggestion-label="{% translate 'Nom misollari' %}"
+                       aria-label="{{ form.name.label }}"
                        autocomplete="one-time-code"
                        :disabled="!isDesktop"
                        class="control !h-9 text-xs sm:text-sm w-full"
-                       placeholder="LMDF 18 mm oq"
+                       placeholder="{{ form.name.label }}"
                        required>
                 {% for e in form.name.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
@@ -359,7 +354,7 @@
       <div class="lg:hidden p-4 form-stack bg-surface">
         <div>
           <label class="field-label" for="m-{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-          <input type="text" name="{{ form.name.html_name }}" id="m-{{ form.name.id_for_label }}" value="{{ form.name.value|default_if_none:'' }}" :disabled="isDesktop" class="control" placeholder="LMDF 18 mm oq" required>
+          <input type="text" name="{{ form.name.html_name }}" id="m-{{ form.name.id_for_label }}" data-material-example data-suggestion-label="{% translate 'Nom misollari' %}" value="{{ form.name.value|default_if_none:'' }}" :disabled="isDesktop" class="control" placeholder="{{ form.name.label }}" required>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
