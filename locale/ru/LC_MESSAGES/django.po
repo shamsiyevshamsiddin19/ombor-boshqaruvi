@@ -2237,3 +2237,7 @@ msgstr "Существующие профессии:"
 #: templates/users/worker_role_form.html:7
 msgid "Qo'shilgach, ishchilar ro'yxatdan o'tishda shu kasbni tanlay oladi. Materiallarda ham shu kasbni belgilang."
 msgstr "После добавления работники смогут выбрать эту профессию при регистрации. Отметьте её и в материалах."
+
+#: templates/inventory/home.html:250
+msgid "Ombor hozircha bo'sh"
+msgstr "Склад пока пуст"

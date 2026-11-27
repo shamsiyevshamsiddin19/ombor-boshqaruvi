@@ -2225,3 +2225,7 @@ msgstr "Existing trades:"
 #: templates/users/worker_role_form.html:7
 msgid "Qo'shilgach, ishchilar ro'yxatdan o'tishda shu kasbni tanlay oladi. Materiallarda ham shu kasbni belgilang."
 msgstr "Once added, workers can choose this trade when they register. Select it on materials too."
+
+#: templates/inventory/home.html:250
+msgid "Ombor hozircha bo'sh"
+msgstr "The warehouse is empty"
