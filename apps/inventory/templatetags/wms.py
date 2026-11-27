@@ -188,6 +188,12 @@ def offcut_figure(length_mm, width_mm, sheet_length=None, sheet_width=None, box_
     The piece drawn to scale inside the outline of a full sheet, so a worker can
     see at a glance whether an offcut is big enough before walking to the rack.
     """
+    if not (length_mm and width_mm):
+        return format_html(
+            '<svg width="{}" height="{}" viewBox="0 0 {} {}" role="img" aria-label="{}">'
+            '<rect x="1" y="1" width="{}" height="{}" rx="3" fill="none" stroke="#c7ccd4" stroke-dasharray="3 2"/></svg>',
+            box_w, box_h, box_w, box_h, _("O'lchamsiz qoldiq"), box_w - 2, box_h - 2,
+        )
     piece = sorted((int(length_mm), int(width_mm)), reverse=True)
     has_sheet = bool(sheet_length and sheet_width)
     sheet = sorted((int(sheet_length), int(sheet_width)), reverse=True) if has_sheet else piece

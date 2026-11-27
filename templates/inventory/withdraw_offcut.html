@@ -6,7 +6,7 @@
 <div class="max-w-[600px]" x-data="{ q: Number('{{ form.quantity.value|default_if_none:1|escapejs }}') || 1, max: {{ offcut.quantity }} }">
   <a href="{% url 'inventory:home' %}?tab=offcuts" class="inline-flex items-center gap-1.5 text-muted hover:text-ink">{% icon "back" %} {% translate "Ombor" %}</a>
   <h1 class="mt-3 font-bold text-[24px] leading-8 lg:text-[32px] lg:leading-10">{{ m.name }}</h1>
-  <p class="num mt-1" style="font-size:16px">{% blocktranslate with length=offcut.length_mm width=offcut.width_mm %}Qoldiq {{ length }} × {{ width }} mm{% endblocktranslate %}</p>
+  <p class="num mt-1" style="font-size:16px">{% if offcut.has_dimensions %}{% blocktranslate with length=offcut.length_mm width=offcut.width_mm %}Qoldiq {{ length }} × {{ width }} mm{% endblocktranslate %}{% else %}{% translate "Qoldiq" %}{% endif %}</p>
 
   <form method="post" class="panel form-stack mt-6 p-5 sm:p-6" novalidate>
     {% csrf_token %}

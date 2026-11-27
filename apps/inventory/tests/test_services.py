@@ -252,10 +252,28 @@ class OffcutTests(TestCase):
             with self.subTest(bad=bad), self.assertRaises(ValidationError):
                 services.register_offcut(material=self.mdf, user=self.worker, **kwargs)
 
-    def test_hardware_and_liquids_have_no_offcuts(self):
+    def test_hardware_and_liquids_take_offcuts_without_a_size(self):
         hinge = make_material("Petlya", MaterialCategory.HARDWARE, MeasurementUnit.PIECE)
+        offcut = services.register_offcut(material=hinge, user=self.admin, length_mm=10, width_mm=10, quantity=3)
+        self.assertEqual((offcut.length_mm, offcut.width_mm, offcut.quantity), (None, None, 3))
+        self.assertIsNone(offcut.area_m2)
+        self.assertIsNone(offcut.estimated_value_usd)
+        deposit = InventoryTransaction.objects.get(transaction_type=TransactionType.OFFCUT_DEPOSIT, material=hinge)
+        self.assertIsNone(deposit.offcut_length_mm)
+
+    def test_sheet_offcut_still_needs_a_size(self):
         with self.assertRaises(ValidationError):
-            services.register_offcut(material=hinge, user=self.admin, length_mm=10, width_mm=10)
+            services.register_offcut(material=self.mdf, user=self.worker, length_mm=None, width_mm=None)
+
+    def test_size_less_offcut_can_be_taken_and_the_take_reversed(self):
+        paint = make_material("Lak mat", MaterialCategory.LIQUID, MeasurementUnit.LITER)
+        painter = make_user("kraskachi", [UserRole.KRASKACHI])
+        offcut = services.register_offcut(material=paint, user=painter, quantity=2, notes="yarim banka")
+        entry = services.withdraw_offcut(offcut=offcut, user=painter, quantity=2)
+        self.assertFalse(LeftoverOffcut.objects.filter(pk=offcut.pk).exists())
+        services.reverse_transaction(entry=entry, user=self.admin, reason="xato")
+        restored = LeftoverOffcut.objects.get(pk=offcut.pk)
+        self.assertEqual((restored.length_mm, restored.width_mm, restored.quantity), (None, None, 2))
 
     def test_other_trades_cannot_log_or_take_offcuts(self):
         painter = make_user("kraskachi", [UserRole.KRASKACHI])

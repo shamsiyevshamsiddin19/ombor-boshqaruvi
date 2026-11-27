@@ -157,7 +157,10 @@ def update_material(material: BaseMaterial, *, changes: dict, dimensions: dict) 
             raise ValidationError({"unit_of_measure": _("Zaxirasi yoki tarixi bor materialning birligini almashtirib bo'lmaydi.")})
     if current.is_active and changes.get("is_active") is False and (stock.quantity or current.offcuts.exists()):
         raise ValidationError({"is_active": _("Omborda zaxirasi yoki qoldig'i bor materialni arxivlab bo'lmaydi.")})
-    if changes.get("category", current.category) not in offcut_category_codes() and current.offcuts.exists():
+    if (
+        changes.get("category", current.category) not in offcut_category_codes()
+        and current.offcuts.filter(length_mm__isnull=False).exists()
+    ):
         raise ValidationError({"category": _("Qoldig'i bor materialni o'lchamsiz kategoriyaga o'tkazib bo'lmaydi.")})
     for field, value in changes.items():
         setattr(current, field, value)
@@ -364,27 +367,32 @@ def register_offcut(
     *,
     material: BaseMaterial,
     user,
-    length_mm: int,
-    width_mm: int,
+    length_mm: int | None = None,
+    width_mm: int | None = None,
     quantity: int = 1,
     notes: str = "",
 ) -> LeftoverOffcut:
-    """Log a reusable leftover piece after cutting a sheet."""
+    """Log a reusable leftover: a cut piece of a sheet or roll (with its size), or pieces of any other material."""
     material = BaseMaterial.objects.select_for_update().get(pk=material.pk)
     _require_access(user, material)
     if not material.is_active:
         raise ValidationError(_("Bu material arxivlangan."))
-    if not material.supports_offcuts:
-        raise ValidationError({"material": _("Bu turdagi material uchun qoldiq qayd etilmaydi.")})
+    # Only sheets and rolls keep dimensions; any other material's leftover is counted in pieces.
+    measured = material.supports_offcuts
+    if not measured:
+        length_mm = width_mm = None
 
     errors = {}
-    for field, value in (("length_mm", length_mm), ("width_mm", width_mm), ("quantity", quantity)):
+    checks = [("quantity", quantity)]
+    if measured:
+        checks = [("length_mm", length_mm), ("width_mm", width_mm), *checks]
+    for field, value in checks:
         if not isinstance(value, int) or isinstance(value, bool) or value < 1:
             errors[field] = _("Musbat butun son kiriting.")
     if errors:
         raise ValidationError(errors)
 
-    stock = WholeMaterial.objects.filter(material=material).first()
+    stock = WholeMaterial.objects.filter(material=material).first() if measured else None
     if stock and stock.length_mm and stock.width_mm:
         piece = sorted((length_mm, width_mm))
         sheet = sorted((stock.length_mm, stock.width_mm))

@@ -282,8 +282,9 @@ class OffcutForm(forms.Form):
     material = MaterialChoiceField(
         queryset=BaseMaterial.objects.none(), label=_("Material"), empty_label=_("Materialni tanlang")
     )
-    length_mm = forms.IntegerField(label=_("Uzunligi (mm)"), min_value=1, max_value=MAX_MM)
-    width_mm = forms.IntegerField(label=_("Eni (mm)"), min_value=1, max_value=MAX_MM)
+    # Required only for sheets and rolls (see clean()); other materials are counted in pieces.
+    length_mm = forms.IntegerField(label=_("Uzunligi (mm)"), min_value=1, max_value=MAX_MM, required=False)
+    width_mm = forms.IntegerField(label=_("Eni (mm)"), min_value=1, max_value=MAX_MM, required=False)
     quantity = forms.IntegerField(label=_("Soni (dona)"), min_value=1, max_value=1000, initial=1)
     notes = forms.CharField(
         label=_("Joylashuvi / izoh"),
@@ -300,7 +301,22 @@ class OffcutForm(forms.Form):
             self.fields[name].widget.attrs.update(
                 {"inputmode": "numeric", "x-model.number": model, "class": "control font-mono"}
             )
+        for name in ("length_mm", "width_mm"):
+            self.fields[name].widget.attrs[":disabled"] = "!measured"
         self.fields["notes"].widget.attrs.update({"class": "control"})
+
+    def clean(self):
+        cleaned = super().clean()
+        material = cleaned.get("material")
+        if material is None:
+            return cleaned
+        if material.supports_offcuts:
+            for field in ("length_mm", "width_mm"):
+                if cleaned.get(field) is None and field not in self.errors:
+                    self.add_error(field, _("List va lenta qoldig'i uchun o'lchamni kiriting."))
+        else:
+            cleaned["length_mm"] = cleaned["width_mm"] = None
+        return cleaned
 
 
 class WithdrawOffcutForm(forms.Form):
