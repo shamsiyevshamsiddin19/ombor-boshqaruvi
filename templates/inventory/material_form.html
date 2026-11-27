@@ -224,12 +224,12 @@
                   <input type="number"
                          name="{{ form.minimum_threshold.html_name }}"
                          id="{{ form.minimum_threshold.id_for_label }}"
-                         min="0" max="1000000000" step="0.01" inputmode="decimal"
-                         value="{{ form.minimum_threshold.value|default_if_none:'0'|unlocalize }}"
+                         min="0" max="1000000000" step="1" inputmode="numeric"
+                         value="{{ form.minimum_threshold.value|default_if_none:''|unlocalize }}"
+                         data-whole-number
                          :disabled="!isDesktop"
                          class="control !h-9 text-xs font-mono pr-10 w-full"
-                         placeholder="0"
-                         required>
+                         placeholder="0">
                   <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted font-medium" x-text="unitShort"></span>
                 </div>
                 {% for e in form.minimum_threshold.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
@@ -387,7 +387,7 @@
 
         <div>
           <label class="field-label" for="m-{{ form.minimum_threshold.id_for_label }}">{{ form.minimum_threshold.label }}</label>
-          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="0.01" inputmode="decimal" value="{{ form.minimum_threshold.value|default_if_none:'0'|unlocalize }}" :disabled="isDesktop" class="control font-mono">
+          <input type="number" name="{{ form.minimum_threshold.html_name }}" id="m-{{ form.minimum_threshold.id_for_label }}" min="0" step="1" inputmode="numeric" value="{{ form.minimum_threshold.value|default_if_none:''|unlocalize }}" data-whole-number placeholder="0" :disabled="isDesktop" class="control font-mono">
         </div>
 
         <div x-show="showDims" x-cloak class="space-y-2 rounded-lg border border-line bg-raised/30 p-3">

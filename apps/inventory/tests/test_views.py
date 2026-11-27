@@ -335,6 +335,35 @@ class KirimViewTests(WorkshopTestCase):
         self.assertEqual(set(response.context["form"].errors), {"minimum_threshold"})
         self.assertFalse(BaseMaterial.objects.filter(name="Lak X").exists())
 
+    def test_material_minimum_is_a_whole_number(self):
+        url = reverse("inventory:material_create")
+        page = self.client.get(url).content.decode()
+        self.assertRegex(page, r'name="minimum_threshold"[^>]*step="1"')
+        self.assertNotRegex(page, r'name="minimum_threshold"[^>]*value="0"')  # no 0 to delete first
+
+        response = self.client.post(url, {
+            "name": "Lak Y", "category": "KRASKA", "unit_of_measure": MeasurementUnit.LITER,
+            "minimum_threshold": "2.5",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(set(response.context["form"].errors), {"minimum_threshold"})
+
+        self.client.post(url, {
+            "name": "Lak Y", "category": "KRASKA", "unit_of_measure": MeasurementUnit.LITER,
+            "minimum_threshold": "12",
+        })
+        self.assertEqual(BaseMaterial.objects.get(name="Lak Y").minimum_threshold, Decimal("12"))
+
+    def test_empty_minimum_means_zero(self):
+        self.client.post(reverse("inventory:material_create"), {
+            "name": "Lak Z", "category": "KRASKA", "unit_of_measure": MeasurementUnit.LITER,
+            "minimum_threshold": "",
+        })
+        material = BaseMaterial.objects.get(name="Lak Z")
+        self.assertEqual(material.minimum_threshold, Decimal("0"))
+        edit_page = self.client.get(reverse("inventory:material_edit", args=[material.pk])).content.decode()
+        self.assertNotRegex(edit_page, r'name="minimum_threshold"[^>]*value="0"')
+
 
 class DashboardAndReportTests(WorkshopTestCase):
     def setUp(self):

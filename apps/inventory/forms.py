@@ -91,10 +91,11 @@ class MaterialForm(forms.ModelForm):
         label=_("List eni"), required=False, min_value=1, max_value=MAX_MM,
         help_text=_("Masalan 1830 mm (yoki 183 sm)."),
     )
-    minimum_threshold = forms.DecimalField(
-        label=_("Minimal qoldiq"), min_value=0, max_value=10**9, initial=0, max_digits=12, decimal_places=2,
+    # A whole number; left empty it means 0 (see clean_minimum_threshold).
+    minimum_threshold = forms.IntegerField(
+        label=_("Minimal qoldiq"), min_value=0, max_value=10**9, required=False,
         help_text=_("Miqdor shundan kam bo'lsa, xarid ro'yxatida ko'rinadi."),
-        widget=forms.NumberInput(attrs={"step": "0.01", "inputmode": "decimal"}),
+        widget=forms.NumberInput(attrs={"step": "1", "inputmode": "numeric"}),
     )
 
     class Meta:
@@ -121,11 +122,16 @@ class MaterialForm(forms.ModelForm):
             self.fields["length_mm"].initial = stock.length_mm
             self.fields["width_mm"].initial = stock.width_mm
         self.fields["unit_of_measure"].choices = [("", _("Tanlang")), *MeasurementUnit.choices]
+        # Show a whole number; a zero minimum is left blank so the "0" placeholder shows instead.
         threshold = self.instance.minimum_threshold
         if self.instance.pk and threshold == threshold.to_integral_value():
-            self.initial["minimum_threshold"] = int(threshold)
+            self.initial["minimum_threshold"] = int(threshold) or None
         if not self.instance.pk:
             self.fields.pop("is_active")
+
+    def clean_minimum_threshold(self):
+        value = self.cleaned_data.get("minimum_threshold")
+        return 0 if value is None else value
 
     def clean(self):
         cleaned = super().clean()
