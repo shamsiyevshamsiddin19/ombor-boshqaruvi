@@ -2235,3 +2235,12 @@ msgstr "Price type"
 
 msgid "Narx (USD)"
 msgstr "Price (USD)"
+
+msgid "O'lchamli materiallar"
+msgstr "Materials with dimensions"
+
+msgid "O'lchamsiz materiallar"
+msgstr "Materials without dimensions"
+
+msgid "Kiritilmagan"
+msgstr "Not entered"
