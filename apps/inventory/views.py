@@ -67,6 +67,13 @@ def fmt_qty(value: Decimal) -> str:
     return f"{Decimal(value).normalize():f}"
 
 
+def group_by_dimensions(rows, dimension_categories, *, material_for_row):
+    groups = {True: [], False: []}
+    for row in rows:
+        groups[material_for_row(row).category in dimension_categories].append(row)
+    return [(has_dimensions, items) for has_dimensions, items in groups.items() if items]
+
+
 # ---------------------------------------------------------------------------
 # Worker-facing inventory
 # ---------------------------------------------------------------------------
@@ -104,7 +111,9 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
                 "query": query,
                 "category": category,
                 "dimension_categories": dimension_categories,
-                "show_dimensions": not category or category in dimension_categories,
+                "whole_groups": group_by_dimensions(
+                    whole_page.object_list, dimension_categories, material_for_row=lambda stock: stock.material
+                ),
                 "show_offcuts": not category or category in dimension_categories or bool(offcut_page.paginator.count),
                 "tab": "offcuts" if tab == "offcuts" and (
                     not category or category in dimension_categories or offcut_page.paginator.count
@@ -395,8 +404,9 @@ class MaterialFormContextMixin:
             for cat in cats
         }
         context["initial_roles"] = [str(r) for r in (form["allowed_roles"].value() or [])]
-        context["recent_materials"] = (
-            BaseMaterial.objects.select_related("whole_stock").order_by("-created_at", "-id")[:12]
+        recent_materials = BaseMaterial.objects.select_related("whole_stock").order_by("-created_at", "-id")[:12]
+        context["recent_material_groups"] = group_by_dimensions(
+            recent_materials, context["offcut_categories"], material_for_row=lambda material: material
         )
         return context
 

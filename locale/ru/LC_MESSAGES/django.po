@@ -2247,3 +2247,12 @@ msgstr "Тип цены"
 
 msgid "Narx (USD)"
 msgstr "Цена (USD)"
+
+msgid "O'lchamli materiallar"
+msgstr "Материалы с размерами"
+
+msgid "O'lchamsiz materiallar"
+msgstr "Материалы без размеров"
+
+msgid "Kiritilmagan"
+msgstr "Не указано"

@@ -103,6 +103,22 @@ class HomeTests(WorkshopTestCase):
         self.assertContains(response, "$385.00")  # MDF line value
         self.assertContains(response, "$437.20")  # header valuation: 385.00 + 52.20
 
+    def test_materials_share_a_table_by_dimension_requirement(self):
+        another_sheet = make_material("Faner", category="FANER")
+        self.client.force_login(self.admin)
+        for view_name, context_key in (
+            ("inventory:home", "whole_groups"),
+            ("inventory:material_create", "recent_material_groups"),
+        ):
+            with self.subTest(view=view_name):
+                response = self.client.get(reverse(view_name))
+                groups = dict(response.context[context_key])
+                if context_key == "whole_groups":
+                    groups = {flag: [stock.material for stock in rows] for flag, rows in groups.items()}
+                self.assertCountEqual(groups[True], [self.mdf, another_sheet])
+                self.assertEqual(groups[False], [self.paint])
+                self.assertContains(response, "Kiritilmagan")
+
     def test_search_and_category_filter(self):
         self.client.force_login(self.admin)
         response = self.client.get(reverse("inventory:home"), {"q": "akril"})

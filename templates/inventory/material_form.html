@@ -125,7 +125,7 @@
     {% csrf_token %}
     {% include "partials/form_errors.html" %}
 
-    {# =================== UNIFIED SMART DATA GRID =================== #}
+    {# Material form #}
     <div class="panel overflow-hidden shadow-xs">
       {# Desktop Excel Table #}
       <div class="hidden lg:block overflow-x-auto">
@@ -135,7 +135,7 @@
               <th class="min-w-[200px] text-left">{% translate "Material nomi" %}</th>
               <th class="w-[155px] min-w-[145px] text-left">{% translate "Kategoriya" %}</th>
               <th class="w-[130px] min-w-[120px] text-left">{% translate "Birlik" %}</th>
-              <th class="w-[220px] min-w-[210px] text-left">{% translate "O'lchami" %}</th>
+              <th x-show="showDims" x-cloak class="w-[220px] min-w-[210px] text-left">{% translate "O'lchami" %}</th>
               <th class="w-[125px] min-w-[115px] text-left">{% translate "Minimal" %}</th>
               <th class="w-[220px] min-w-[200px] text-left">{% translate "Kim ko'radi va oladi" %}</th>
               <th class="w-[100px] min-w-[90px] text-center">{% translate "Holati" %}</th>
@@ -190,8 +190,8 @@
               </td>
 
               {# 4. O'lchami (Smart mm/sm inline pair) #}
-              <td class="px-3 py-3 align-top">
-                <div x-show="showDims" x-cloak class="space-y-1.5">
+              <td x-show="showDims" x-cloak class="px-3 py-3 align-top">
+                <div class="space-y-1.5">
                   <div class="flex items-center gap-1">
                     <input type="hidden" name="{{ form.dim_unit.html_name }}" :value="dimUnit" :disabled="!isDesktop || !showDims">
                     <input type="number"
@@ -221,7 +221,6 @@
                   {% for e in form.length_mm.errors %}<p class="field-error text-xs">{{ e }}</p>{% endfor %}
                   {% for e in form.width_mm.errors %}<p class="field-error text-xs">{{ e }}</p>{% endfor %}
                 </div>
-                <span x-show="!showDims" class="text-muted">—</span>
               </td>
 
               {# 5. Minimal #}
@@ -288,7 +287,7 @@
 
             {# ---------------- SMART SUB-ROW: NEW CATEGORY ("Boshqa") ---------------- #}
             <tr x-show="category === '__other__'" {% if form.category.value != "__other__" %}x-cloak{% endif %} class="bg-raised/70 border-b border-line">
-              <td colspan="8" class="px-5 py-3">
+              <td colspan="7" :colspan="showDims ? 8 : 7" class="px-5 py-3">
                 <div class="flex flex-wrap items-center gap-4">
                   <div class="flex items-center gap-2 min-w-[260px] flex-1 max-w-md {% if form.new_category.errors %}has-error{% endif %}">
                     <label class="text-xs font-semibold text-ink whitespace-nowrap" for="{{ form.new_category.id_for_label }}">{{ form.new_category.label }}:</label>
@@ -315,87 +314,6 @@
               </td>
             </tr>
 
-            {# ---------------- SECTION DIVIDER ROW ---------------- #}
-            <tr class="bg-raised/70 border-t border-b border-line text-[11px] font-semibold uppercase tracking-wider text-muted select-none">
-              <td colspan="8" class="px-5 py-2.5">
-                <div class="flex items-center justify-between">
-                  <span class="flex items-center gap-1.5 text-muted font-medium">
-                    {% icon "layers" 14 %}
-                    <span>{% translate "So'nggi materiallar" %}</span>
-                  </span>
-                  <span class="text-xs text-muted font-normal lowercase">
-                    {% if recent_materials %}{{ recent_materials|length }} ta{% else %}{% translate "Hali material qo'shilmagan." %}{% endif %}
-                  </span>
-                </div>
-              </td>
-            </tr>
-
-            {# ---------------- EXISTING MATERIALS ROWS ---------------- #}
-            {% for m in recent_materials %}{% with st=m.whole_stock %}
-            <tr class="hover:bg-raised/40 transition-colors">
-              <td class="px-4 py-3 font-medium text-ink">
-                <span class="block text-[14px] leading-snug">{{ m.name }}</span>
-              </td>
-              <td class="px-3 py-3 whitespace-nowrap">
-                <span class="inline-flex items-center rounded border border-line/70 bg-raised px-2 py-0.5 text-xs font-medium text-muted">
-                  {{ m.category|cat_label }}
-                </span>
-              </td>
-              <td class="px-3 py-3 text-xs text-muted whitespace-nowrap">
-                {{ m.unit_short }}
-              </td>
-              <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
-                {% if m.category in offcut_categories and st.length_mm %}
-                  {{ st.length_mm }} × {{ st.width_mm }} <span class="text-muted font-sans">{% translate "mm" %}</span>
-                {% else %}
-                  <span class="text-muted">—</span>
-                {% endif %}
-              </td>
-              <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
-                {% if m.minimum_threshold > 0 %}
-                  {{ m.minimum_threshold|qty }} <span class="text-muted font-sans">{{ m.unit_short }}</span>
-                {% else %}
-                  <span class="text-muted">—</span>
-                {% endif %}
-              </td>
-              <td class="px-3 py-3">
-                <div class="flex flex-wrap gap-1 max-w-[220px]">
-                  {% for r in m.allowed_roles %}
-                    <span class="inline-flex items-center rounded border border-line/60 bg-raised px-1.5 py-0.5 text-[11px] font-medium text-ink">
-                      {{ r|short_role }}
-                    </span>
-                  {% empty %}
-                    <span class="text-muted">—</span>
-                  {% endfor %}
-                </div>
-              </td>
-              <td class="px-3 py-3 text-center whitespace-nowrap">
-                {% if m.is_active %}
-                  <span class="pill pill-pos text-xs">{% translate "Faol" %}</span>
-                {% else %}
-                  <span class="pill pill-neutral text-xs">{% translate "Arxivda" %}</span>
-                {% endif %}
-              </td>
-              <td class="px-4 py-3 text-right whitespace-nowrap">
-                <div class="inline-flex items-center gap-1.5 justify-end">
-                  <a href="{% url 'inventory:material_edit' m.pk %}" class="btn btn-secondary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
-                    {% icon "edit" 13 %} <span>{% translate "Tahrirlash" %}</span>
-                  </a>
-                  {% if m.is_active %}
-                  <a href="{% url 'inventory:kirim' %}?material={{ m.pk }}" class="btn btn-primary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
-                    {% icon "plus" 13 %} <span>{% translate "Kirim" %}</span>
-                  </a>
-                  {% endif %}
-                </div>
-              </td>
-            </tr>
-            {% endwith %}{% empty %}
-            <tr>
-              <td colspan="8" class="px-5 py-8 text-center text-muted text-sm">
-                {% translate "Hali material qo'shilmagan." %}
-              </td>
-            </tr>
-            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -522,4 +440,5 @@
     </div>
   </form>
 </div>
+{% include "inventory/_recent_material_groups.html" %}
 {% endblock %}
