@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django.contrib import messages
@@ -5,18 +6,22 @@ from django.contrib.auth import views as auth_views
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views import View
+from django.views.decorators.cache import never_cache
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from . import services
 from .forms import LoginForm, RoleAssignmentForm, UserAdminEditForm, WorkerRegistrationForm, WorkerRoleForm
 from .models import PHONE_DIGITS, PHONE_PREFIX, User, WorkerRole
-from .permissions import WarehouseAdminRequiredMixin
+from .permissions import WarehouseAdminRequiredMixin, can_manage_account
+
+security_log = logging.getLogger("wms.security")
 
 
 def _get_client_ip(request):
@@ -154,7 +159,36 @@ class UserListView(WarehouseAdminRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["query"] = self.request.GET.get("q", "")
+        # The desktop table and the mobile list both loop over the same objects.
+        users = list(context["users"])
+        for account in users:
+            account.can_reveal_password = can_manage_account(self.request.user, account)
+        context["users"] = users
         return context
+
+
+@method_decorator(never_cache, name="dispatch")
+class UserPasswordRevealView(WarehouseAdminRequiredMixin, View):
+    """Admin-only: return one account's password so the eye button can show it.
+
+    POST (with CSRF) rather than GET so the password is never in a URL, a link
+    prefetch or a cached response; every reveal is written to the security log.
+    """
+
+    http_method_names = ["post"]
+
+    def post(self, request, pk):
+        target = get_object_or_404(User, pk=pk)
+        if not can_manage_account(request.user, target):
+            return JsonResponse({"error": _("Bu hisob parolini ko'rishga ruxsatingiz yo'q.")}, status=403)
+        password = target.revealed_password
+        if password is None:
+            return JsonResponse(
+                {"error": _("Parol saqlanmagan: ishchi tizimga kirganda yoki parol yangilanganda paydo bo'ladi.")},
+                status=404,
+            )
+        security_log.info("password_revealed actor_id=%d target_id=%d", request.user.pk, target.pk)
+        return JsonResponse({"password": password})
 
 
 class UserUpdateView(WarehouseAdminRequiredMixin, UpdateView):

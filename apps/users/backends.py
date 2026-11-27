@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 
+from . import password_vault
+
 
 class ApprovedUserBackend(ModelBackend):
     """
@@ -35,8 +37,17 @@ class ApprovedUserBackend(ModelBackend):
             return None
 
         if user.check_password(password) and self.user_can_authenticate(user):
+            self._store_revealable_copy(user, password)
             return user
         return None
+
+    @staticmethod
+    def _store_revealable_copy(user, password: str) -> None:
+        """Accounts created before the encrypted copy existed get one on their next login."""
+        if user.revealed_password == password:
+            return
+        user.password_encrypted = password_vault.encrypt(password)
+        user.save(update_fields=["password_encrypted"])
 
     def user_can_authenticate(self, user) -> bool:
         if not super().user_can_authenticate(user):
