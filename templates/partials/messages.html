@@ -1,22 +1,25 @@
 {% load wms %}{% if messages %}
-<div class="grid gap-2 mb-5" role="status" aria-live="polite">
+<div class="{% if floating %}flash-toasts{% else %}flash-messages{% endif %}" role="status" aria-live="polite">
   {% for message in messages %}
-    <div x-data="{ show: true }" {% if message.tags == 'success' %}x-init="setTimeout(() => show = false, 3000)"{% endif %}
-         class="grid transition-[grid-template-rows] duration-300 ease-out"
+    {% if floating and 'floating-toast' in message.tags or not floating and 'floating-toast' not in message.tags %}
+    <div x-data="{ show: true }" {% if 'success' in message.tags %}x-init="setTimeout(() => show = false, 3000)"{% endif %}
+         class="grid transition-[grid-template-rows] duration-300 ease-out{% if 'floating-toast' in message.tags %} flash-toast{% endif %}"
+         {% if 'floating-toast' in message.tags %}x-show="show" x-transition.opacity.duration.200ms{% endif %}
          :class="show ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'">
       <div class="overflow-hidden">
         <div class="transition-opacity duration-200" :class="show ? 'opacity-100' : 'opacity-0'">
           <div class="flex items-start gap-2.5 rounded-[8px] border px-4 py-3
-            {% if message.tags == 'success' %}border-[#bbe5c9] bg-pos-bg text-pos-ink
+            {% if 'success' in message.tags %}border-[#bbe5c9] bg-pos-bg text-pos-ink
             {% elif message.tags == 'error' %}border-[#f3c0ba] bg-neg-bg text-neg-ink
             {% elif message.tags == 'warning' %}border-warn-line bg-warn-bg text-warn-ink
             {% else %}border-line bg-surface text-ink{% endif %}">
-            <span class="mt-0.5 flex-none">{% if message.tags == 'success' %}{% icon "check" %}{% elif message.tags == 'error' or message.tags == 'warning' %}{% icon "alert" %}{% else %}{% icon "clock" %}{% endif %}</span>
+            <span class="mt-0.5 flex-none">{% if 'success' in message.tags %}{% icon "check" %}{% elif message.tags == 'error' or message.tags == 'warning' %}{% icon "alert" %}{% else %}{% icon "clock" %}{% endif %}</span>
             <p>{{ message }}</p>
           </div>
         </div>
       </div>
     </div>
+    {% endif %}
   {% endfor %}
 </div>
 {% endif %}

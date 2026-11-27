@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.http import StreamingHttpResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -91,8 +91,10 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
             category = ""
         tab = self.request.GET.get("tab", "whole")
 
-        whole = selectors.search_stock(selectors.visible_whole_stock(user), query=query, category=category)
-        offcuts = selectors.search_stock(selectors.visible_offcuts(user), query=query, category=category)
+        exact = self.request.GET.get("match") == "exact"
+        filters = {"query": query, "category": category, "exact": exact}
+        whole = selectors.search_stock(selectors.visible_whole_stock(user), **filters)
+        offcuts = selectors.search_stock(selectors.visible_offcuts(user), **filters)
         visible_categories = set(selectors.visible_materials(user).values_list("category", flat=True).distinct())
         dimension_categories = offcut_category_codes()
         whole_page = Paginator(whole.order_by("material__category", "material__name", "pk"), 50).get_page(
@@ -109,6 +111,7 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
                 "whole_page": whole_page,
                 "offcut_page": offcut_page,
                 "query": query,
+                "exact_search": exact,
                 "category": category,
                 "dimension_categories": dimension_categories,
                 "whole_groups": group_by_dimensions(
@@ -123,6 +126,19 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
             }
         )
         return context
+
+
+class MaterialSuggestionsView(ApprovedUserRequiredMixin, View):
+    def get(self, request):
+        query = request.GET.get("q", "").strip()
+        category = request.GET.get("category", "")
+        names = []
+        if query and len(query) <= BaseMaterial._meta.get_field("name").max_length:
+            materials = selectors.visible_materials(request.user).filter(name__istartswith=query)
+            if category:
+                materials = materials.filter(category=category)
+            names = list(materials.order_by("name").values_list("name", flat=True).distinct()[:8])
+        return JsonResponse({"names": names}, headers={"Cache-Control": "private, no-store"})
 
 
 class WithdrawWholeView(StockTakerRequiredMixin, FormView):
@@ -379,6 +395,20 @@ DEFAULT_CATEGORY_UNITS = {
 }
 
 
+def material_name_examples():
+    return {
+        "LMDF": [_('LMDF oq mat 18 mm'), _('LMDF eman 16 mm')],
+        "LDSP": [_('LDSP oq 16 mm'), _('LDSP yong‘oq 18 mm')],
+        "FANER": [_('Qayin faner 12 mm'), _('Faner 18 mm')],
+        "DSP": [_('DSP 16 mm'), _('DSP 22 mm')],
+        "KRASKA": [_('Lak mat'), _('Kraska oq mat'), _('Akril kraska oq')],
+        "GRUNTOFKA": [_('Oq gruntovka'), _('Yog‘och uchun gruntovka')],
+        "PVC": [_('PVC oq 22 × 1 mm'), _('PVC eman 22 × 2 mm')],
+        "HARDWARE": [_('Samarez 4 × 16 mm'), _('Petlya 35 mm')],
+        "UPAKOVKA": [_('Qadoqlash plyonkasi'), _('Karton burchak')],
+    }
+
+
 class MaterialFormContextMixin:
     """Shared smart-grid context for MaterialCreateView and MaterialUpdateView."""
 
@@ -402,6 +432,10 @@ class MaterialFormContextMixin:
                 "unit": DEFAULT_CATEGORY_UNITS.get(cat.code, ""),
             }
             for cat in cats
+        }
+        active_codes = {cat.code for cat in cats if cat.is_active}
+        context["material_name_examples"] = {
+            code: names for code, names in material_name_examples().items() if code in active_codes
         }
         context["initial_roles"] = [str(r) for r in (form["allowed_roles"].value() or [])]
         recent_materials = BaseMaterial.objects.select_related("whole_stock").order_by("-created_at", "-id")[:12]
@@ -432,7 +466,11 @@ class MaterialCreateView(WarehouseAdminRequiredMixin, MaterialFormContextMixin, 
         except ValidationError as exc:
             apply_service_errors(form, exc)
             return self.form_invalid(form)
-        messages.success(self.request, _("“%(name)s” qo'shildi. Endi kirimni kiriting.") % {"name": material.name})
+        messages.success(
+            self.request,
+            _("“%(name)s” qo'shildi. Endi kirimni kiriting.") % {"name": material.name},
+            extra_tags="floating-toast",
+        )
         return redirect(reverse("inventory:kirim") + f"?material={material.pk}")
 
 

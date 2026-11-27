@@ -11,7 +11,9 @@
   <link rel="apple-touch-icon" href="{% static 'img/profur-icon.png' %}">
   <link rel="preload" href="{% static 'fonts/dm-sans-latin-400-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/inventory-interactions.css' %}">
   <script defer src="{% static 'vendor/alpine.min.js' %}"></script>
+  <script defer src="{% static 'js/inventory-interactions.js' %}"></script>
   <script>
     try {
       if (localStorage.getItem('sidebar_collapsed') === 'true') {
@@ -298,6 +300,7 @@
       {% include "partials/messages.html" %}
       {% block content %}{% endblock %}
     </main>
+    {% include "partials/messages.html" with floating=True %}
   </div>
 
   {# ---- Bottom bar (phone) ---- #}
@@ -377,7 +380,7 @@
       el.setAttribute('autocorrect', 'off');
       el.setAttribute('autocapitalize', 'off');
       el.setAttribute('spellcheck', 'false');
-      el.setAttribute('aria-autocomplete', 'none');
+      if (!el.hasAttribute('aria-autocomplete')) el.setAttribute('aria-autocomplete', 'none');
       el.setAttribute('data-lpignore', 'true');
       el.setAttribute('data-1p-ignore', 'true');
       el.setAttribute('data-bwignore', 'true');

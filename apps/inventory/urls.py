@@ -6,6 +6,7 @@ app_name = "inventory"
 
 urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
+    path("inventory/material-suggestions/", views.MaterialSuggestionsView.as_view(), name="material_suggestions"),
     path("inventory/whole/<int:pk>/withdraw/", views.WithdrawWholeView.as_view(), name="withdraw_whole"),
     path("inventory/offcuts/add/", views.OffcutCreateView.as_view(), name="offcut_add"),
     path("inventory/offcuts/<int:pk>/withdraw/", views.OffcutWithdrawView.as_view(), name="offcut_withdraw"),

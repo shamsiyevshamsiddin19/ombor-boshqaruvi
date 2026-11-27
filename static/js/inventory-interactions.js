@@ -1,0 +1,179 @@
+(() => {
+  const usable = (field) => !field.disabled && field.getClientRects().length > 0;
+
+  for (const form of document.querySelectorAll('[data-enter-order]')) {
+    const names = form.dataset.enterOrder.split(' ');
+    form.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' || event.defaultPrevented || event.isComposing) return;
+      if (!names.includes(event.target.name)) return;
+
+      const fields = Array.from(form.elements).filter(usable);
+      const sequence = names.map((name) => fields.find((field) => field.name === name));
+      sequence.push(fields.find((field) => field.type === 'submit'));
+      const next = sequence.slice(names.indexOf(event.target.name) + 1).find(Boolean);
+      if (next) {
+        event.preventDefault();
+        next.focus();
+      }
+    });
+  }
+
+  function attachSuggestions(input, getOptions, onSelect, { showOnFocus = false } = {}) {
+    const list = document.createElement('div');
+    list.id = `${input.id}-suggestions`;
+    list.className = 'material-suggestions';
+    list.setAttribute('role', 'listbox');
+    list.setAttribute('aria-label', input.dataset.suggestionLabel);
+    list.hidden = true;
+    document.body.append(list);
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', list.id);
+    input.setAttribute('aria-expanded', 'false');
+    let options = [];
+    let active = -1;
+    let timer;
+    let pending;
+
+    function hide() {
+      list.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+      active = -1;
+    }
+
+    function close() {
+      clearTimeout(timer);
+      pending?.abort();
+      hide();
+    }
+
+    function position() {
+      const rect = input.getBoundingClientRect();
+      const below = window.innerHeight - rect.bottom - 10;
+      const above = rect.top - 10;
+      const placeBelow = below >= 144 || below >= above;
+      list.style.left = `${rect.left}px`;
+      list.style.width = `${rect.width}px`;
+      list.style.maxHeight = `${Math.min(260, placeBelow ? below : above)}px`;
+      list.style.top = placeBelow ? `${rect.bottom + 4}px` : 'auto';
+      list.style.bottom = placeBelow ? 'auto' : `${window.innerHeight - rect.top + 4}px`;
+    }
+
+    function highlight(index) {
+      active = index;
+      Array.from(list.children).forEach((option, i) => option.setAttribute('aria-selected', String(index === i)));
+      const option = list.children[index];
+      input.setAttribute('aria-activedescendant', option.id);
+      option.scrollIntoView({ block: 'nearest' });
+    }
+
+    function choose(index) {
+      const option = options[index];
+      if (!option) return;
+      close();
+      input.value = option.name;
+      onSelect(option);
+    }
+
+    function refresh() {
+      close();
+      timer = setTimeout(async () => {
+        const request = new AbortController();
+        pending = request;
+        try {
+          const results = await getOptions(input.value.trim(), request.signal);
+          if (request.signal.aborted || document.activeElement !== input || !results.length) return;
+          options = results;
+          list.replaceChildren(...options.map(({ name }, index) => {
+            const option = document.createElement('div');
+            option.className = 'material-suggestion';
+            option.id = `${list.id}-${index}`;
+            option.setAttribute('role', 'option');
+            option.setAttribute('aria-selected', 'false');
+            option.dataset.index = index;
+            option.textContent = name;
+            return option;
+          }));
+          position();
+          list.hidden = false;
+          input.setAttribute('aria-expanded', 'true');
+        } catch (error) {
+          if (!request.signal.aborted) hide();
+        }
+      }, 120);
+    }
+
+    input.addEventListener('input', refresh);
+    if (showOnFocus) input.addEventListener('focus', refresh);
+    input.addEventListener('blur', close);
+    window.addEventListener('resize', close);
+    document.addEventListener('scroll', (event) => {
+      if (!list.contains(event.target)) close();
+    }, { capture: true, passive: true });
+    list.addEventListener('mousedown', (event) => event.preventDefault());
+    list.addEventListener('click', (event) => {
+      const option = event.target.closest('[role="option"]');
+      if (option) choose(Number(option.dataset.index));
+    });
+    input.addEventListener('keydown', (event) => {
+      if (event.isComposing) return;
+      if (event.key === 'Escape') {
+        if (!list.hidden) event.preventDefault();
+        close();
+      } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (list.hidden) refresh();
+        else {
+          const direction = event.key === 'ArrowDown' ? 1 : -1;
+          const start = active < 0 && direction < 0 ? 0 : active;
+          highlight((start + direction + options.length) % options.length);
+        }
+      } else if (event.key === 'Enter' && !list.hidden && active >= 0) {
+        event.preventDefault();
+        choose(active);
+      }
+    });
+  }
+
+  for (const form of document.querySelectorAll('[data-auto-search]')) {
+    const input = form.elements.q;
+    input.addEventListener('input', () => { form.elements.match.value = ''; });
+    attachSuggestions(input, async (query, signal) => {
+      if (!query) return [];
+      const url = new URL(form.dataset.autoSearch, window.location.origin);
+      url.searchParams.set('q', query);
+      if (form.elements.category) url.searchParams.set('category', form.elements.category.value);
+      const response = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+      if (!response.ok) return [];
+      const { names } = await response.json();
+      return names.map((name) => ({ name }));
+    }, () => {
+      form.elements.match.value = 'exact';
+      form.requestSubmit();
+    });
+  }
+
+  const exampleData = document.getElementById('material-name-examples');
+  if (exampleData) {
+    const examples = JSON.parse(exampleData.textContent);
+    const normalize = (value) => value.toLocaleLowerCase().replace(/[ʻʼ’‘]/g, "'");
+    for (const input of document.querySelectorAll('[data-material-example]')) {
+      const categoryField = () => Array.from(input.form.elements).find((field) => field.name === 'category' && usable(field));
+      attachSuggestions(input, (query) => {
+        const category = categoryField()?.value;
+        const entries = category ? [[category, examples[category] || []]] : Object.entries(examples);
+        const choices = entries.flatMap(([code, names]) => names.map((name) => ({ name, code })));
+        const prefix = normalize(query);
+        const matches = choices.filter(({ name }) => normalize(name).startsWith(prefix) && normalize(name) !== prefix);
+        return (matches.length || !category || !prefix ? matches : choices).slice(0, 5);
+      }, ({ code }) => {
+        const category = categoryField();
+        if (category && !category.value && Array.from(category.options).some((option) => option.value === code)) {
+          category.value = code;
+          category.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }, { showOnFocus: true });
+    }
+  }
+})();

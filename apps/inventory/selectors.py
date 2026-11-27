@@ -111,9 +111,10 @@ def user_can_access_material(user, material: BaseMaterial) -> bool:
     return material.is_active and bool(set(material.allowed_roles) & set(user.worker_roles))
 
 
-def search_stock(qs: QuerySet, *, query: str = "", category: str = "") -> QuerySet:
+def search_stock(qs: QuerySet, *, query: str = "", category: str = "", exact: bool = False) -> QuerySet:
     if query:
-        qs = qs.filter(material__name__istartswith=query)
+        lookup = "material__name__iexact" if exact else "material__name__istartswith"
+        qs = qs.filter(**{lookup: query})
     if category:
         qs = qs.filter(material__category=category)
     return qs
