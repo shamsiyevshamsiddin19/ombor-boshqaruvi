@@ -2298,3 +2298,27 @@ msgstr "Packaging film"
 
 msgid "Karton burchak"
 msgstr "Cardboard corner protector"
+
+msgid "Administrator hisobi o'chirilmaydi."
+msgstr "An administrator account cannot be deleted."
+
+msgid "Bu ishchining ombor tarixi bor. Hisobni faolsizlantirishingiz mumkin."
+msgstr "This worker has warehouse history. You can deactivate the account."
+
+msgid "%(name)s hisobi o'chirildi."
+msgstr "The account for %(name)s was deleted."
+
+msgid "O'chirish"
+msgstr "Delete"
+
+msgid "Ishchini o'chirish"
+msgstr "Delete worker"
+
+msgid "%(name)s hisobini o'chirishni tasdiqlaysizmi?"
+msgstr "Delete the account for %(name)s?"
+
+msgid "Parol amallari"
+msgstr "Password options"
+
+msgid "Parolni yangilash"
+msgstr "Reset password"

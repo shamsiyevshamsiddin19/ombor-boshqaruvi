@@ -78,6 +78,28 @@ class AccessTests(WorkshopTestCase):
         self.assertEqual(self.mdf.whole_stock.quantity, Decimal("10"))
 
 
+class WorkerDeletionTests(WorkshopTestCase):
+    def test_only_an_admin_can_delete_an_unused_worker_by_post(self):
+        url = reverse("users:user_delete", args=[self.kraskachi.pk])
+        self.client.force_login(self.arrachi)
+        self.assertEqual(self.client.post(url).status_code, 403)
+        self.client.force_login(self.admin)
+        self.assertEqual(self.client.get(url).status_code, 405)
+        self.assertRedirects(self.client.post(url), reverse("users:user_list"))
+        self.assertFalse(type(self.kraskachi).objects.filter(pk=self.kraskachi.pk).exists())
+
+    def test_worker_with_inventory_history_and_admin_are_protected(self):
+        self.client.force_login(self.admin)
+        for account in (self.arrachi, self.admin):
+            with self.subTest(account=account):
+                url = reverse("users:user_delete", args=[account.pk])
+                edit_url = reverse("users:user_edit", args=[account.pk])
+                self.assertContains(self.client.get(edit_url), 'id="delete-blocker"')
+                self.assertRedirects(self.client.post(url), edit_url)
+                self.assertTrue(type(account).objects.filter(pk=account.pk).exists())
+        self.assertTrue(LeftoverOffcut.objects.filter(pk=self.offcut.pk, created_by=self.arrachi).exists())
+
+
 class HomeTests(WorkshopTestCase):
     def test_worker_sees_only_their_trade_in_both_sections(self):
         self.client.force_login(self.kraskachi)

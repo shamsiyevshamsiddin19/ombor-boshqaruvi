@@ -2,6 +2,7 @@ import logging
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models.deletion import ProtectedError
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -65,3 +66,31 @@ def reject_registration(user: User) -> None:
     uid = user.pk
     user.delete()
     audit_log.info("registration_rejected user_id=%d", uid)
+
+
+def worker_deletion_blocker(account: User, *, acting_user: User) -> str:
+    if account.pk == acting_user.pk or account.is_warehouse_admin:
+        return _("Administrator hisobi o'chirilmaydi.")
+    if (
+        account.transactions.exists()
+        or account.registered_offcuts.exists()
+        or account.created_projects.exists()
+        or account.operating_expenses.exists()
+    ):
+        return _("Bu ishchining ombor tarixi bor. Hisobni faolsizlantirishingiz mumkin.")
+    return ""
+
+
+@transaction.atomic
+def delete_worker(account_id: int, *, acting_user: User) -> str:
+    account = User.objects.select_for_update().get(pk=account_id)
+    blocker = worker_deletion_blocker(account, acting_user=acting_user)
+    if blocker:
+        raise ValidationError(blocker)
+    name = account.display_name
+    try:
+        account.delete()
+    except ProtectedError as exc:
+        raise ValidationError(_("Bu ishchining ombor tarixi bor. Hisobni faolsizlantirishingiz mumkin.")) from exc
+    audit_log.info("worker_deleted user_id=%d by=%d", account_id, acting_user.pk)
+    return name
