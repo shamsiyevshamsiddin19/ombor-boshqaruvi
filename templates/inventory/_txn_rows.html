@@ -50,7 +50,7 @@
 
         {# 4. O'lchami #}
         <td class="whitespace-nowrap font-mono text-xs">
-          {% if t.is_offcut %}
+          {% if t.is_offcut and t.offcut_length_mm %}
             <span class="font-semibold text-ink">{{ t.offcut_length_mm }} × {{ t.offcut_width_mm }}</span>
             <span class="text-muted">mm</span>
           {% else %}
@@ -128,7 +128,7 @@
 
     <div class="flex items-center justify-between text-xs pt-1 border-t border-rule/50">
       <div class="text-muted">
-        {% if t.is_offcut %}
+        {% if t.is_offcut and t.offcut_length_mm %}
           <span class="num font-mono">{{ t.offcut_length_mm }} × {{ t.offcut_width_mm }} mm</span>
         {% elif t.notes %}
           <span class="truncate max-w-[180px] inline-block">{{ t.notes }}</span>

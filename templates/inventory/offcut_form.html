@@ -3,9 +3,14 @@
 {% block title %}{% translate "Qoldiq qo'shish" %}{% endblock %}
 {% block content %}
 {{ sheet_sizes|json_script:"sheet-sizes" }}
+{{ measured_materials|json_script:"measured-materials" }}
 {% translate "mm" as t_mm %}{% translate "dona" as t_pcs %}{% translate "m²" as t_m2 %}
 <div x-data="{
        sizes: JSON.parse(document.getElementById('sheet-sizes').textContent),
+       measuredIds: JSON.parse(document.getElementById('measured-materials').textContent),
+       isDesktop: window.matchMedia('(min-width: 768px)').matches,
+       {# Only sheets and rolls take a size; with nothing chosen yet the size fields stay visible. #}
+       get measured() { return !this.material || this.measuredIds.includes(Number(this.material)); },
        material: '{{ form.material.value|default_if_none:''|escapejs }}',
        length: Number('{{ form.length_mm.value|default_if_none:''|escapejs }}') || '',
        width: Number('{{ form.width_mm.value|default_if_none:''|escapejs }}') || '',
@@ -22,7 +27,8 @@
        get tooBig() { return this.sheet && this.piece[0] && (this.piece[0] > this.sheet[0] || this.piece[1] > this.sheet[1]); },
        get share() { return this.sheet && this.piece[0] ? Math.round(this.piece[0] * this.piece[1] / (this.sheet[0] * this.sheet[1]) * 100) : null; },
        get area() { return ((Number(this.length) || 0) * (Number(this.width) || 0) / 1e6).toFixed(2); }
-     }">
+     }"
+     @resize.window="isDesktop = window.matchMedia('(min-width: 768px)').matches">
 
   {# Header #}
   <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -41,7 +47,7 @@
   {% if not form.fields.material.queryset.exists %}
     <div class="panel mt-6 p-6">
       <p class="font-medium text-ink">{% translate "Kasbingiz uchun qoldiq yoziladigan material yo'q." %}</p>
-      <p class="mt-1 text-muted text-sm">{% translate "Qoldiq faqat list va lenta materiallar uchun yoziladi." %}</p>
+      <p class="mt-1 text-muted text-sm">{% translate "Administrator kasbingizga material biriktirgach, shu yerda qoldiq yoza olasiz." %}</p>
     </div>
   {% else %}
 
@@ -53,7 +59,7 @@
     {# =================== UNIFIED DATA GRID =================== #}
     <div class="panel overflow-hidden shadow-xs">
       {# Desktop Excel Table #}
-      <div class="hidden md:block overflow-x-auto">
+      <fieldset class="hidden md:block overflow-x-auto" style="border:0;margin:0;padding:0;min-width:0" :disabled="!isDesktop">
         <table class="grid-table">
           <thead>
             <tr>
@@ -82,19 +88,21 @@
 
               {# 2. Uzunligi #}
               <td class="px-3 py-3.5 align-middle">
-                <div class="relative">
+                <div class="relative" x-show="measured">
                   {{ form.length_mm }}
                   <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted font-mono">mm</span>
                 </div>
+                <span class="text-xs text-muted" x-show="!measured" x-cloak>{% translate "kerak emas" %}</span>
                 {% for e in form.length_mm.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
 
               {# 3. Eni #}
               <td class="px-3 py-3.5 align-middle">
-                <div class="relative">
+                <div class="relative" x-show="measured">
                   {{ form.width_mm }}
                   <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted font-mono">mm</span>
                 </div>
+                <span class="text-xs text-muted" x-show="!measured" x-cloak>{% translate "kerak emas" %}</span>
                 {% for e in form.width_mm.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
               </td>
 
@@ -118,7 +126,7 @@
 
               {# 6. Ko'rinishi #}
               <td class="px-3 py-2 align-middle text-center">
-                <div class="inline-flex flex-col items-center justify-center">
+                <div class="inline-flex flex-col items-center justify-center" x-show="measured">
                   <svg class="block h-[42px] w-[70px] rounded border border-rule/80 bg-surface p-0.5 shadow-2xs" viewBox="0 0 100 60">
                     <rect x="0" y="0" width="100" height="60" fill="#f8fafc"/>
                     <rect :x="box.ox" :y="box.oy" :width="box.sw" :height="box.sh" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" x-show="sheet"/>
@@ -129,7 +137,7 @@
 
               {# 7. Maydoni #}
               <td class="px-4 py-3.5 align-middle text-right whitespace-nowrap font-mono">
-                <span class="text-xs font-semibold text-ink" x-text="piece[0] ? area + ' m²' : '—'"></span>
+                <span class="text-xs font-semibold text-ink" x-text="measured && piece[0] ? area + ' m²' : '—'"></span>
                 <span class="block text-[11px] text-muted font-sans font-normal" x-show="share !== null" x-text="'(' + share + '%)'"></span>
               </td>
 
@@ -170,14 +178,14 @@
 
               {# 2. Uzunligi #}
               <td class="px-3 py-3.5 whitespace-nowrap">
-                <span class="num font-mono text-[13px] font-semibold text-ink">{{ offcut.length_mm }}</span>
-                <span class="text-xs text-muted">mm</span>
+                {% if offcut.has_dimensions %}<span class="num font-mono text-[13px] font-semibold text-ink">{{ offcut.length_mm }}</span>
+                <span class="text-xs text-muted">mm</span>{% else %}<span class="text-muted">—</span>{% endif %}
               </td>
 
               {# 3. Eni #}
               <td class="px-3 py-3.5 whitespace-nowrap">
-                <span class="num font-mono text-[13px] font-semibold text-ink">{{ offcut.width_mm }}</span>
-                <span class="text-xs text-muted">mm</span>
+                {% if offcut.has_dimensions %}<span class="num font-mono text-[13px] font-semibold text-ink">{{ offcut.width_mm }}</span>
+                <span class="text-xs text-muted">mm</span>{% else %}<span class="text-muted">—</span>{% endif %}
               </td>
 
               {# 4. Soni #}
@@ -199,7 +207,7 @@
 
               {# 7. Maydoni #}
               <td class="px-4 py-3.5 text-right whitespace-nowrap font-mono text-xs font-semibold text-ink">
-                {{ offcut.area_m2 }} m²
+                {% if offcut.has_dimensions %}{{ offcut.area_m2 }} m²{% else %}—{% endif %}
               </td>
 
               {# 8. Amal #}
@@ -223,19 +231,20 @@
             {% endfor %}
           </tbody>
         </table>
-      </div>
+      </fieldset>
 
       {# =================== MOBILE FORM (< md screens) =================== #}
-      <div class="md:hidden p-4 form-stack">
+      {# Only the visible copy is submitted: the other one is disabled, so its empty notes can't overwrite this one's. #}
+      <fieldset class="md:hidden p-4 form-stack" style="border:0;margin:0;min-width:0" :disabled="isDesktop">
         {% include "partials/field.html" with field=form.material %}
-        <div class="grid grid-cols-2 gap-3">
-          {% include "partials/field.html" with field=form.length_mm %}
-          {% include "partials/field.html" with field=form.width_mm %}
+        <div class="grid grid-cols-2 gap-3" x-show="measured">
+          {% include "partials/field.html" with field=form.length_mm hide_optional=True %}
+          {% include "partials/field.html" with field=form.width_mm hide_optional=True %}
         </div>
         <p class="-mt-2 text-negative text-xs" x-show="tooBig" x-cloak>{% translate "Bo'lak to'liq listdan katta bo'lishi mumkin emas" %}.</p>
         {% include "partials/field.html" with field=form.quantity %}
         {% include "partials/field.html" with field=form.notes %}
-        <div class="rounded border border-rule/70 p-3 bg-raised/30 flex items-center gap-3">
+        <div class="rounded border border-rule/70 p-3 bg-raised/30 flex items-center gap-3" x-show="measured">
           <svg class="block h-[44px] w-[75px] rounded border border-rule bg-surface p-0.5" viewBox="0 0 100 60">
             <rect x="0" y="0" width="100" height="60" fill="#f9fafb"/>
             <rect :x="box.ox" :y="box.oy" :width="box.sw" :height="box.sh" fill="#ffffff" stroke="#c7ccd4" stroke-width="1" x-show="sheet"/>
@@ -247,7 +256,7 @@
           </div>
         </div>
         <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">{% icon "plus" 18 %} {% translate "Qoldiqni saqlash" %}</button>
-      </div>
+      </fieldset>
     </div>
   </form>
 
@@ -267,7 +276,7 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="font-medium text-ink text-sm truncate">{{ m.name }}</p>
-            <p class="num font-mono text-xs text-muted mt-0.5">{{ offcut.length_mm }} × {{ offcut.width_mm }} mm · {{ offcut.quantity }} dona</p>
+            <p class="num font-mono text-xs text-muted mt-0.5">{% if offcut.has_dimensions %}{{ offcut.length_mm }} × {{ offcut.width_mm }} mm · {% endif %}{{ offcut.quantity }} {% translate "dona" %}</p>
             {% if offcut.notes %}<p class="text-xs text-muted truncate mt-0.5">{{ offcut.notes }}</p>{% endif %}
           </div>
         </div>

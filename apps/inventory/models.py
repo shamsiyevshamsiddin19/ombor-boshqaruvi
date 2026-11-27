@@ -296,8 +296,14 @@ class WholeMaterial(models.Model):
 
 class LeftoverOffcut(models.Model):
     material = models.ForeignKey(BaseMaterial, on_delete=models.CASCADE, related_name="offcuts")
-    length_mm = models.IntegerField(_("Uzunligi (mm)"), validators=[MinValueValidator(1)], help_text="Remaining length in mm")
-    width_mm = models.IntegerField(_("Eni (mm)"), validators=[MinValueValidator(1)], help_text="Remaining width in mm")
+    # Sheets and rolls (categories that keep dimensions) record the piece's size; every other
+    # material (paint, hardware, ...) records only how many pieces are left, so both stay empty.
+    length_mm = models.IntegerField(
+        _("Uzunligi (mm)"), null=True, blank=True, validators=[MinValueValidator(1)], help_text="Remaining length in mm"
+    )
+    width_mm = models.IntegerField(
+        _("Eni (mm)"), null=True, blank=True, validators=[MinValueValidator(1)], help_text="Remaining width in mm"
+    )
     quantity = models.IntegerField(_("Soni"), default=1, validators=[MinValueValidator(1)])
     notes = models.TextField(_("Izoh"), blank=True, help_text="Location or description of offcut scrap")
     created_by = models.ForeignKey(
@@ -312,16 +318,25 @@ class LeftoverOffcut(models.Model):
         constraints = [
             models.CheckConstraint(condition=models.Q(quantity__gte=1), name="offcut_quantity_positive"),
             models.CheckConstraint(
-                condition=models.Q(length_mm__gte=1, width_mm__gte=1), name="offcut_dimensions_positive"
+                condition=models.Q(length_mm__gte=1, width_mm__gte=1)
+                | models.Q(length_mm__isnull=True, width_mm__isnull=True),
+                name="offcut_dimensions_positive",
             ),
         ]
         indexes = [models.Index(fields=["material", "-created_at"])]
 
     def __str__(self) -> str:
-        return f"Offcut: {self.material.name} ({self.length_mm}x{self.width_mm} mm) - Qty: {self.quantity}"
+        size = f" ({self.length_mm}x{self.width_mm} mm)" if self.has_dimensions else ""
+        return f"Offcut: {self.material.name}{size} - Qty: {self.quantity}"
 
     @property
-    def area_m2(self) -> Decimal:
+    def has_dimensions(self) -> bool:
+        return bool(self.length_mm and self.width_mm)
+
+    @property
+    def area_m2(self) -> Decimal | None:
+        if not self.has_dimensions:
+            return None
         return (Decimal(self.length_mm * self.width_mm) / Decimal(1_000_000)).quantize(Decimal("0.001"))
 
     @property
@@ -332,6 +347,8 @@ class LeftoverOffcut(models.Model):
         Offcuts are *not* part of the warehouse valuation; their cost was already
         booked when the parent sheet was withdrawn (Chiqim).
         """
+        if not self.has_dimensions:
+            return None
         stock = getattr(self.material, "whole_stock", None)
         if stock is None or not stock.sheet_area_mm2:
             return None

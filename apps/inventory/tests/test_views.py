@@ -393,3 +393,53 @@ class DashboardAndReportTests(WorkshopTestCase):
         chiqim = next(r for r in rows[1:] if r[4] == "-1.00")
         self.assertEqual(chiqim[-1], "'=HYPERLINK(\"x\")")  # formula neutralised
         self.assertEqual(chiqim[-2], "Bobur Karimov")
+
+
+class OffcutForEveryMaterialTests(TestCase):
+    """“Qoldiq qo'shish” works for every trade, not only for the ones that cut sheets or rolls."""
+
+    def setUp(self):
+        self.admin = make_admin()
+        self.painter = make_user("kraskachi", [UserRole.KRASKACHI])
+        self.cutter = make_user("arrachi", [UserRole.ARRACHI])
+        self.paint = make_material("Lak mat", MaterialCategory.LIQUID, MeasurementUnit.LITER)
+        self.mdf = make_material("MDF 16 mm", length_mm=2750, width_mm=1830)
+        self.url = reverse("inventory:offcut_add")
+
+    def test_painter_sees_the_form_and_can_save_a_leftover(self):
+        self.client.force_login(self.painter)
+        page = self.client.get(self.url)
+        self.assertNotContains(page, "Kasbingiz uchun qoldiq yoziladigan material yo")
+        self.assertContains(page, "Lak mat")
+
+        response = self.client.post(
+            self.url, {"material": self.paint.pk, "quantity": "2", "notes": "yarim banka"}, follow=True
+        )
+        self.assertContains(response, "Qoldiq qo&#x27;shildi: Lak mat — 2 dona.")
+        self.assertNotContains(response, "None")
+        offcut = self.paint.offcuts.get()
+        self.assertEqual((offcut.length_mm, offcut.width_mm, offcut.quantity, offcut.notes), (None, None, 2, "yarim banka"))
+        self.assertContains(self.client.get(reverse("inventory:home") + "?tab=offcuts"), "Lak mat")
+
+    def test_sheet_without_a_size_is_rejected_with_a_message(self):
+        self.client.force_login(self.cutter)
+        response = self.client.post(self.url, {"material": self.mdf.pk, "quantity": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("length_mm", response.context["form"].errors)
+        self.assertFalse(self.mdf.offcuts.exists())
+
+    def test_sheet_with_a_size_still_works(self):
+        self.client.force_login(self.cutter)
+        response = self.client.post(self.url, {"material": self.mdf.pk, "length_mm": "600", "width_mm": "400", "quantity": "1"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.mdf.offcuts.get().length_mm, 600)
+
+    def test_painter_can_take_the_leftover_back(self):
+        self.client.force_login(self.painter)
+        self.client.post(self.url, {"material": self.paint.pk, "quantity": "1"})
+        offcut = self.paint.offcuts.get()
+        page = self.client.get(reverse("inventory:offcut_withdraw", args=[offcut.pk]))
+        self.assertEqual(page.status_code, 200)
+        response = self.client.post(reverse("inventory:offcut_withdraw", args=[offcut.pk]), {"quantity": "1"})
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(self.paint.offcuts.exists())

@@ -129,7 +129,7 @@
                 </span>
               </td>
               <td class="num px-4 py-3.5 font-medium text-ink whitespace-nowrap">
-                {{ offcut.length_mm }} × {{ offcut.width_mm }} <span class="text-xs text-muted">{% translate "mm" %}</span>
+                {% if offcut.has_dimensions %}{{ offcut.length_mm }} × {{ offcut.width_mm }} <span class="text-xs text-muted">{% translate "mm" %}</span>{% else %}<span class="text-muted">—</span>{% endif %}
               </td>
               <td class="num px-4 py-3.5 text-right whitespace-nowrap">
                 <span class="text-[15px] font-semibold text-ink">{{ offcut.quantity }}</span> <span class="text-xs text-muted">{% translate "dona" %}</span>
@@ -147,7 +147,7 @@
                 {% if user.is_warehouse_admin %}
                   <span class="pill pill-neutral text-xs text-muted">{% translate "Qoldiq" %}</span>
                 {% else %}
-                  <a href="{% url 'inventory:offcut_withdraw' offcut.pk %}" class="btn btn-secondary !px-3 !py-1 text-xs font-medium" aria-label="{% blocktranslate with name=m.name length=offcut.length_mm width=offcut.width_mm %}{{ name }} {{ length }}×{{ width }} — oldim{% endblocktranslate %}">
+                  <a href="{% url 'inventory:offcut_withdraw' offcut.pk %}" class="btn btn-secondary !px-3 !py-1 text-xs font-medium" aria-label="{% if offcut.has_dimensions %}{% blocktranslate with name=m.name length=offcut.length_mm width=offcut.width_mm %}{{ name }} {{ length }}×{{ width }} — oldim{% endblocktranslate %}{% else %}{% blocktranslate with name=m.name %}{{ name }} — oldim{% endblocktranslate %}{% endif %}">
                     {% icon "take" 14 %} {% translate "Oldim" %}
                   </a>
                 {% endif %}
@@ -165,14 +165,14 @@
           <div class="flex-none">{% offcut_figure offcut.length_mm offcut.width_mm m.whole_stock.length_mm m.whole_stock.width_mm %}</div>
           <div class="min-w-0 flex-1">
             <p class="font-medium text-ink text-[15px] truncate">{{ m.name }}</p>
-            <p class="num text-sm text-ink"><span class="whitespace-nowrap">{{ offcut.length_mm }} × {{ offcut.width_mm }} {% translate "mm" %}</span> <span class="text-muted text-xs">· {{ offcut.quantity }} {% translate "dona" %}</span></p>
+            <p class="num text-sm text-ink">{% if offcut.has_dimensions %}<span class="whitespace-nowrap">{{ offcut.length_mm }} × {{ offcut.width_mm }} {% translate "mm" %}</span> <span class="text-muted text-xs">· {{ offcut.quantity }} {% translate "dona" %}</span>{% else %}<span>{{ offcut.quantity }} {% translate "dona" %}</span>{% endif %}</p>
             {% if offcut.notes %}<p class="truncate text-xs text-muted">{{ offcut.notes }}</p>{% endif %}
           </div>
           <div class="flex-none text-right">
             {% if user.is_warehouse_admin %}
               <span class="pill pill-neutral text-xs text-muted">{% translate "Qoldiq" %}</span>
             {% else %}
-              <a href="{% url 'inventory:offcut_withdraw' offcut.pk %}" class="btn btn-secondary min-h-10 px-3 text-xs font-medium" aria-label="{% blocktranslate with name=m.name length=offcut.length_mm width=offcut.width_mm %}{{ name }} {{ length }}×{{ width }} — oldim{% endblocktranslate %}">
+              <a href="{% url 'inventory:offcut_withdraw' offcut.pk %}" class="btn btn-secondary min-h-10 px-3 text-xs font-medium" aria-label="{% if offcut.has_dimensions %}{% blocktranslate with name=m.name length=offcut.length_mm width=offcut.width_mm %}{{ name }} {{ length }}×{{ width }} — oldim{% endblocktranslate %}{% else %}{% blocktranslate with name=m.name %}{{ name }} — oldim{% endblocktranslate %}{% endif %}">
                 {% icon "take" 15 %} {% translate "Oldim" %}
               </a>
             {% endif %}

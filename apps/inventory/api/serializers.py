@@ -136,8 +136,9 @@ class LeftoverOffcutSerializer(serializers.ModelSerializer):
         source="material", queryset=BaseMaterial.objects.all(), write_only=True
     )
     created_by = serializers.StringRelatedField(read_only=True)
-    length_mm = serializers.IntegerField(min_value=1, max_value=100_000)
-    width_mm = serializers.IntegerField(min_value=1, max_value=100_000)
+    # Required for sheets and rolls only; register_offcut enforces that and ignores them otherwise.
+    length_mm = serializers.IntegerField(min_value=1, max_value=100_000, required=False, allow_null=True)
+    width_mm = serializers.IntegerField(min_value=1, max_value=100_000, required=False, allow_null=True)
     quantity = serializers.IntegerField(min_value=1, max_value=1000, default=1)
 
     class Meta:

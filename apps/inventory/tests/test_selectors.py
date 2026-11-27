@@ -82,12 +82,15 @@ class RoleVisibilityTests(TestCase):
         self.assertEqual(list(selectors.visible_offcuts(sborkachi)), [self.tape_offcut])
         self.assertEqual(selectors.visible_offcuts(self.admin).count(), 2)
 
-    def test_offcut_capable_materials_exclude_liquids_and_hardware(self):
+    def test_every_visible_material_can_take_an_offcut(self):
         sborkachi = make_user("sborkachi", [UserRole.SBORKACHI])
         kraskachi = make_user("kraskachi", [UserRole.KRASKACHI])
-        self.assertEqual(list(selectors.offcut_capable_materials(sborkachi)), [self.tape])
-        # The painter's veneer is a sheet, so it is the only offcut-capable material they have.
-        self.assertEqual(list(selectors.offcut_capable_materials(kraskachi)), [self.special])
+        # Liquids and hardware count too: a painter must be able to log a half-used can.
+        self.assertEqual(set(selectors.offcut_capable_materials(sborkachi)), {self.tape, self.hinge})
+        self.assertEqual(set(selectors.offcut_capable_materials(kraskachi)), {self.paint, self.special})
+        self.assertEqual(
+            set(selectors.offcut_capable_materials(kraskachi)), set(selectors.visible_materials(kraskachi))
+        )
 
     def test_user_can_access_material(self):
         arrachi = make_user("arrachi", [UserRole.ARRACHI])

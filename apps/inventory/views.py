@@ -116,10 +116,8 @@ class HomeView(ApprovedUserRequiredMixin, TemplateView):
                 "whole_groups": group_by_dimensions(
                     whole_page.object_list, dimension_categories, material_for_row=lambda stock: stock.material
                 ),
-                "show_offcuts": not category or category in dimension_categories or bool(offcut_page.paginator.count),
-                "tab": "offcuts" if tab == "offcuts" and (
-                    not category or category in dimension_categories or offcut_page.paginator.count
-                ) else "whole",
+                "show_offcuts": True,
+                "tab": "offcuts" if tab == "offcuts" else "whole",
                 "categories": [(code, name) for code, name in category_choices() if code in visible_categories],
                 "can_add_offcut": selectors.offcut_capable_materials(user).exists(),
             }
@@ -206,6 +204,9 @@ class OffcutCreateView(ApprovedUserRequiredMixin, FormView):
             for m in form.fields["material"].queryset
             if hasattr(m, "whole_stock") and m.whole_stock.length_mm
         }
+        context["measured_materials"] = [
+            m.pk for m in form.fields["material"].queryset if m.category in offcut_category_codes()
+        ]
         context["recent_offcuts"] = selectors.visible_offcuts(self.request.user).order_by("-created_at")[:10]
         return context
 
@@ -223,15 +224,19 @@ class OffcutCreateView(ApprovedUserRequiredMixin, FormView):
         except ValidationError as exc:
             apply_service_errors(form, exc)
             return self.form_invalid(form)
-        messages.success(
-            self.request,
-            _("Qoldiq qo'shildi: %(name)s %(length)s×%(width)s mm — %(count)s dona.") % {
+        if offcut.has_dimensions:
+            text = _("Qoldiq qo'shildi: %(name)s %(length)s×%(width)s mm — %(count)s dona.") % {
                 "name": offcut.material.name,
                 "length": offcut.length_mm,
                 "width": offcut.width_mm,
                 "count": offcut.quantity,
-            },
-        )
+            }
+        else:
+            text = _("Qoldiq qo'shildi: %(name)s — %(count)s dona.") % {
+                "name": offcut.material.name,
+                "count": offcut.quantity,
+            }
+        messages.success(self.request, text)
         return redirect(reverse("inventory:home") + "?tab=offcuts")
 
 
@@ -746,7 +751,7 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                         unit_short_label(txn.movement_unit),
                         f"{txn.unit_price_usd}",
                         f"{txn.total_price_usd}",
-                        f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",
+                        f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut and txn.offcut_length_mm else "",
                         _csv_safe(txn.user.display_name),
                         _csv_safe(txn.notes),
                     ]

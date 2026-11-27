@@ -37,7 +37,6 @@ from .models import (
     OperatingExpense,
     TransactionType,
     WholeMaterial,
-    offcut_category_codes,
 )
 
 MONEY = DecimalField(max_digits=24, decimal_places=6)
@@ -100,7 +99,11 @@ def visible_offcuts(user) -> QuerySet[LeftoverOffcut]:
 
 
 def offcut_capable_materials(user) -> QuerySet[BaseMaterial]:
-    return visible_materials(user).filter(category__in=offcut_category_codes())
+    """Materials a leftover can be logged for: every material the user may see.
+
+    Sheets and rolls record the piece's size; other materials only the number of pieces.
+    """
+    return visible_materials(user)
 
 
 def user_can_access_material(user, material: BaseMaterial) -> bool:

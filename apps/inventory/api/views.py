@@ -97,8 +97,8 @@ class LeftoverOffcutViewSet(
         offcut = services.register_offcut(
             material=data["material"],
             user=request.user,
-            length_mm=data["length_mm"],
-            width_mm=data["width_mm"],
+            length_mm=data.get("length_mm"),
+            width_mm=data.get("width_mm"),
             quantity=data.get("quantity", 1),
             notes=data.get("notes", ""),
         )
