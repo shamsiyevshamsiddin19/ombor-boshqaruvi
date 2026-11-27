@@ -22,7 +22,7 @@ from apps.users.permissions import (
     WarehouseAdminRequiredMixin,
 )
 
-from . import selectors, services
+from . import notifications, selectors, services
 from .forms import (
     ExpenseFilterForm,
     ExpenseForm,
@@ -39,7 +39,6 @@ from .models import (
     InventoryTransaction,
     LeftoverOffcut,
     MeasurementUnit,
-    Project,
     category_choices,
     category_codes,
     default_roles_for_category,
@@ -165,7 +164,6 @@ class WithdrawWholeView(StockTakerRequiredMixin, FormView):
                 user=self.request.user,
                 quantity=form.cleaned_data["quantity"],
                 notes=form.cleaned_data.get("notes", ""),
-                project=form.cleaned_data.get("project"),
             )
         except ValidationError as exc:
             apply_service_errors(form, exc)
@@ -259,7 +257,6 @@ class OffcutWithdrawView(StockTakerRequiredMixin, FormView):
                 user=self.request.user,
                 quantity=form.cleaned_data["quantity"],
                 notes=form.cleaned_data.get("notes", ""),
-                project=form.cleaned_data.get("project"),
             )
         except ValidationError as exc:
             apply_service_errors(form, exc)
@@ -466,10 +463,11 @@ class MaterialCreateView(WarehouseAdminRequiredMixin, MaterialFormContextMixin, 
         except ValidationError as exc:
             apply_service_errors(form, exc)
             return self.form_invalid(form)
-        messages.success(
-            self.request,
-            _("“%(name)s” qo'shildi. Endi kirimni kiriting.") % {"name": material.name},
-            extra_tags="floating-toast",
+        notifications.notify_admins(
+            kind="material",
+            message=_("%(who)s: “%(name)s” materiali qo'shildi.")
+            % {"who": self.request.user.display_name, "name": material.name},
+            url=reverse("inventory:material_list"),
         )
         return redirect(reverse("inventory:kirim") + f"?material={material.pk}")
 
@@ -560,15 +558,18 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
                         form.add_error("price_usd", error)
             apply_service_errors(form, exc)
             return self.form_invalid(form)
-        messages.success(
-            self.request,
-            _("Kirim yozildi: %(name)s +%(amount)s %(unit)s, %(total)s. Yangi o'rtacha narx: %(price)s.") % {
+        notifications.notify_admins(
+            kind="arrival",
+            message=_("%(who)s kirim yozdi: %(name)s +%(amount)s %(unit)s, %(total)s. Yangi o'rtacha narx: %(price)s.")
+            % {
+                "who": self.request.user.display_name,
                 "name": entry.material.name,
                 "amount": fmt_qty(entry.quantity_changed),
                 "unit": entry.material.unit_short,
                 "total": f"${entry.total_price_usd:,.2f}",
                 "price": f"${entry.material.unit_price_usd:,.4f}",
             },
+            url=reverse("inventory:kirim"),
         )
         category = form.cleaned_data.get("category")
         return redirect(f"{reverse('inventory:kirim')}?category={category}" if category else "inventory:kirim")
@@ -730,12 +731,11 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                     _("Birlik narxi (USD)"),
                     _("Jami (USD)"),
                     _("Qoldiq o'lchami (mm)"),
-                    _("Loyiha"),
                     _("Ishchi"),
                     _("Izoh"),
                 ]
             )
-            for txn in qs.select_related("project").iterator(chunk_size=500):
+            for txn in qs.iterator(chunk_size=500):
                 yield writer.writerow(
                     [
                         timezone.localtime(txn.created_at).strftime("%Y-%m-%d %H:%M"),
@@ -747,7 +747,6 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
                         f"{txn.unit_price_usd}",
                         f"{txn.total_price_usd}",
                         f"{txn.offcut_length_mm}x{txn.offcut_width_mm}" if txn.is_offcut else "",
-                        _csv_safe(txn.project.name if txn.project else ""),
                         _csv_safe(txn.user.display_name),
                         _csv_safe(txn.notes),
                     ]
@@ -759,47 +758,20 @@ class ReportExportView(WarehouseAdminRequiredMixin, View):
 
 
 # ---------------------------------------------------------------------------
-# Project management (admin only)
+# Bell menu: mark entries read (admin only, POST)
 # ---------------------------------------------------------------------------
-class ProjectListView(WarehouseAdminRequiredMixin, ListView):
-    template_name = "inventory/project_list.html"
-    context_object_name = "projects"
-    paginate_by = 50
+class NotificationReadView(WarehouseAdminRequiredMixin, View):
+    http_method_names = ["post"]
 
-    def get_queryset(self):
-        qs = Project.objects.select_related("created_by").order_by("-is_active", "-created_at")
-        status = self.request.GET.get("status", "active")
-        if status == "active":
-            qs = qs.filter(is_active=True)
-        elif status == "archived":
-            qs = qs.filter(is_active=False)
-        return qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["status"] = self.request.GET.get("status", "active")
-        return context
+    def post(self, request, key):
+        if not notifications.mark_read(request.user, request.session, key):
+            return JsonResponse({"ok": False}, status=404)
+        return JsonResponse({"ok": True}, headers={"Cache-Control": "private, no-store"})
 
 
-class ProjectCreateView(WarehouseAdminRequiredMixin, CreateView):
-    model = Project
-    template_name = "inventory/project_form.html"
-    fields = ["name", "client", "notes"]
+class NotificationReadAllView(WarehouseAdminRequiredMixin, View):
+    http_method_names = ["post"]
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.save()
-        messages.success(self.request, _("“%(name)s” loyihasi yaratildi.") % {"name": form.instance.name})
-        return redirect("inventory:project_list")
-
-
-class ProjectUpdateView(WarehouseAdminRequiredMixin, UpdateView):
-    model = Project
-    template_name = "inventory/project_form.html"
-    fields = ["name", "client", "is_active", "notes"]
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, _("“%(name)s” saqlandi.") % {"name": form.instance.name})
-        return redirect("inventory:project_list")
-
+    def post(self, request):
+        notifications.mark_all_read(request.user, request.session)
+        return JsonResponse({"ok": True}, headers={"Cache-Control": "private, no-store"})

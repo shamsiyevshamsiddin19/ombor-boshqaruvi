@@ -4,7 +4,7 @@ from django.utils.functional import SimpleLazyObject
 from apps.users.models import User
 from apps.users.permissions import is_warehouse_admin
 
-from . import selectors
+from . import notifications, selectors
 
 #: url_name -> the nav item that should be highlighted
 NAV_SECTIONS = {
@@ -22,9 +22,6 @@ NAV_SECTIONS = {
     "expenses": "expenses",
     "expenses_export": "expenses",
     "reports": "reports",
-    "project_list": "projects",
-    "project_create": "projects",
-    "project_edit": "projects",
     "pending_users": "pending_users",
     "pending_user_review": "pending_users",
     "user_list": "users",
@@ -45,7 +42,7 @@ def navigation(request):
         context.update(
             {
                 "nav_pending_users": SimpleLazyObject(lambda: User.objects.pending_approval().count()),
-                "nav_low_stock": SimpleLazyObject(lambda: selectors.low_stock_items().count()),
+                "nav_notifications": SimpleLazyObject(lambda: notifications.feed_for(user, request.session)),
                 "nav_valuation_usd": SimpleLazyObject(selectors.warehouse_valuation_usd),
             }
         )

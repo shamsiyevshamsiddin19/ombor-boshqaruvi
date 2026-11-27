@@ -74,7 +74,6 @@ def worker_deletion_blocker(account: User, *, acting_user: User) -> str:
     if (
         account.transactions.exists()
         or account.registered_offcuts.exists()
-        or account.created_projects.exists()
         or account.operating_expenses.exists()
     ):
         return _("Bu ishchining ombor tarixi bor. Hisobni faolsizlantirishingiz mumkin.")

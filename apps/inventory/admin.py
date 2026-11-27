@@ -6,7 +6,6 @@ from .models import (
     InventoryTransaction,
     LeftoverOffcut,
     OperatingExpense,
-    Project,
     WholeMaterial,
 )
 
@@ -84,14 +83,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ("code", "name", "sort_order", "supports_offcuts", "is_active")
     list_filter = ("supports_offcuts", "is_active")
     ordering = ("sort_order", "name")
-
-
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("name", "client", "is_active", "created_by", "created_at")
-    list_filter = ("is_active",)
-    search_fields = ("name", "client")
-    readonly_fields = ("created_by", "created_at")
 
 
 @admin.register(OperatingExpense)

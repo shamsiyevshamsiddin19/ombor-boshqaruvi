@@ -9,6 +9,7 @@ from django.urls import reverse
 
 from apps.inventory import services
 from apps.inventory.models import (
+    Notification,
     BaseMaterial,
     InventoryTransaction,
     LeftoverOffcut,
@@ -312,7 +313,10 @@ class KirimViewTests(WorkshopTestCase):
         )
         material = BaseMaterial.objects.get(name="Fanera 12 mm")
         self.assertRedirects(response, f"{self.url}?material={material.pk}", fetch_redirect_response=False)
-        self.assertContains(self.client.get(response.url), 'class="flash-toasts"')
+        page = self.client.get(response.url)
+        self.assertNotContains(page, 'class="flash-toasts"')
+        self.assertContains(page, "Fanera 12 mm")  # the bell menu carries the “added” notice
+        self.assertTrue(Notification.objects.filter(recipient=self.admin, message__contains="Fanera 12 mm").exists())
         self.assertEqual(material.allowed_roles, [UserRole.ARRACHI, UserRole.ROVERCHI])  # category default
         self.assertEqual((material.whole_stock.length_mm, material.whole_stock.width_mm), (2440, 1220))
 

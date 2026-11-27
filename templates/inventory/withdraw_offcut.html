@@ -30,7 +30,6 @@
       {% for error in form.quantity.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
       <p class="field-help" x-cloak x-show="q >= max">{% translate "Hammasi olinsa, bu qoldiq ro'yxatdan o'chadi." %}</p>
     </div>
-    {% include "partials/field.html" with field=form.project %}
     {% include "partials/field.html" with field=form.notes %}
     <button type="submit" class="btn btn-primary btn-lg btn-block">{% icon "take" 18 %} {% translate "Oldim — tasdiqlash" %}</button>
   </form>
