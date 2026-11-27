@@ -1,106 +1,105 @@
 {% load wms i18n %}
-<section class="panel mt-5 overflow-hidden" aria-labelledby="recent-materials-title">
-  <div class="panel-head"><h2 class="panel-title" id="recent-materials-title">{% translate "So'nggi materiallar" %}</h2></div>
+<section class="mt-5" aria-labelledby="recent-materials-title">
+  <h2 class="panel-title mb-3" id="recent-materials-title">{% translate "So'nggi materiallar" %}</h2>
   {% for show_dimensions, materials in recent_material_groups %}
-    {% if recent_material_groups|length > 1 %}
-    <h3 class="border-y border-line bg-raised px-5 py-2.5 text-sm font-medium">{% include "inventory/_dimension_group_label.html" %}</h3>
-    {% endif %}
-    <div class="hidden lg:block overflow-x-auto">
-      <table class="grid-table">
-        <thead>
-          <tr>
-            <th class="min-w-[200px] text-left">{% translate "Material nomi" %}</th>
-            <th class="w-[155px] min-w-[145px] text-left">{% translate "Kategoriya" %}</th>
-            <th class="w-[130px] min-w-[120px] text-left">{% translate "Birlik" %}</th>
-            {% if show_dimensions %}<th class="w-[220px] min-w-[210px] text-left">{% translate "O'lchami" %}</th>{% endif %}
-            <th class="w-[125px] min-w-[115px] text-left">{% translate "Minimal" %}</th>
-            <th class="w-[220px] min-w-[200px] text-left">{% translate "Kim ko'radi va oladi" %}</th>
-            <th class="w-[100px] min-w-[90px] text-center">{% translate "Holati" %}</th>
-            <th class="w-[165px] min-w-[155px] text-right">{% translate "Amal" %}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for m in materials %}{% with st=m.whole_stock %}
-          <tr class="hover:bg-raised/40 transition-colors">
-            <td class="px-4 py-3 font-medium text-ink">
-              <span class="block text-[14px] leading-snug">{{ m.name }}</span>
-            </td>
-            <td class="px-3 py-3 whitespace-nowrap">
-              <span class="inline-flex items-center rounded border border-line/70 bg-raised px-2 py-0.5 text-xs font-medium text-muted">
-                {{ m.category|cat_label }}
-              </span>
-            </td>
-            <td class="px-3 py-3 text-xs text-muted whitespace-nowrap">
-              {{ m.unit_short }}
-            </td>
-            {% if show_dimensions %}
-            <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
-              {% if st.length_mm and st.width_mm %}
-                {{ st.length_mm }} × {{ st.width_mm }} <span class="text-muted font-sans">{% translate "mm" %}</span>
-              {% else %}
-                <span class="text-muted font-sans">{% translate "Kiritilmagan" %}</span>
-              {% endif %}
-            </td>
-            {% endif %}
-            <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
-              {% if m.minimum_threshold > 0 %}
-                {{ m.minimum_threshold|qty }} <span class="text-muted font-sans">{{ m.unit_short }}</span>
-              {% else %}
-                <span class="text-muted">—</span>
-              {% endif %}
-            </td>
-            <td class="px-3 py-3">
-              <div class="flex flex-wrap gap-1 max-w-[220px]">
-                {% for r in m.allowed_roles %}
-                  <span class="inline-flex items-center rounded border border-line/60 bg-raised px-1.5 py-0.5 text-[11px] font-medium text-ink">
-                    {{ r|short_role }}
-                  </span>
-                {% empty %}
-                  <span class="text-muted">—</span>
-                {% endfor %}
-              </div>
-            </td>
-            <td class="px-3 py-3 text-center whitespace-nowrap">
-              {% if m.is_active %}
-                <span class="pill pill-pos text-xs">{% translate "Faol" %}</span>
-              {% else %}
-                <span class="pill pill-neutral text-xs">{% translate "Arxivda" %}</span>
-              {% endif %}
-            </td>
-            <td class="px-4 py-3 text-right whitespace-nowrap">
-              <div class="inline-flex items-center gap-1.5 justify-end">
-                <a href="{% url 'inventory:material_edit' m.pk %}" class="btn btn-secondary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
-                  {% icon "edit" 13 %} <span>{% translate "Tahrirlash" %}</span>
-                </a>
-                {% if m.is_active %}
-                <a href="{% url 'inventory:kirim' %}?material={{ m.pk }}" class="btn btn-primary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
-                  {% icon "plus" 13 %} <span>{% translate "Kirim" %}</span>
-                </a>
+    <div class="panel overflow-hidden shadow-xs{% if not forloop.first %} mt-6{% endif %}">
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="grid-table">
+          <thead>
+            <tr>
+              <th class="min-w-[200px] text-left">{% translate "Material nomi" %}</th>
+              <th class="w-[155px] min-w-[145px] text-left">{% translate "Kategoriya" %}</th>
+              <th class="w-[130px] min-w-[120px] text-left">{% translate "Birlik" %}</th>
+              {% if show_dimensions %}<th class="w-[220px] min-w-[210px] text-left">{% translate "O'lchami" %}</th>{% endif %}
+              <th class="w-[125px] min-w-[115px] text-left">{% translate "Minimal" %}</th>
+              <th class="w-[220px] min-w-[200px] text-left">{% translate "Kim ko'radi va oladi" %}</th>
+              <th class="w-[100px] min-w-[90px] text-center">{% translate "Holati" %}</th>
+              <th class="w-[165px] min-w-[155px] text-right">{% translate "Amal" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in materials %}{% with st=m.whole_stock %}
+            <tr class="hover:bg-raised/40 transition-colors">
+              <td class="px-4 py-3 font-medium text-ink">
+                <span class="block text-[14px] leading-snug">{{ m.name }}</span>
+              </td>
+              <td class="px-3 py-3 whitespace-nowrap">
+                <span class="inline-flex items-center rounded border border-line/70 bg-raised px-2 py-0.5 text-xs font-medium text-muted">
+                  {{ m.category|cat_label }}
+                </span>
+              </td>
+              <td class="px-3 py-3 text-xs text-muted whitespace-nowrap">
+                {{ m.unit_short }}
+              </td>
+              {% if show_dimensions %}
+              <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
+                {% if st.length_mm and st.width_mm %}
+                  {{ st.length_mm }} × {{ st.width_mm }} <span class="text-muted font-sans">{% translate "mm" %}</span>
+                {% else %}
+                  <span class="text-muted font-sans">{% translate "Kiritilmagan" %}</span>
                 {% endif %}
-              </div>
-            </td>
-          </tr>
-          {% endwith %}{% endfor %}
-        </tbody>
-      </table>
+              </td>
+              {% endif %}
+              <td class="px-3 py-3 whitespace-nowrap text-xs font-mono text-ink">
+                {% if m.minimum_threshold > 0 %}
+                  {{ m.minimum_threshold|qty }} <span class="text-muted font-sans">{{ m.unit_short }}</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="px-3 py-3">
+                <div class="flex flex-wrap gap-1 max-w-[220px]">
+                  {% for r in m.allowed_roles %}
+                    <span class="inline-flex items-center rounded border border-line/60 bg-raised px-1.5 py-0.5 text-[11px] font-medium text-ink">
+                      {{ r|short_role }}
+                    </span>
+                  {% empty %}
+                    <span class="text-muted">—</span>
+                  {% endfor %}
+                </div>
+              </td>
+              <td class="px-3 py-3 text-center whitespace-nowrap">
+                {% if m.is_active %}
+                  <span class="pill pill-pos text-xs">{% translate "Faol" %}</span>
+                {% else %}
+                  <span class="pill pill-neutral text-xs">{% translate "Arxivda" %}</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3 text-right whitespace-nowrap">
+                <div class="inline-flex items-center gap-1.5 justify-end">
+                  <a href="{% url 'inventory:material_edit' m.pk %}" class="btn btn-secondary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
+                    {% icon "edit" 13 %} <span>{% translate "Tahrirlash" %}</span>
+                  </a>
+                  {% if m.is_active %}
+                  <a href="{% url 'inventory:kirim' %}?material={{ m.pk }}" class="btn btn-primary min-h-8 px-2.5 text-xs font-medium inline-flex items-center gap-1">
+                    {% icon "plus" 13 %} <span>{% translate "Kirim" %}</span>
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endwith %}{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <ul class="list-rows divide-y divide-rule lg:hidden">
+        {% for m in materials %}{% with st=m.whole_stock %}
+        <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+          <div class="min-w-0">
+            <p class="font-medium break-words">{{ m.name }}</p>
+            <p class="text-xs text-muted">
+              {{ m.category|cat_label }}{% if show_dimensions %} · {% if st.length_mm and st.width_mm %}{{ st.length_mm }} × {{ st.width_mm }} {% translate "mm" %}{% else %}{% translate "O'lchami" %}: {% translate "Kiritilmagan" %}{% endif %}{% endif %}
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <a href="{% url 'inventory:material_edit' m.pk %}" class="btn btn-secondary text-xs">{% translate "Tahrirlash" %}</a>
+            {% if m.is_active %}<a href="{% url 'inventory:kirim' %}?material={{ m.pk }}" class="btn btn-primary text-xs">{% translate "Kirim" %}</a>{% endif %}
+          </div>
+        </li>
+        {% endwith %}{% endfor %}
+      </ul>
     </div>
-    <ul class="list-rows divide-y divide-rule lg:hidden">
-      {% for m in materials %}{% with st=m.whole_stock %}
-      <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
-        <div class="min-w-0">
-          <p class="font-medium break-words">{{ m.name }}</p>
-          <p class="text-xs text-muted">
-            {{ m.category|cat_label }}{% if show_dimensions %} · {% if st.length_mm and st.width_mm %}{{ st.length_mm }} × {{ st.width_mm }} {% translate "mm" %}{% else %}{% translate "O'lchami" %}: {% translate "Kiritilmagan" %}{% endif %}{% endif %}
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-1.5">
-          <a href="{% url 'inventory:material_edit' m.pk %}" class="btn btn-secondary text-xs">{% translate "Tahrirlash" %}</a>
-          {% if m.is_active %}<a href="{% url 'inventory:kirim' %}?material={{ m.pk }}" class="btn btn-primary text-xs">{% translate "Kirim" %}</a>{% endif %}
-        </div>
-      </li>
-      {% endwith %}{% endfor %}
-    </ul>
   {% empty %}
-    <p class="px-5 pb-5 text-sm text-muted">{% translate "Hali material qo'shilmagan." %}</p>
+    <p class="panel px-5 py-4 text-sm text-muted">{% translate "Hali material qo'shilmagan." %}</p>
   {% endfor %}
 </section>

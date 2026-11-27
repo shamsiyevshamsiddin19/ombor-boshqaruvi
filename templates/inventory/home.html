@@ -66,32 +66,23 @@
 
   {# ================= Butun materiallar ================= #}
   <section class="{% if tab == 'whole' %}block{% else %}hidden lg:block{% endif %} lg:mt-6" :class="tab === 'whole' ? 'block' : 'hidden lg:block'" aria-labelledby="whole-title">
-    <div class="panel mt-4 overflow-hidden lg:mt-0 shadow-xs">
-      <div class="panel-head border-b border-line px-5 py-3.5 hidden lg:flex">
-        <div class="flex items-center gap-2.5">
-          <h2 id="whole-title" class="panel-title">{% translate "Butun materiallar" %}</h2>
-          <span class="pill pill-neutral font-medium">{{ whole_count }}</span>
-        </div>
-      </div>
-
-      {% if whole_stock %}
-      {% for show_dimensions, stocks in whole_groups %}
-        {% if whole_groups|length > 1 %}
-        <h3 class="border-b border-line bg-raised px-5 py-2.5 text-sm font-medium{% if not forloop.first %} border-t{% endif %}">
-          {% include "inventory/_dimension_group_label.html" %}
-        </h3>
-        {% endif %}
+    <div class="mb-3 hidden items-center gap-2.5 lg:flex">
+      <h2 id="whole-title" class="panel-title">{% translate "Butun materiallar" %}</h2>
+      <span class="pill pill-neutral font-medium">{{ whole_count }}</span>
+    </div>
+    {% for show_dimensions, stocks in whole_groups %}
+      <div class="panel overflow-hidden shadow-xs {% if forloop.first %}mt-4 lg:mt-0{% else %}mt-6{% endif %}">
         {% include "inventory/_warehouse_material_group.html" %}
-      {% endfor %}
-
-      {% include "partials/pagination.html" with page_obj=whole_page page_key="whole_page" tab_key="whole" %}
-      {% else %}
+      </div>
+    {% empty %}
+      <div class="panel mt-4 overflow-hidden shadow-xs lg:mt-0">
         <div class="flex flex-col items-center gap-2 px-5 py-8 text-center text-sm">
           <p class="font-medium">{% if query or category %}{% translate "Qidiruv bo'yicha material topilmadi." %}{% else %}{% if user.is_warehouse_admin %}{% translate "Ombor hozircha bo'sh" %}{% else %}{% translate "Kasbingiz uchun hali material qo'shilmagan." %}{% endif %}{% endif %}</p>
           <p class="text-muted">{% if query or category %}<a class="underline underline-offset-4" href="?tab=whole">{% translate "Filtrni tozalash" %}</a>{% elif user.is_warehouse_admin %}<a class="btn btn-primary text-sm" href="{% url 'inventory:material_create' %}">{% translate "Birinchi materialni qo'shing" %}</a>{% else %}{% translate "Administrator material qo'shgach, shu yerda ko'rinadi." %}{% endif %}</p>
         </div>
-      {% endif %}
-    </div>
+      </div>
+    {% endfor %}
+    {% include "partials/pagination.html" with page_obj=whole_page page_key="whole_page" tab_key="whole" %}
   </section>
 
   {# ================= Qoldiq materiallar ================= #}
