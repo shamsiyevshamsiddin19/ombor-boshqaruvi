@@ -32,7 +32,7 @@
       <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{% icon "search" 16 %}</span>
       {% translate "Nomi bo'yicha qidirish" as search_label %}
       <input type="search" name="q" value="{{ query }}" placeholder="{{ search_label }}..." aria-label="{{ search_label }}"
-             class="control !min-h-[38px] w-full !border-line !pl-9 !text-sm hover:!border-control focus:!border-ink focus:!ring-1 focus:!ring-ink">
+             class="control w-full !border-line !pl-9 hover:!border-control focus:!border-ink focus:!ring-1 focus:!ring-ink">
     </form>
 
     {% if user.is_warehouse_admin %}
