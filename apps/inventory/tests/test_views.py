@@ -9,12 +9,12 @@ from django.urls import reverse
 
 from apps.inventory import services
 from apps.inventory.models import (
-    Notification,
     BaseMaterial,
     InventoryTransaction,
     LeftoverOffcut,
     MaterialCategory,
     MeasurementUnit,
+    Notification,
     TransactionType,
 )
 from apps.users.models import UserRole

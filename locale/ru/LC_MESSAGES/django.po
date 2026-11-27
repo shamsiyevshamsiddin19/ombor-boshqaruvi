@@ -10,7 +10,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: apps/inventory/api/serializers.py:80
+#: apps/inventory/api/serializers.py:79
 msgid "O'lchamlar (uzunlik va kenglik) birga berilishi kerak."
 msgstr "Размеры (длина и ширина) нужно указывать вместе."
 
@@ -21,239 +21,226 @@ msgstr "Размеры (длина и ширина) нужно указыват�
 msgid "Ombor"
 msgstr "Склад"
 
-#: apps/inventory/forms.py:112
+#: apps/inventory/forms.py:111
 msgid "O'chirilsa, ishchilar materialni ko'rmaydi; tarix saqlanadi."
 msgstr "Если отключить, работники не будут видеть материал; история сохранится."
 
-#: apps/inventory/forms.py:137
+#: apps/inventory/forms.py:136
 msgid "Bu kategoriya uchun kamida bitta kasbni belgilang."
 msgstr "Отметьте хотя бы одну профессию для этой категории."
 
-#: apps/inventory/forms.py:148
+#: apps/inventory/forms.py:147
 msgid "Uzunlik va enni birga kiriting."
 msgstr "Введите длину и ширину вместе."
 
-#: apps/inventory/forms.py:151
+#: apps/inventory/forms.py:150
 #, python-format
 msgid "Uzunlik %(max)s sm dan oshmasligi kerak."
 msgstr "Длина не должна превышать %(max)s см."
 
-#: apps/inventory/forms.py:153
+#: apps/inventory/forms.py:152
 #, python-format
 msgid "Eni %(max)s sm dan oshmasligi kerak."
 msgstr "Ширина не должна превышать %(max)s см."
 
-#: apps/inventory/forms.py:161
+#: apps/inventory/forms.py:160
 msgid "Suyuqliklar uchun litr, kg yoki dona tanlang."
 msgstr "Для жидкостей выберите литры, кг или штуки."
 
-#: apps/inventory/forms.py:167
+#: apps/inventory/forms.py:166
 msgid "Yangi kategoriya nomini yozing."
 msgstr "Введите название новой категории."
 
-#: apps/inventory/forms.py:213 templates/inventory/material_list.html:36
+#: apps/inventory/forms.py:212 templates/inventory/material_list.html:37
 msgid "Barcha kategoriyalar"
 msgstr "Все категории"
 
-#: apps/inventory/forms.py:216 apps/inventory/forms.py:284 apps/inventory/forms.py:340 apps/inventory/views.py:726
+#: apps/inventory/forms.py:215 apps/inventory/forms.py:277 apps/inventory/forms.py:327 apps/inventory/views.py:727
 #: templates/inventory/kirim_form.html:199 templates/inventory/offcut_form.html:60
 msgid "Material"
 msgstr "Материал"
 
-#: apps/inventory/forms.py:216 apps/inventory/forms.py:284 templates/inventory/kirim_form.html:130
+#: apps/inventory/forms.py:215 apps/inventory/forms.py:277 templates/inventory/kirim_form.html:130
 msgid "Materialni tanlang"
 msgstr "Выберите материал"
 
-#: apps/inventory/forms.py:219 apps/inventory/models.py:257 apps/inventory/views.py:728 templates/inventory/_recent_transactions.html:15
+#: apps/inventory/forms.py:218 apps/inventory/models.py:257 apps/inventory/views.py:729 templates/inventory/_recent_transactions.html:15
 #: templates/inventory/_txn_rows.html:15 templates/inventory/kirim_form.html:200
 msgid "Miqdor"
 msgstr "Количество"
 
-#: apps/inventory/forms.py:226
+#: apps/inventory/forms.py:225
 msgid "Narx turi"
 msgstr "Тип цены"
 
-#: apps/inventory/forms.py:227 templates/inventory/_txn_rows.html:17 templates/inventory/kirim_form.html:201
+#: apps/inventory/forms.py:226 templates/inventory/_txn_rows.html:17 templates/inventory/kirim_form.html:201
 msgid "Birlik narxi"
 msgstr "Цена за единицу"
 
-#: apps/inventory/forms.py:227 templates/inventory/kirim_form.html:170 templates/inventory/kirim_form.html:202
+#: apps/inventory/forms.py:226 templates/inventory/kirim_form.html:170 templates/inventory/kirim_form.html:202
 msgid "Partiya jami"
 msgstr "Итого по партии"
 
-#: apps/inventory/forms.py:233
+#: apps/inventory/forms.py:232
 msgid "Narx (USD)"
 msgstr "Цена (USD)"
 
-#: apps/inventory/forms.py:240
+#: apps/inventory/forms.py:239
 msgid "Partiya jami ko'pi bilan 2 xonali kasr bo'lishi mumkin."
 msgstr "Сумма партии может содержать не более двух знаков после запятой."
 
-#: apps/inventory/forms.py:256
+#: apps/inventory/forms.py:255
 msgid "Qancha oldingiz?"
 msgstr "Сколько вы взяли?"
 
-#: apps/inventory/forms.py:259 apps/inventory/forms.py:310
-msgid "Loyiha / buyurtma"
-msgstr "Проект / заказ"
-
-#: apps/inventory/forms.py:262 apps/inventory/forms.py:313
-msgid "— tanlang (ixtiyoriy) —"
-msgstr "— Выберите (необязательно) —"
-
-#: apps/inventory/forms.py:265 apps/inventory/forms.py:315 apps/inventory/models.py:302 apps/inventory/models.py:352
-#: apps/inventory/models.py:565 apps/inventory/views.py:694 apps/inventory/views.py:735 templates/inventory/_txn_rows.html:20
-#: templates/inventory/expenses.html:75
+#: apps/inventory/forms.py:258 apps/inventory/forms.py:302 apps/inventory/models.py:302 apps/inventory/models.py:549
+#: apps/inventory/views.py:695 apps/inventory/views.py:735 templates/inventory/_txn_rows.html:20 templates/inventory/expenses.html:75
 msgid "Izoh"
 msgstr "Примечание"
 
-#: apps/inventory/forms.py:268
+#: apps/inventory/forms.py:261
 msgid "Buyurtma yoki mijoz nomi"
 msgstr "Заказ или имя клиента"
 
-#: apps/inventory/forms.py:286 apps/inventory/models.py:263 apps/inventory/models.py:299 templates/inventory/offcut_form.html:61
+#: apps/inventory/forms.py:279 apps/inventory/models.py:263 apps/inventory/models.py:299 templates/inventory/offcut_form.html:61
 msgid "Uzunligi (mm)"
 msgstr "Длина (мм)"
 
-#: apps/inventory/forms.py:287 apps/inventory/models.py:264 apps/inventory/models.py:300 templates/inventory/offcut_form.html:62
+#: apps/inventory/forms.py:280 apps/inventory/models.py:264 apps/inventory/models.py:300 templates/inventory/offcut_form.html:62
 msgid "Eni (mm)"
 msgstr "Ширина (мм)"
 
-#: apps/inventory/forms.py:288 templates/inventory/offcut_form.html:63
+#: apps/inventory/forms.py:281 templates/inventory/offcut_form.html:63
 msgid "Soni (dona)"
 msgstr "Количество (шт.)"
 
-#: apps/inventory/forms.py:290
+#: apps/inventory/forms.py:283
 msgid "Joylashuvi / izoh"
 msgstr "Место / примечание"
 
-#: apps/inventory/forms.py:293
+#: apps/inventory/forms.py:286
 msgid "Masalan: 2-stellaj, yuqori polka"
 msgstr "Например: стеллаж 2, верхняя полка"
 
-#: apps/inventory/forms.py:308
+#: apps/inventory/forms.py:301
 msgid "Necha dona oldingiz?"
 msgstr "Сколько штук вы взяли?"
 
-#: apps/inventory/forms.py:327 apps/inventory/forms.py:415 templates/inventory/dashboard.html:61
+#: apps/inventory/forms.py:314 apps/inventory/forms.py:396 templates/inventory/dashboard.html:61
 msgid "Oy"
 msgstr "Месяц"
 
-#: apps/inventory/forms.py:330
+#: apps/inventory/forms.py:317
 msgid "Harakat turi"
 msgstr "Тип движения"
 
-#: apps/inventory/forms.py:336 apps/inventory/views.py:734 templates/inventory/_recent_transactions.html:14 templates/inventory/_txn_rows.html:13
+#: apps/inventory/forms.py:323 apps/inventory/views.py:734 templates/inventory/_recent_transactions.html:14 templates/inventory/_txn_rows.html:13
 #: templates/users/pending_users.html:26 templates/users/user_list.html:51
 msgid "Ishchi"
 msgstr "Работник"
 
-#: apps/inventory/forms.py:343 apps/inventory/models.py:466 apps/inventory/views.py:733
-msgid "Loyiha"
-msgstr "Проект"
-
-#: apps/inventory/forms.py:355 apps/inventory/forms.py:430
+#: apps/inventory/forms.py:337 apps/inventory/forms.py:411
 msgid "Oyni YYYY-MM ko'rinishida kiriting."
 msgstr "Введите месяц в формате ГГГГ-ММ."
 
-#: apps/inventory/forms.py:37
-msgid "Boshqa"
-msgstr "Другая"
-
-#: apps/inventory/forms.py:37 apps/inventory/forms.py:124
-msgid "Tanlang"
-msgstr "Выберите"
-
-#: apps/inventory/forms.py:376 apps/inventory/forms.py:418
+#: apps/inventory/forms.py:357 apps/inventory/forms.py:399
 msgid "Xarajat turi"
 msgstr "Тип расхода"
 
-#: apps/inventory/forms.py:381
+#: apps/inventory/forms.py:36
+msgid "Boshqa"
+msgstr "Другая"
+
+#: apps/inventory/forms.py:36 apps/inventory/forms.py:123
+msgid "Tanlang"
+msgstr "Выберите"
+
+#: apps/inventory/forms.py:362
 msgid "Nomi / nima uchun"
 msgstr "Название / назначение"
 
-#: apps/inventory/forms.py:383
+#: apps/inventory/forms.py:364
 msgid "Masalan: Arra pichog'i, tushlik, soliq..."
 msgstr "Напр.: Пильный диск, обед, налог..."
 
-#: apps/inventory/forms.py:386 apps/inventory/views.py:694
+#: apps/inventory/forms.py:367 apps/inventory/views.py:695
 msgid "Summa (USD)"
 msgstr "Сумма (USD)"
 
-#: apps/inventory/forms.py:393 apps/inventory/models.py:564 apps/inventory/views.py:694 apps/inventory/views.py:724
+#: apps/inventory/forms.py:374 apps/inventory/models.py:548 apps/inventory/views.py:695 apps/inventory/views.py:725
 #: templates/inventory/expenses.html:72
 msgid "Sana"
 msgstr "Дата"
 
-#: apps/inventory/forms.py:398
+#: apps/inventory/forms.py:379
 msgid "Izoh (ixtiyoriy)"
 msgstr "Примечание (необязательно)"
 
-#: apps/inventory/forms.py:401
+#: apps/inventory/forms.py:382
 msgid "Qo'shimcha izoh..."
 msgstr "Дополнительное примечание..."
 
-#: apps/inventory/forms.py:49 apps/inventory/forms.py:337 apps/inventory/forms.py:340 apps/inventory/forms.py:345
-#: apps/inventory/forms.py:330 apps/inventory/forms.py:420
+#: apps/inventory/forms.py:48 apps/inventory/forms.py:324 apps/inventory/forms.py:327 apps/inventory/forms.py:317
+#: apps/inventory/forms.py:401
 msgid "Barchasi"
 msgstr "Все"
 
-#: apps/inventory/forms.py:64 apps/inventory/forms.py:211 apps/inventory/forms.py:333 apps/inventory/models.py:178
-#: apps/inventory/views.py:727 templates/inventory/_recent_material_groups.html:11 templates/inventory/_warehouse_material_group.html:8 templates/inventory/dashboard.html:85
+#: apps/inventory/forms.py:63 apps/inventory/forms.py:210 apps/inventory/forms.py:320 apps/inventory/models.py:178
+#: apps/inventory/views.py:728 templates/inventory/_recent_material_groups.html:11 templates/inventory/_warehouse_material_group.html:8 templates/inventory/dashboard.html:85
 #: templates/inventory/home.html:46 templates/inventory/home.html:108 templates/inventory/kirim_form.html:112 templates/inventory/material_form.html:129
-#: templates/inventory/material_list.html:35 templates/inventory/material_list.html:59
+#: templates/inventory/material_list.html:36 templates/inventory/material_list.html:60
 msgid "Kategoriya"
 msgstr "Категория"
 
-#: apps/inventory/forms.py:66
+#: apps/inventory/forms.py:65
 msgid "Yangi kategoriya nomi"
 msgstr "Название новой категории"
 
-#: apps/inventory/forms.py:67 templates/inventory/material_form.html:295 templates/inventory/material_form.html:380
+#: apps/inventory/forms.py:66 templates/inventory/material_form.html:295 templates/inventory/material_form.html:380
 msgid "Masalan: Oyna va ko'zgu"
 msgstr "Например: Стекло и зеркала"
 
-#: apps/inventory/forms.py:70
+#: apps/inventory/forms.py:69
 msgid "O'lcham (list) va qoldiq yuritiladi"
 msgstr "Учитываются размеры (лист) и остатки"
 
-#: apps/inventory/forms.py:72
+#: apps/inventory/forms.py:71
 msgid "Belgilansa, list o'lchami (uzunlik × eni) va kesilgan qoldiqlar qo'shiladi."
 msgstr "Если отмечено, включаются размеры листа (длина × ширина) и обрезки."
 
-#: apps/inventory/forms.py:75
+#: apps/inventory/forms.py:74
 msgid "Qaysi kasblar ko'ra oladi va oladi"
 msgstr "Какие профессии видят и берут"
 
-#: apps/inventory/forms.py:79
+#: apps/inventory/forms.py:78
 msgid "Bo'sh qoldirilsa, kategoriya bo'yicha standart kasblar belgilanadi."
 msgstr "Если оставить пустым, будут отмечены профессии по умолчанию для категории."
 
-#: apps/inventory/forms.py:82 templates/inventory/material_form.html:212 templates/inventory/material_form.html:395
+#: apps/inventory/forms.py:81 templates/inventory/material_form.html:212 templates/inventory/material_form.html:395
 msgid "O'lcham birligi"
 msgstr "Единица размера"
 
-#: apps/inventory/forms.py:88
+#: apps/inventory/forms.py:87
 msgid "List uzunligi"
 msgstr "Длина листа"
 
-#: apps/inventory/forms.py:89
+#: apps/inventory/forms.py:88
 msgid "Faqat o'lchamli materiallar uchun, masalan 2750 mm (yoki 275 sm)."
 msgstr "Только для листовых материалов, напр. 2750 мм (или 275 см)."
 
-#: apps/inventory/forms.py:92
+#: apps/inventory/forms.py:91
 msgid "List eni"
 msgstr "Ширина листа"
 
-#: apps/inventory/forms.py:93
+#: apps/inventory/forms.py:92
 msgid "Masalan 1830 mm (yoki 183 sm)."
 msgstr "Напр. 1830 мм (или 183 см)."
 
-#: apps/inventory/forms.py:96 apps/inventory/models.py:189
+#: apps/inventory/forms.py:95 apps/inventory/models.py:189
 msgid "Minimal qoldiq"
 msgstr "Минимальный остаток"
 
-#: apps/inventory/forms.py:97
+#: apps/inventory/forms.py:96
 msgid "Miqdor shundan kam bo'lsa, xarid ro'yxatida ko'rinadi."
 msgstr "Если количество станет меньше, материал появится в списке закупки."
 
@@ -283,7 +270,7 @@ msgstr "Разрешённые профессии"
 msgid "O'lchov birligi"
 msgstr "Единица измерения"
 
-#: apps/inventory/models.py:198 apps/inventory/views.py:730
+#: apps/inventory/models.py:198 apps/inventory/views.py:731
 msgid "Birlik narxi (USD)"
 msgstr "Цена за единицу (USD)"
 
@@ -365,45 +352,33 @@ msgctxt "category"
 msgid "PVC"
 msgstr "ПВХ"
 
-#: apps/inventory/models.py:350 templates/inventory/project_list.html:24
-msgid "Mijoz"
-msgstr "Клиент"
-
 #: apps/inventory/models.py:36
 msgctxt "category"
 msgid "DSP"
 msgstr "ДСП"
-
-#: apps/inventory/models.py:360
-msgid "loyiha"
-msgstr "проект"
-
-#: apps/inventory/models.py:361
-msgid "loyihalar"
-msgstr "проекты"
 
 #: apps/inventory/models.py:37
 msgctxt "category"
 msgid "Upakovka"
 msgstr "Упаковка"
 
-#: apps/inventory/models.py:377 templates/inventory/_recent_material_groups.html:75 templates/inventory/_recent_material_groups.html:96 templates/inventory/_txn_rows.html:38
+#: apps/inventory/models.py:370 templates/inventory/_recent_material_groups.html:75 templates/inventory/_recent_material_groups.html:96 templates/inventory/_txn_rows.html:38
 #: templates/inventory/_txn_rows.html:120 templates/inventory/_warehouse_material_group.html:86 templates/inventory/_warehouse_material_group.html:141 templates/inventory/dashboard.html:61
 #: templates/inventory/dashboard.html:123 templates/inventory/dashboard.html:143 templates/inventory/dashboard.html:168 templates/inventory/kirim_form.html:3
-#: templates/inventory/kirim_form.html:36 templates/inventory/material_list.html:133 templates/inventory/reports.html:36 templates/partials/bottom_nav.html:5
+#: templates/inventory/kirim_form.html:36 templates/inventory/material_list.html:134 templates/inventory/reports.html:35 templates/partials/bottom_nav.html:5
 msgid "Kirim"
 msgstr "Приход"
 
-#: apps/inventory/models.py:378 templates/inventory/_txn_rows.html:40 templates/inventory/_txn_rows.html:122 templates/inventory/dashboard.html:61
+#: apps/inventory/models.py:371 templates/inventory/_txn_rows.html:40 templates/inventory/_txn_rows.html:122 templates/inventory/dashboard.html:61
 #: templates/inventory/dashboard.html:168
 msgid "Chiqim"
 msgstr "Расход"
 
-#: apps/inventory/models.py:379 templates/inventory/reports.html:52
+#: apps/inventory/models.py:372 templates/inventory/reports.html:51
 msgid "Qoldiq qo'shildi"
 msgstr "Добавлен обрезок"
 
-#: apps/inventory/models.py:380
+#: apps/inventory/models.py:373
 msgid "Tuzatish (qaytarish)"
 msgstr "Корректировка (возврат)"
 
@@ -432,71 +407,79 @@ msgctxt "unit"
 msgid "Metr"
 msgstr "Метр"
 
+#: apps/inventory/models.py:467
+msgid "ombor harakati"
+msgstr "движение по складу"
+
+#: apps/inventory/models.py:468
+msgid "ombor harakatlari"
+msgstr "движения по складу"
+
 #: apps/inventory/models.py:47
 msgctxt "unit"
 msgid "Santimetr"
 msgstr "Сантиметр"
-
-#: apps/inventory/models.py:483
-msgid "ombor harakati"
-msgstr "движение по складу"
-
-#: apps/inventory/models.py:484
-msgid "ombor harakatlari"
-msgstr "движения по складу"
 
 #: apps/inventory/models.py:52
 msgctxt "unit short"
 msgid "m²"
 msgstr "м²"
 
-#: apps/inventory/models.py:53
-msgctxt "unit short"
-msgid "L"
-msgstr "л"
-
-#: apps/inventory/models.py:536
+#: apps/inventory/models.py:520
 msgctxt "expense_category"
 msgid "Nalog"
 msgstr "Налог"
 
-#: apps/inventory/models.py:537
+#: apps/inventory/models.py:521
 msgctxt "expense_category"
 msgid "Produkta"
 msgstr "Продукты"
 
-#: apps/inventory/models.py:538
+#: apps/inventory/models.py:522
 msgctxt "expense_category"
 msgid "Stanok"
 msgstr "Станок"
 
-#: apps/inventory/models.py:539
+#: apps/inventory/models.py:523
 msgctxt "expense_category"
 msgid "Boshqa"
 msgstr "Другое"
+
+#: apps/inventory/models.py:53
+msgctxt "unit short"
+msgid "L"
+msgstr "л"
 
 #: apps/inventory/models.py:54
 msgctxt "unit short"
 msgid "kg"
 msgstr "кг"
 
+#: apps/inventory/models.py:540 apps/inventory/views.py:695 apps/inventory/views.py:726 templates/inventory/_txn_rows.html:9
+#: templates/inventory/expenses.html:73
+msgid "Turi"
+msgstr "Тип"
+
+#: apps/inventory/models.py:541 apps/inventory/views.py:695
+msgid "Xarajat nomi"
+msgstr "Название расхода"
+
+#: apps/inventory/models.py:543
+msgid "Summa (USD $)"
+msgstr "Сумма (USD $)"
+
 #: apps/inventory/models.py:55
 msgctxt "unit short"
 msgid "m"
 msgstr "м"
 
-#: apps/inventory/models.py:556 apps/inventory/views.py:694 apps/inventory/views.py:725 templates/inventory/_txn_rows.html:9
-#: templates/inventory/expenses.html:73
-msgid "Turi"
-msgstr "Тип"
+#: apps/inventory/models.py:557
+msgid "qo'shimcha xarajat"
+msgstr "дополнительный расход"
 
-#: apps/inventory/models.py:557 apps/inventory/views.py:694
-msgid "Xarajat nomi"
-msgstr "Название расхода"
-
-#: apps/inventory/models.py:559
-msgid "Summa (USD $)"
-msgstr "Сумма (USD $)"
+#: apps/inventory/models.py:558
+msgid "qo'shimcha xarajatlar"
+msgstr "дополнительные расходы"
 
 #: apps/inventory/models.py:56
 msgctxt "unit short"
@@ -508,20 +491,11 @@ msgctxt "unit short"
 msgid "dona"
 msgstr "шт."
 
-#: apps/inventory/models.py:573
-msgid "qo'shimcha xarajat"
-msgstr "дополнительный расход"
-
-#: apps/inventory/models.py:574
-msgid "qo'shimcha xarajatlar"
-msgstr "дополнительные расходы"
-
 #: apps/inventory/models.py:81 apps/users/models.py:31
 msgid "Kod"
 msgstr "Код"
 
-#: apps/inventory/models.py:82 apps/inventory/models.py:177 apps/inventory/models.py:349 apps/users/models.py:32
-#: templates/inventory/expenses.html:74 templates/inventory/project_list.html:23
+#: apps/inventory/models.py:82 apps/inventory/models.py:177 apps/users/models.py:32 templates/inventory/expenses.html:74
 msgid "Nomi"
 msgstr "Название"
 
@@ -537,9 +511,8 @@ msgstr "Учёт размеров и остатков"
 msgid "Standart kasblar"
 msgstr "Профессии по умолчанию"
 
-#: apps/inventory/models.py:86 apps/inventory/models.py:206 apps/inventory/models.py:351 templates/inventory/_recent_material_groups.html:63
-#: templates/inventory/material_form.html:267 templates/inventory/material_form.html:270 templates/inventory/material_list.html:117 templates/users/user_list.html:100
-#: templates/users/user_list.html:142
+#: apps/inventory/models.py:86 apps/inventory/models.py:206 templates/inventory/_recent_material_groups.html:63 templates/inventory/material_form.html:267
+#: templates/inventory/material_form.html:270 templates/inventory/material_list.html:118 templates/users/user_list.html:100 templates/users/user_list.html:142
 msgid "Faol"
 msgstr "Активен"
 
@@ -551,169 +524,193 @@ msgstr "категория"
 msgid "kategoriyalar"
 msgstr "категории"
 
-#: apps/inventory/services.py:112 apps/users/permissions.py:74
+#: apps/inventory/notifications.py:60
+msgid "Minimal qoldiqdan kam"
+msgstr "Ниже минимального остатка"
+
+#: apps/inventory/notifications.py:61
+#, python-format
+msgid "%(n)d ta material kam qoldi"
+msgid_plural "%(n)d ta material kam qoldi"
+msgstr[0] "%(n)d материал заканчивается"
+msgstr[1] "%(n)d материала заканчиваются"
+msgstr[2] "%(n)d материалов заканчиваются"
+
+#: apps/inventory/notifications.py:71
+msgid "Yangi so'rovlar"
+msgstr "Новые заявки"
+
+#: apps/inventory/notifications.py:72
+#, python-format
+msgid "%(n)d ta xodim tasdiq kutmoqda"
+msgid_plural "%(n)d ta xodim tasdiq kutmoqda"
+msgstr[0] "%(n)d сотрудник ожидает подтверждения"
+msgstr[1] "%(n)d сотрудника ожидают подтверждения"
+msgstr[2] "%(n)d сотрудников ожидают подтверждения"
+
+#: apps/inventory/services.py:111 apps/users/permissions.py:74
 msgid "Administrator ombordan material olmaydi — buni ishchi bajaradi."
 msgstr "Администратор не списывает материалы — это делает рабочий."
 
-#: apps/inventory/services.py:158
+#: apps/inventory/services.py:157
 msgid "Zaxirasi yoki tarixi bor materialning birligini almashtirib bo'lmaydi."
 msgstr "Нельзя изменить единицу материала с остатками или историей движений."
 
-#: apps/inventory/services.py:160
+#: apps/inventory/services.py:159
 msgid "Omborda zaxirasi yoki qoldig'i bor materialni arxivlab bo'lmaydi."
 msgstr "Нельзя архивировать материал с запасом или обрезками на складе."
 
-#: apps/inventory/services.py:162
+#: apps/inventory/services.py:161
 msgid "Qoldig'i bor materialni o'lchamsiz kategoriyaga o'tkazib bo'lmaydi."
 msgstr "Нельзя переместить материал с обрезками в категорию без размеров."
 
-#: apps/inventory/services.py:213
+#: apps/inventory/services.py:212
 msgid "Bu kirim so'rovi boshqa ma'lumot bilan yuborilgan. Sahifani yangilang."
 msgstr "Этот запрос прихода уже отправлен с другими данными. Обновите страницу."
 
-#: apps/inventory/services.py:220
+#: apps/inventory/services.py:219
 msgid "Birlik narxi yoki umumiy partiya narxidan bittasini kiriting."
 msgstr "Введите либо цену за единицу, либо общую цену партии."
 
-#: apps/inventory/services.py:224 apps/inventory/services.py:233
+#: apps/inventory/services.py:223 apps/inventory/services.py:232
 msgid "Narx manfiy bo'lishi mumkin emas."
 msgstr "Цена не может быть отрицательной."
 
-#: apps/inventory/services.py:228
+#: apps/inventory/services.py:227
 msgid "Miqdorga nisbatan narx juda past — birlik narxi nolga tushadi."
 msgstr "Цена слишком мала для такого количества — цена за единицу округлится до нуля."
 
-#: apps/inventory/services.py:238
+#: apps/inventory/services.py:237
 msgid "Birlik narxi ruxsat etilgan chegaradan oshadi."
 msgstr "Цена за единицу превышает допустимый предел."
 
-#: apps/inventory/services.py:240
+#: apps/inventory/services.py:239
 #, python-format
 msgid "Partiya narxi juda katta (max %(max)s USD)."
 msgstr "Цена партии слишком велика (макс. %(max)s USD)."
 
-#: apps/inventory/services.py:243
+#: apps/inventory/services.py:242
 msgid "Arxivlangan materialga kirim qilib bo'lmaydi. Avval uni faollashtiring."
 msgstr "Нельзя оформить приход архивного материала. Сначала сделайте его активным."
 
-#: apps/inventory/services.py:248
+#: apps/inventory/services.py:247
 #, python-format
 msgid "Jami zaxira hajmi juda katta (max %(max)s)."
 msgstr "Общий объём запаса слишком велик (макс. %(max)s)."
 
-#: apps/inventory/services.py:293
+#: apps/inventory/services.py:292
 #, python-format
 msgid "Omborda faqat %(amount)s %(unit)s bor."
 msgstr "На складе только %(amount)s %(unit)s."
 
-#: apps/inventory/services.py:322
+#: apps/inventory/services.py:320
 msgid "Butun son kiriting."
 msgstr "Введите целое число."
 
-#: apps/inventory/services.py:324
+#: apps/inventory/services.py:322
 msgid "Kamida 1 dona (butun son) kiriting."
 msgstr "Введите не меньше 1 шт. (целое число)."
 
-#: apps/inventory/services.py:331
+#: apps/inventory/services.py:329
 msgid "Bu qoldiq allaqachon olingan."
 msgstr "Этот обрезок уже забрали."
 
-#: apps/inventory/services.py:334
+#: apps/inventory/services.py:332
 #, python-format
 msgid "Bu qoldiqdan faqat %(count)s dona bor."
 msgstr "Этого обрезка осталось только %(count)s шт."
 
-#: apps/inventory/services.py:379 apps/inventory/services.py:290
+#: apps/inventory/services.py:376 apps/inventory/services.py:289
 msgid "Bu material arxivlangan."
 msgstr "Этот материал в архиве."
 
-#: apps/inventory/services.py:381
+#: apps/inventory/services.py:378
 msgid "Bu turdagi material uchun qoldiq qayd etilmaydi."
 msgstr "Для этого вида материала обрезки не учитываются."
 
-#: apps/inventory/services.py:386
+#: apps/inventory/services.py:383
 msgid "Musbat butun son kiriting."
 msgstr "Введите положительное целое число."
 
-#: apps/inventory/services.py:396
+#: apps/inventory/services.py:393
 #, python-format
 msgid "Qoldiq o'lchami to'liq listdan (%(length)sx%(width)s mm) katta bo'lishi mumkin emas."
 msgstr "Обрезок не может быть больше целого листа (%(length)sx%(width)s мм)."
 
-#: apps/inventory/services.py:434
+#: apps/inventory/services.py:431
 msgid "Qaytarish yozuvini qaytarib bo'lmaydi."
 msgstr "Корректировочную запись нельзя откатить."
 
-#: apps/inventory/services.py:439
+#: apps/inventory/services.py:436
 msgid "Bu yozuv allaqachon qaytarilgan."
 msgstr "Эта запись уже была откорректирована."
 
-#: apps/inventory/services.py:441
+#: apps/inventory/services.py:438
 msgid "Avval materialni faollashtiring."
 msgstr "Сначала активируйте материал."
 
-#: apps/inventory/services.py:471
+#: apps/inventory/services.py:467
 msgid "Bu harakatning birligi hozirgi material birligidan farq qiladi."
 msgstr "Единица этого движения отличается от текущей единицы материала."
 
-#: apps/inventory/services.py:474
+#: apps/inventory/services.py:470
 msgid "Qaytarish uchun ombordagi miqdor yetarli emas yoki chegaradan oshadi."
 msgstr "После отмены остаток окажется отрицательным или превысит допустимый предел."
 
-#: apps/inventory/services.py:484
+#: apps/inventory/services.py:480
 msgid "Avval bu kirimdan keyingi butun material harakatlarini qaytaring."
 msgstr "Сначала отмените более поздние движения целого материала."
 
-#: apps/inventory/services.py:491
+#: apps/inventory/services.py:487
 msgid "Qaytarishdan keyin zaxira qiymatini ishonchli hisoblab bo'lmadi."
 msgstr "Не удалось надёжно рассчитать стоимость остатка после отмены."
 
-#: apps/inventory/services.py:498
+#: apps/inventory/services.py:494
 msgid "Qaytarishdan keyin birlik narxi ruxsat etilgan chegaradan oshadi."
 msgstr "Цена за единицу после отмены превышает допустимый предел."
 
-#: apps/inventory/services.py:530
+#: apps/inventory/services.py:526
 msgid "Qoldiqning asl yozuvi topilmadi yoki undan foydalanilgan."
 msgstr "Исходный обрезок не найден или уже использован."
 
-#: apps/inventory/services.py:574
-msgid "Noma'lum xarajat turi."
-msgstr "Неизвестный тип расхода."
-
-#: apps/inventory/services.py:577
-msgid "Xarajat nomini kiriting."
-msgstr "Введите название расхода."
-
-#: apps/inventory/services.py:58 apps/inventory/services.py:56
+#: apps/inventory/services.py:57 apps/inventory/services.py:55
 msgid "Noto'g'ri raqam."
 msgstr "Неверное число."
 
-#: apps/inventory/services.py:580
+#: apps/inventory/services.py:570
+msgid "Noma'lum xarajat turi."
+msgstr "Неизвестный тип расхода."
+
+#: apps/inventory/services.py:573
+msgid "Xarajat nomini kiriting."
+msgstr "Введите название расхода."
+
+#: apps/inventory/services.py:576
 msgid "Summa 0 dan katta bo'lishi kerak."
 msgstr "Сумма должна быть больше 0."
 
-#: apps/inventory/services.py:582
+#: apps/inventory/services.py:578
 msgid "Summa ko'pi bilan 2 xonali kasr bo'lishi mumkin."
 msgstr "Сумма может содержать не более 2 знаков после запятой."
 
-#: apps/inventory/services.py:65
+#: apps/inventory/services.py:64
 msgid "Miqdor 0 dan katta bo'lishi kerak."
 msgstr "Количество должно быть больше 0."
 
-#: apps/inventory/services.py:67
+#: apps/inventory/services.py:66
 msgid "Miqdor ko'pi bilan 2 xonali kasr bo'lishi mumkin."
 msgstr "Количество может иметь не больше 2 знаков после запятой."
 
-#: apps/inventory/services.py:70
+#: apps/inventory/services.py:69
 #, python-format
 msgid "%(name)s faqat butun sonda hisoblanadi (%(unit)s)."
 msgstr "«%(name)s» учитывается только целыми числами (%(unit)s)."
 
-#: apps/inventory/services.py:83 apps/users/permissions.py:67
+#: apps/inventory/services.py:82 apps/users/permissions.py:67
 msgid "Bu amal faqat administratorlar uchun."
 msgstr "Это действие доступно только администраторам."
 
-#: apps/inventory/services.py:96
+#: apps/inventory/services.py:95
 msgid "Bu material sizning kasbingiz uchun ruxsat etilmagan."
 msgstr "Этот материал недоступен для вашей профессии."
 
@@ -787,141 +784,136 @@ msgctxt "month"
 msgid "oktabr"
 msgstr "октябрь"
 
-#: apps/inventory/views.py:177
+#: apps/inventory/views.py:175
 #, python-format
 msgid "Chiqim yozildi: %(name)s — %(amount)s %(unit)s. Omborda qoldi: %(left)s %(unit)s."
 msgstr "Расход записан: %(name)s — %(amount)s %(unit)s. Осталось на складе: %(left)s %(unit)s."
 
-#: apps/inventory/views.py:230
+#: apps/inventory/views.py:228
 #, python-format
 msgid "Qoldiq qo'shildi: %(name)s %(length)s×%(width)s mm — %(count)s dona."
 msgstr "Обрезок добавлен: %(name)s %(length)s×%(width)s мм — %(count)s шт."
 
-#: apps/inventory/views.py:269
+#: apps/inventory/views.py:266
 #, python-format
 msgid "Qoldiq olindi: %(name)s %(length)s×%(width)s mm — %(count)s dona."
 msgstr "Обрезок взят: %(name)s %(length)s×%(width)s мм — %(count)s шт."
 
-#: apps/inventory/views.py:305
+#: apps/inventory/views.py:302
 msgid "Harakat qaytarildi."
 msgstr "Движение отменено."
 
-#: apps/inventory/views.py:400
+#: apps/inventory/views.py:397
 msgid "LMDF eman 16 mm"
 msgstr "ЛМДФ дуб 16 мм"
 
-#: apps/inventory/views.py:400
+#: apps/inventory/views.py:397
 msgid "LMDF oq mat 18 mm"
 msgstr "ЛМДФ белый матовый 18 мм"
 
-#: apps/inventory/views.py:401
+#: apps/inventory/views.py:398
 msgid "LDSP oq 16 mm"
 msgstr "ЛДСП белая 16 мм"
 
-#: apps/inventory/views.py:401
+#: apps/inventory/views.py:398
 msgid "LDSP yong‘oq 18 mm"
 msgstr "ЛДСП орех 18 мм"
 
-#: apps/inventory/views.py:402
+#: apps/inventory/views.py:399
 msgid "Faner 18 mm"
 msgstr "Фанера 18 мм"
 
-#: apps/inventory/views.py:402
+#: apps/inventory/views.py:399
 msgid "Qayin faner 12 mm"
 msgstr "Берёзовая фанера 12 мм"
 
-#: apps/inventory/views.py:403
+#: apps/inventory/views.py:400
 msgid "DSP 16 mm"
 msgstr "ДСП 16 мм"
 
-#: apps/inventory/views.py:403
+#: apps/inventory/views.py:400
 msgid "DSP 22 mm"
 msgstr "ДСП 22 мм"
 
-#: apps/inventory/views.py:404
+#: apps/inventory/views.py:401
 msgid "Akril kraska oq"
 msgstr "Краска акриловая белая"
 
-#: apps/inventory/views.py:404
+#: apps/inventory/views.py:401
 msgid "Kraska oq mat"
 msgstr "Краска белая матовая"
 
-#: apps/inventory/views.py:404
+#: apps/inventory/views.py:401
 msgid "Lak mat"
 msgstr "Лак матовый"
 
-#: apps/inventory/views.py:405
+#: apps/inventory/views.py:402
 msgid "Oq gruntovka"
 msgstr "Грунтовка белая"
 
-#: apps/inventory/views.py:405
+#: apps/inventory/views.py:402
 msgid "Yog‘och uchun gruntovka"
 msgstr "Грунтовка для дерева"
 
-#: apps/inventory/views.py:406
+#: apps/inventory/views.py:403
 msgid "PVC eman 22 × 2 mm"
 msgstr "Кромка ПВХ дуб 22 × 2 мм"
 
-#: apps/inventory/views.py:406
+#: apps/inventory/views.py:403
 msgid "PVC oq 22 × 1 mm"
 msgstr "Кромка ПВХ белая 22 × 1 мм"
 
-#: apps/inventory/views.py:407
+#: apps/inventory/views.py:404
 msgid "Petlya 35 mm"
 msgstr "Петля 35 мм"
 
-#: apps/inventory/views.py:407
+#: apps/inventory/views.py:404
 msgid "Samarez 4 × 16 mm"
 msgstr "Саморез 4 × 16 мм"
 
-#: apps/inventory/views.py:408
+#: apps/inventory/views.py:405
 msgid "Karton burchak"
 msgstr "Картонный уголок"
 
-#: apps/inventory/views.py:408
+#: apps/inventory/views.py:405
 msgid "Qadoqlash plyonkasi"
 msgstr "Упаковочная плёнка"
 
-#: apps/inventory/views.py:471
+#: apps/inventory/views.py:468
 #, python-format
-msgid "“%(name)s” qo'shildi. Endi kirimni kiriting."
-msgstr "Материал «%(name)s» добавлен. Теперь оформите приход."
+msgid "%(who)s: “%(name)s” materiali qo'shildi."
+msgstr "%(who)s: материал «%(name)s» добавлен."
 
-#: apps/inventory/views.py:495 apps/inventory/views.py:803
+#: apps/inventory/views.py:493
 #, python-format
 msgid "“%(name)s” saqlandi."
 msgstr "Материал «%(name)s» сохранён."
 
-#: apps/inventory/views.py:565
+#: apps/inventory/views.py:563
 #, python-format
-msgid "Kirim yozildi: %(name)s +%(amount)s %(unit)s, %(total)s. Yangi o'rtacha narx: %(price)s."
-msgstr "Приход записан: %(name)s +%(amount)s %(unit)s, %(total)s. Новая средняя цена: %(price)s."
+msgid "%(who)s kirim yozdi: %(name)s +%(amount)s %(unit)s, %(total)s. Yangi o'rtacha narx: %(price)s."
+msgstr "%(who)s записал(а) приход: %(name)s +%(amount)s %(unit)s, %(total)s. Новая средняя цена: %(price)s."
 
-#: apps/inventory/views.py:663
+#: apps/inventory/views.py:664
 #, python-format
 msgid "Xarajat saqlandi: %(title)s — %(amount)s."
 msgstr "Расход сохранён: %(title)s — %(amount)s."
 
-#: apps/inventory/views.py:694 templates/inventory/expenses.html:76 templates/inventory/kirim_form.html:204
+#: apps/inventory/views.py:695 templates/inventory/expenses.html:76 templates/inventory/kirim_form.html:204
 msgid "Kim kiritdi"
 msgstr "Кто добавил"
 
-#: apps/inventory/views.py:729 templates/inventory/_recent_material_groups.html:12 templates/inventory/material_form.html:130
+#: apps/inventory/views.py:730 templates/inventory/_recent_material_groups.html:12 templates/inventory/material_form.html:130
 msgid "Birlik"
 msgstr "Единица"
 
-#: apps/inventory/views.py:731
+#: apps/inventory/views.py:732
 msgid "Jami (USD)"
 msgstr "Итого (USD)"
 
-#: apps/inventory/views.py:732
+#: apps/inventory/views.py:733
 msgid "Qoldiq o'lchami (mm)"
 msgstr "Размер обрезка (мм)"
-
-#: apps/inventory/views.py:792
-#, python-format
-msgid "“%(name)s” loyihasi yaratildi."
-msgstr "Проект «%(name)s» создан."
 
 #: apps/users/admin.py:14
 msgid "Ombor (WMS)"
@@ -1155,7 +1147,7 @@ msgstr "Отклонить можно только неподтверждённ�
 msgid "Administrator hisobi o'chirilmaydi."
 msgstr "Учётную запись администратора удалить нельзя."
 
-#: apps/users/services.py:80 apps/users/services.py:94
+#: apps/users/services.py:79 apps/users/services.py:93
 msgid "Bu ishchining ombor tarixi bor. Hisobni faolsizlantirishingiz mumkin."
 msgstr "У сотрудника есть история операций на складе. Учётную запись можно деактивировать."
 
@@ -1253,103 +1245,91 @@ msgstr "Подождите немного и обновите страницу. 
 msgid "Serverda xatolik yuz berdi"
 msgstr "На сервере произошла ошибка"
 
-#: templates/base.html:111 templates/base.html:289 templates/base.html:332
+#: templates/base.html:112 templates/base.html:288 templates/base.html:331
 msgid "Chiqish"
 msgstr "Выйти"
 
-#: templates/base.html:134
+#: templates/base.html:135
 msgid "Ombordagi butun materiallarning joriy qiymati"
 msgstr "Текущая стоимость всех целых материалов на складе"
 
-#: templates/base.html:135 templates/inventory/dashboard.html:22
+#: templates/base.html:136 templates/inventory/dashboard.html:22
 msgid "Ombor qiymati"
 msgstr "Стоимость склада"
 
-#: templates/base.html:145 templates/base.html:146 templates/users/pending_user_review.html:5 templates/users/pending_users.html:3
+#: templates/base.html:146 templates/base.html:147 templates/users/pending_user_review.html:5 templates/users/pending_users.html:3
 #: templates/users/pending_users.html:7 templates/users/user_list.html:16
 msgid "So'rovlar"
 msgstr "Заявки"
 
-#: templates/base.html:162 templates/base.html:163 templates/base.html:184
+#: templates/base.html:167 templates/base.html:168 templates/base.html:187
 msgid "Bildirishnomalar"
 msgstr "Уведомления"
 
-#: templates/base.html:197
-msgid "Minimal qoldiqdan kam"
-msgstr "Ниже минимального остатка"
+#: templates/base.html:191
+msgid "Hammasini o'qildi"
+msgstr "Прочитать все"
 
-#: templates/base.html:198
-#, python-format
-msgid "%(n)s ta material kam qoldi"
-msgid_plural "%(n)s ta material kam qoldi"
-msgstr[0] "%(n)s материал заканчивается"
-msgstr[1] "%(n)s материала заканчиваются"
-msgstr[2] "%(n)s материалов заканчиваются"
+#: templates/base.html:205
+msgid "oldin"
+msgstr "назад"
 
-#: templates/base.html:209
-msgid "Yangi so'rovlar"
-msgstr "Новые заявки"
+#: templates/base.html:210 templates/base.html:210
+msgid "O'qildi"
+msgstr "Прочитано"
 
-#: templates/base.html:210
-#, python-format
-msgid "%(n)s ta xodim tasdiq kutmoqda"
-msgid_plural "%(n)s ta xodim tasdiq kutmoqda"
-msgstr[0] "%(n)s сотрудник ожидает подтверждения"
-msgstr[1] "%(n)s сотрудника ожидают подтверждения"
-msgstr[2] "%(n)s сотрудников ожидают подтверждения"
-
-#: templates/base.html:217
+#: templates/base.html:218
 msgid "Yangi bildirishnomalar yo'q"
 msgstr "Нет новых уведомлений"
 
-#: templates/base.html:218
+#: templates/base.html:219
 msgid "Barcha materiallar me'yorida va yangi so'rovlar mavjud emas."
 msgstr "Все материалы в норме, новых заявок нет."
 
-#: templates/base.html:278 templates/partials/lang_switch.html:3
+#: templates/base.html:277 templates/partials/lang_switch.html:3
 msgid "Til"
 msgstr "Язык"
 
-#: templates/base.html:307
+#: templates/base.html:306
 msgid "Tezkor menyu"
 msgstr "Быстрое меню"
 
-#: templates/base.html:313 templates/partials/bottom_nav.html:10
+#: templates/base.html:312 templates/partials/bottom_nav.html:10
 msgid "Menyu"
 msgstr "Меню"
 
-#: templates/base.html:71 templates/base.html:72 templates/base.html:295
+#: templates/base.html:72 templates/base.html:73 templates/base.html:294
 msgid "Menyuni ochish"
 msgstr "Открыть меню"
 
-#: templates/base.html:71 templates/base.html:72 templates/base.html:319
+#: templates/base.html:72 templates/base.html:73 templates/base.html:318
 msgid "Yopish"
 msgstr "Закрыть"
 
-#: templates/base.html:84
+#: templates/base.html:85
 msgid "Asosiy menyu"
 msgstr "Главное меню"
 
-#: templates/base.html:98 templates/base.html:238
+#: templates/base.html:99 templates/base.html:237
 msgid "Rol yo'q"
 msgstr "Нет роли"
 
 #: templates/inventory/_recent_material_groups.html:10 templates/inventory/_recent_transactions.html:12 templates/inventory/_txn_rows.html:10 templates/inventory/_warehouse_material_group.html:7
-#: templates/inventory/dashboard.html:84 templates/inventory/home.html:107 templates/inventory/material_form.html:128 templates/inventory/material_list.html:58
+#: templates/inventory/dashboard.html:84 templates/inventory/home.html:107 templates/inventory/material_form.html:128 templates/inventory/material_list.html:59
 msgid "Material nomi"
 msgstr "Наименование материала"
 
-#: templates/inventory/_recent_material_groups.html:103 templates/inventory/material_list.html:187
+#: templates/inventory/_recent_material_groups.html:103 templates/inventory/material_list.html:188
 msgid "Hali material qo'shilmagan."
 msgstr "Материалы ещё не добавлены."
 
 #: templates/inventory/_recent_material_groups.html:13 templates/inventory/_recent_material_groups.html:91 templates/inventory/_txn_rows.html:11 templates/inventory/_warehouse_material_group.html:10
-#: templates/inventory/_warehouse_material_group.html:112 templates/inventory/home.html:109 templates/inventory/material_form.html:131 templates/inventory/material_list.html:60
+#: templates/inventory/_warehouse_material_group.html:112 templates/inventory/home.html:109 templates/inventory/material_form.html:131 templates/inventory/material_list.html:61
 msgid "O'lchami"
 msgstr "Размеры"
 
 #: templates/inventory/_recent_material_groups.html:14 templates/inventory/_warehouse_material_group.html:13 templates/inventory/dashboard.html:87 templates/inventory/material_form.html:132
-#: templates/inventory/material_list.html:61
+#: templates/inventory/material_list.html:62
 msgid "Minimal"
 msgstr "Минимум"
 
@@ -1358,13 +1338,13 @@ msgid "Kim ko'radi va oladi"
 msgstr "Кто видит и берёт"
 
 #: templates/inventory/_recent_material_groups.html:16 templates/inventory/_warehouse_material_group.html:17 templates/inventory/dashboard.html:89 templates/inventory/material_form.html:134
-#: templates/inventory/material_list.html:63 templates/inventory/project_list.html:25 templates/users/user_list.html:55
+#: templates/inventory/material_list.html:64 templates/users/user_list.html:55
 msgid "Holati"
 msgstr "Статус"
 
 #: templates/inventory/_recent_material_groups.html:17 templates/inventory/_recent_transactions.html:13 templates/inventory/_txn_rows.html:21 templates/inventory/_warehouse_material_group.html:18
 #: templates/inventory/dashboard.html:90 templates/inventory/expenses.html:78 templates/inventory/home.html:114 templates/inventory/material_form.html:135
-#: templates/inventory/material_list.html:64 templates/inventory/offcut_form.html:67 templates/users/pending_users.html:30 templates/users/user_list.html:56
+#: templates/inventory/material_list.html:65 templates/inventory/offcut_form.html:67 templates/users/pending_users.html:30 templates/users/user_list.html:56
 msgid "Amal"
 msgstr "Действие"
 
@@ -1373,7 +1353,7 @@ msgid "So'nggi materiallar"
 msgstr "Последние материалы"
 
 #: templates/inventory/_recent_material_groups.html:37 templates/inventory/_recent_material_groups.html:91 templates/inventory/_warehouse_material_group.html:40 templates/inventory/_warehouse_material_group.html:112
-#: templates/inventory/home.html:132 templates/inventory/home.html:168 templates/inventory/material_list.html:87 templates/inventory/material_list.html:157
+#: templates/inventory/home.html:132 templates/inventory/home.html:168 templates/inventory/material_list.html:88 templates/inventory/material_list.html:158
 #: templates/inventory/offcut_form.html:6
 msgid "mm"
 msgstr "мм"
@@ -1382,13 +1362,12 @@ msgstr "мм"
 msgid "Kiritilmagan"
 msgstr "Не указано"
 
-#: templates/inventory/_recent_material_groups.html:65 templates/inventory/material_form.html:267 templates/inventory/material_list.html:119 templates/inventory/material_list.html:152
+#: templates/inventory/_recent_material_groups.html:65 templates/inventory/material_form.html:267 templates/inventory/material_list.html:120 templates/inventory/material_list.html:153
 msgid "Arxivda"
 msgstr "В архиве"
 
 #: templates/inventory/_recent_material_groups.html:71 templates/inventory/_recent_material_groups.html:95 templates/inventory/_warehouse_material_group.html:80 templates/inventory/_warehouse_material_group.html:82
-#: templates/inventory/_warehouse_material_group.html:138 templates/inventory/material_list.html:128 templates/inventory/project_list.html:39 templates/users/user_list.html:110
-#: templates/users/user_list.html:147
+#: templates/inventory/_warehouse_material_group.html:138 templates/inventory/material_list.html:129 templates/users/user_list.html:110 templates/users/user_list.html:147
 msgid "Tahrirlash"
 msgstr "Изменить"
 
@@ -1397,12 +1376,12 @@ msgid "Vaqti"
 msgstr "Время"
 
 #: templates/inventory/_recent_transactions.html:25 templates/inventory/_recent_transactions.html:45 templates/inventory/_txn_rows.html:40 templates/inventory/_txn_rows.html:122
-#: templates/inventory/reports.html:79
+#: templates/inventory/reports.html:78
 msgid "qoldiq"
 msgstr "обрезок"
 
 #: templates/inventory/_recent_transactions.html:29 templates/inventory/_recent_transactions.html:42 templates/inventory/_txn_rows.html:74 templates/inventory/_txn_rows.html:144
-#: templates/inventory/home.html:135 templates/inventory/home.html:168 templates/inventory/offcut_form.html:6 templates/inventory/reports.html:83
+#: templates/inventory/home.html:135 templates/inventory/home.html:168 templates/inventory/offcut_form.html:6 templates/inventory/reports.html:82
 #: templates/inventory/reverse_transaction.html:8 templates/inventory/withdraw_offcut.html:17
 msgid "dona"
 msgstr "шт."
@@ -1455,7 +1434,7 @@ msgstr "Мало осталось"
 msgid "Yetarli"
 msgstr "В наличии"
 
-#: templates/inventory/_warehouse_material_group.html:84 templates/inventory/home.html:30 templates/inventory/material_list.html:131 templates/inventory/material_list.html:172
+#: templates/inventory/_warehouse_material_group.html:84 templates/inventory/home.html:30 templates/inventory/material_list.html:132 templates/inventory/material_list.html:173
 msgid "Kirim qilish"
 msgstr "Оформить приход"
 
@@ -1580,7 +1559,7 @@ msgstr "Список закупки"
 msgid "omborda / minimal qoldiq"
 msgstr "на складе / минимальный остаток"
 
-#: templates/inventory/dashboard.html:88 templates/inventory/reports.html:44
+#: templates/inventory/dashboard.html:88 templates/inventory/reports.html:43
 msgid "Farq"
 msgstr "Разница"
 
@@ -1589,7 +1568,7 @@ msgid "Barcha davr"
 msgstr "Весь период"
 
 #: templates/inventory/expenses.html:108 templates/inventory/expenses.html:150 templates/inventory/material_form.html:278 templates/inventory/material_form.html:432
-#: templates/inventory/project_form.html:16 templates/users/user_edit.html:28
+#: templates/users/user_edit.html:28
 msgid "Saqlash"
 msgstr "Сохранить"
 
@@ -1617,7 +1596,7 @@ msgstr "Общий расход"
 msgid "Nalog"
 msgstr "Налог"
 
-#: templates/inventory/expenses.html:3 templates/inventory/expenses.html:8 templates/inventory/reports.html:48
+#: templates/inventory/expenses.html:3 templates/inventory/expenses.html:8 templates/inventory/reports.html:47
 msgid "Qo'shimcha xarajatlar"
 msgstr "Доп. расходы"
 
@@ -1633,11 +1612,11 @@ msgstr "Станок"
 msgid "Filtrlar"
 msgstr "Фильтры"
 
-#: templates/inventory/expenses.html:50 templates/inventory/reports.html:28
+#: templates/inventory/expenses.html:50 templates/inventory/reports.html:27
 msgid "Ko'rsatish"
 msgstr "Показать"
 
-#: templates/inventory/expenses.html:51 templates/inventory/material_form.html:330 templates/inventory/reports.html:29 templates/users/user_list.html:37
+#: templates/inventory/expenses.html:51 templates/inventory/material_form.html:330 templates/inventory/reports.html:28 templates/users/user_list.html:37
 msgid "Tozalash"
 msgstr "Сбросить"
 
@@ -1711,12 +1690,12 @@ msgstr "По запросу обрезков не найдено."
 msgid "List kesgandan keyin ishlatsa bo'ladigan bo'lak qolsa, uni qo'shing — keyingi buyurtmada shu yerdan topasiz."
 msgstr "Если после раскроя листа остался пригодный кусок, добавьте его — для следующего заказа вы найдёте его здесь."
 
-#: templates/inventory/home.html:22 templates/inventory/material_list.html:31
+#: templates/inventory/home.html:22 templates/inventory/material_list.html:32
 msgid "Nomi bo'yicha qidirish"
 msgstr "Поиск по названию"
 
 #: templates/inventory/home.html:23 templates/inventory/material_form.html:16 templates/inventory/material_list.html:3 templates/inventory/material_list.html:7
-#: templates/partials/nav.html:63 templates/partials/nav.html:64 templates/partials/nav.html:69
+#: templates/inventory/material_list.html:33 templates/partials/nav.html:63 templates/partials/nav.html:64 templates/partials/nav.html:69
 msgid "Materiallar"
 msgstr "Материалы"
 
@@ -1730,11 +1709,11 @@ msgstr "Новый материал"
 msgid "Qoldiq qo'shish"
 msgstr "Добавить обрезок"
 
-#: templates/inventory/home.html:47 templates/inventory/material_form.html:326 templates/inventory/material_list.html:23 templates/inventory/project_list.html:16
+#: templates/inventory/home.html:47 templates/inventory/material_form.html:326 templates/inventory/material_list.html:23
 msgid "Hammasi"
 msgstr "Все"
 
-#: templates/inventory/home.html:56 templates/inventory/home.html:82 templates/inventory/material_list.html:44
+#: templates/inventory/home.html:56 templates/inventory/home.html:82 templates/inventory/material_list.html:45
 msgid "Filtrni tozalash"
 msgstr "Сбросить фильтр"
 
@@ -1750,7 +1729,7 @@ msgstr "Для вашей профессии материалы ещё не до
 msgid "Ombor hozircha bo'sh"
 msgstr "Склад пока пуст"
 
-#: templates/inventory/home.html:81 templates/inventory/material_list.html:185
+#: templates/inventory/home.html:81 templates/inventory/material_list.html:186
 msgid "Qidiruv bo'yicha material topilmadi."
 msgstr "По запросу материалов не найдено."
 
@@ -1836,29 +1815,29 @@ msgstr "По умолчанию"
 msgid "Tayyor"
 msgstr "Готово"
 
-#: templates/inventory/material_list.html:126 templates/inventory/material_list.html:168
+#: templates/inventory/material_list.html:127 templates/inventory/material_list.html:169
 #, python-format
 msgid "%(name)s — tahrirlash"
 msgstr "Изменить: %(name)s"
 
-#: templates/inventory/material_list.html:186
+#: templates/inventory/material_list.html:187
 msgid "Arxivda material yo'q."
 msgstr "В архиве нет материалов."
 
-#: templates/inventory/material_list.html:191
+#: templates/inventory/material_list.html:192
 msgid "Yangi material qo'shish"
 msgstr "Добавить новый материал"
 
-#: templates/inventory/material_list.html:21 templates/inventory/project_list.html:14
+#: templates/inventory/material_list.html:21
 msgctxt "filter"
 msgid "Faol"
 msgstr "Активные"
 
-#: templates/inventory/material_list.html:22 templates/inventory/project_list.html:15 templates/inventory/project_list.html:36
+#: templates/inventory/material_list.html:22
 msgid "Arxiv"
 msgstr "Архив"
 
-#: templates/inventory/material_list.html:62
+#: templates/inventory/material_list.html:63
 msgid "Kim oladi"
 msgstr "Кто берёт"
 
@@ -1938,66 +1917,32 @@ msgstr "Площадь"
 msgid "To'liq list:"
 msgstr "Полный лист:"
 
-#: templates/inventory/project_form.html:16
-msgid "Yaratish"
-msgstr "Создать"
-
-#: templates/inventory/project_form.html:3 templates/inventory/project_form.html:7 templates/inventory/project_list.html:10
-msgid "Yangi loyiha"
-msgstr "Новый проект"
-
-#: templates/inventory/project_form.html:6 templates/inventory/project_list.html:3 templates/inventory/project_list.html:7 templates/partials/nav.html:75
-#: templates/partials/nav.html:76 templates/partials/nav.html:81
-msgid "Loyihalar"
-msgstr "Проекты"
-
-#: templates/inventory/project_form.html:7
-msgid "Loyihani tahrirlash"
-msgstr "Редактировать проект"
-
-#: templates/inventory/project_list.html:26
-msgid "Yaratildi"
-msgstr "Создан"
-
-#: templates/inventory/project_list.html:35
-msgctxt "status"
-msgid "Faol"
-msgstr "Активен"
-
-#: templates/inventory/project_list.html:47
-msgid "Hali loyiha yo'q."
-msgstr "Проектов пока нет."
-
-#: templates/inventory/project_list.html:8
-msgid "Buyurtma va loyihalar — chiqimlarni guruhlash uchun"
-msgstr "Заказы и проекты для группировки расходов материалов"
-
-#: templates/inventory/reports.html:101
+#: templates/inventory/reports.html:100
 msgid "Tanlangan filtr bo'yicha harakat yo'q."
 msgstr "По выбранному фильтру движений нет."
 
-#: templates/inventory/reports.html:3 templates/inventory/reports.html:8 templates/partials/nav.html:99 templates/partials/nav.html:100
-#: templates/partials/nav.html:105
+#: templates/inventory/reports.html:3 templates/inventory/reports.html:8 templates/partials/nav.html:87 templates/partials/nav.html:88
+#: templates/partials/nav.html:93
 msgid "Oylik hisobot"
 msgstr "Месячный отчёт"
 
-#: templates/inventory/reports.html:34
+#: templates/inventory/reports.html:33
 msgid "Davr bo'yicha jami"
 msgstr "Итоги за период"
 
-#: templates/inventory/reports.html:40
+#: templates/inventory/reports.html:39
 msgid "Chiqim (sarf)"
 msgstr "Расход (использование)"
 
-#: templates/inventory/reports.html:59
+#: templates/inventory/reports.html:58
 msgid "Sarf ishchilar bo'yicha"
 msgstr "Расход по работникам"
 
-#: templates/inventory/reports.html:59
+#: templates/inventory/reports.html:58
 msgid "USD, olingan materiallar qiymati"
 msgstr "USD, стоимость взятых материалов"
 
-#: templates/inventory/reports.html:65 templates/inventory/reports.html:83
+#: templates/inventory/reports.html:64 templates/inventory/reports.html:82
 #, python-format
 msgid "%(n)s marta"
 msgid_plural "%(n)s marta"
@@ -2005,23 +1950,23 @@ msgstr[0] "%(n)s раз"
 msgstr[1] "%(n)s раза"
 msgstr[2] "%(n)s раз"
 
-#: templates/inventory/reports.html:69 templates/inventory/reports.html:88
+#: templates/inventory/reports.html:68 templates/inventory/reports.html:87
 msgid "Bu davrda chiqim yo'q."
 msgstr "За этот период расхода нет."
 
-#: templates/inventory/reports.html:73
+#: templates/inventory/reports.html:72
 msgid "Sarf materiallar bo'yicha"
 msgstr "Расход по материалам"
 
-#: templates/inventory/reports.html:73
+#: templates/inventory/reports.html:72
 msgid "eng qimmati birinchi"
 msgstr "сначала самые дорогие"
 
-#: templates/inventory/reports.html:94
+#: templates/inventory/reports.html:93
 msgid "Barcha harakatlar"
 msgstr "Все движения"
 
-#: templates/inventory/reports.html:95
+#: templates/inventory/reports.html:94
 msgid "o'zgartirib bo'lmaydigan jurnal"
 msgstr "неизменяемый журнал"
 
@@ -2061,7 +2006,7 @@ msgstr "Взять обрезок"
 msgid "Hammasi olinsa, bu qoldiq ro'yxatdan o'chadi."
 msgstr "Если забрать все куски, обрезок исчезнет из списка."
 
-#: templates/inventory/withdraw_offcut.html:35 templates/inventory/withdraw_whole.html:65
+#: templates/inventory/withdraw_offcut.html:34 templates/inventory/withdraw_whole.html:64
 msgid "Oldim — tasdiqlash"
 msgstr "Взять — подтвердить"
 
@@ -2102,7 +2047,7 @@ msgstr "Минимальный остаток: %(amount)s %(unit)s"
 msgid "Minimal qoldiqdan (%(amount)s %(unit)s) kam bo'ladi — administrator xarid ro'yxatida ko'radi."
 msgstr "Станет меньше минимального остатка (%(amount)s %(unit)s) — администратор увидит это в списке закупки."
 
-#: templates/inventory/withdraw_whole.html:66
+#: templates/inventory/withdraw_whole.html:65
 msgid "Chiqim ombordan ayriladi va tarixingizga yoziladi."
 msgstr "Расход списывается со склада и записывается в вашу историю."
 
@@ -2118,18 +2063,18 @@ msgstr "История"
 msgid "(ixtiyoriy)"
 msgstr "(необязательно)"
 
-#: templates/partials/nav.html:111 templates/partials/nav.html:112 templates/partials/nav.html:117 templates/users/user_edit.html:5
-#: templates/users/user_list.html:3 templates/users/user_list.html:7 templates/users/worker_role_form.html:5
-msgid "Ishchilar"
-msgstr "Работники"
-
 #: templates/partials/nav.html:45
 msgid "Boshqaruv"
 msgstr "Управление"
 
-#: templates/partials/nav.html:87 templates/partials/nav.html:88 templates/partials/nav.html:93
+#: templates/partials/nav.html:75 templates/partials/nav.html:76 templates/partials/nav.html:81
 msgid "Xarajatlar"
 msgstr "Расходы"
+
+#: templates/partials/nav.html:99 templates/partials/nav.html:100 templates/partials/nav.html:105 templates/users/user_edit.html:5
+#: templates/users/user_list.html:3 templates/users/user_list.html:7 templates/users/worker_role_form.html:5
+msgid "Ishchilar"
+msgstr "Работники"
 
 #: templates/partials/pagination.html:2
 msgid "Sahifalar"
