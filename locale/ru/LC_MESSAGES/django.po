@@ -2161,10 +2161,6 @@ msgstr "Если ждать приходится долго, сообщите н
 msgid "Kirish ma'lumotlari"
 msgstr "Учетные данные для входа"
 
-#: templates/users/user_edit.html:37
-msgid "Yangisini o'rnatish uchun chapdagi formadan foydalaning"
-msgstr "Используйте форму слева, чтобы задать новый"
-
 #: templates/users/user_edit.html:7
 #, python-format
 msgid "ro'yxatdan o'tgan %(date)s"
@@ -2328,9 +2324,3 @@ msgstr "Удаление сотрудника"
 
 msgid "%(name)s hisobini o'chirishni tasdiqlaysizmi?"
 msgstr "Удалить учётную запись «%(name)s»?"
-
-msgid "Parol amallari"
-msgstr "Действия с паролем"
-
-msgid "Parolni yangilash"
-msgstr "Сбросить пароль"

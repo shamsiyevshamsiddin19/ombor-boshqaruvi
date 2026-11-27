@@ -76,7 +76,7 @@
           </td>
 
           <td class="px-4 py-3.5 whitespace-nowrap">
-            {% include "users/_password_action.html" %}
+            <span class="font-mono text-xs" aria-label="{% translate 'Parol' %}">********</span>
           </td>
 
           {# 3. Kasblari (Rollar) #}
@@ -126,7 +126,7 @@
           {% if u.pk == user.pk %}<span class="text-xs text-muted font-normal">{% translate "(siz)" %}</span>{% endif %}
         </div>
         <p class="mt-0.5 truncate text-xs text-muted font-mono">{{ u.phone_display|default:u.login_id }}</p>
-        {% include "users/_password_action.html" %}
+        <span class="font-mono text-xs" aria-label="{% translate 'Parol' %}">********</span>
         <div class="mt-1 flex flex-wrap gap-1">
           {% for r in u.roles %}
             <span class="rounded bg-surface-raised px-1 py-0.5 text-[10px] text-muted">{{ r|short_role }}</span>
