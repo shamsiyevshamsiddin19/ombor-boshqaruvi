@@ -1,9 +1,28 @@
 {% extends "base.html" %}
-{% load wms i18n %}
+{% load wms i18n l10n %}
 {% block title %}{% translate "Kirim" %}{% endblock %}
 {% block content %}
 {{ material_meta|json_script:"material-meta" }}
 {{ kirim_materials|json_script:"kirim-materials" }}
+<style>
+  .receipt-fields {
+    display: grid;
+    gap: .875rem;
+  }
+  .receipt-fields > * {
+    min-width: 0;
+  }
+  .receipt-fields output { display: block; }
+  @media (min-width: 640px) {
+    .receipt-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .receipt-fields {
+      grid-template-columns: minmax(0, 1.7fr) repeat(5, minmax(0, 1fr)) auto;
+      align-items: end;
+    }
+  }
+</style>
 
 {# Header #}
 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -21,13 +40,13 @@
 
 <div class="mt-5"
      x-data="{
-       isDesktop: window.innerWidth >= 1024,
        meta: JSON.parse(document.getElementById('material-meta').textContent),
        allMaterials: JSON.parse(document.getElementById('kirim-materials').textContent),
        category: '{{ form.category.value|default_if_none:''|escapejs }}',
        material: '{{ form.material.value|default_if_none:''|escapejs }}',
-       quantity: '{{ form.quantity.value|default_if_none:''|escapejs }}',
-       price: '{{ form.price_usd.value|default_if_none:''|escapejs }}',
+       quantity: '{{ form.quantity.value|default_if_none:''|unlocalize|escapejs }}',
+       price: '{{ form.price_usd.value|default_if_none:''|unlocalize|escapejs }}',
+       priceMode: '{{ form.price_mode.value|default:'total'|escapejs }}',
        get filteredMaterials() {
          if (!this.category) return this.allMaterials;
          return this.allMaterials.filter(item => item.category === this.category);
@@ -42,20 +61,28 @@
        get m() { return this.meta[this.material] || null; },
        get qty() { return Number(this.quantity) || 0; },
        get p() { return Number(this.price) || 0; },
+       get total() {
+         if (!this.m || this.qty <= 0 || this.price === '' || !Number.isFinite(this.qty) || !Number.isFinite(this.p) || this.p < 0) return null;
+         if (this.priceMode !== 'unit') return this.p;
+         const quantityHundredths = Math.round(this.qty * 100);
+         const priceTenThousandths = Math.round(this.p * 10000);
+         if (!Number.isSafeInteger(quantityHundredths) || !Number.isSafeInteger(priceTenThousandths)) return null;
+         const cents = (BigInt(quantityHundredths) * BigInt(priceTenThousandths) + 5000n) / 10000n;
+         return Number(cents) / 100;
+       },
        get avg() {
-         if (!this.m || this.qty <= 0 || this.price === '' || this.p < 0) return null;
+         if (this.total === null) return null;
          const stock = Number(this.m.stock);
-         return (stock * Number(this.m.price) + this.p) / (stock + this.qty);
+         if (stock === 0 && this.priceMode === 'unit') return this.p;
+         return (stock * Number(this.m.price) + this.total) / (stock + this.qty);
        },
        usd(v, d = 2) { return '$' + Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); },
        n(v) { return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
-     }"
-     @resize.window="isDesktop = window.innerWidth >= 1024">
+     }">
 
   <form method="post" autocomplete="off" novalidate>
     {% csrf_token %}
     {{ form.idempotency_key }}
-    {% include "partials/form_errors.html" %}
     {% if form.errors %}
     <div class="mb-4 rounded-lg border border-[#f3c0ba] bg-neg-bg px-4 py-3 text-neg-ink text-xs shadow-xs" role="alert">
       <div class="flex items-center gap-2 font-semibold text-sm">
@@ -88,105 +115,61 @@
       <span class="text-xs text-muted" x-cloak x-text="filteredMaterials.length + ' {% translate "ta material" %}'"></span>
     </div>
 
-    {# =================== UNIFIED EXCEL DATA GRID =================== #}
     <div class="panel overflow-hidden shadow-xs">
-      {# Desktop Excel Table #}
-      <div class="hidden lg:block overflow-x-auto">
-        <table class="grid-table">
-          <thead>
-            <tr>
-              <th class="min-w-[240px] text-left">{% translate "Material" %}</th>
-              <th class="w-[170px] min-w-[150px] text-left">{% translate "Miqdor" %}</th>
-              <th class="w-[130px] min-w-[120px] text-left">{% translate "Partiya jami" %}</th>
-              <th class="w-[150px] min-w-[140px] text-right">{% translate "Yangi o'rtacha narx" %}</th>
-              <th class="w-[150px] min-w-[140px] text-right">{% translate "Amal" %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {# ---------------- ROW 1: THE ACTIVE INPUT ROW ---------------- #}
-            <tr class="bg-accent/[0.04] hover:bg-accent/[0.07] transition-colors border-b-2 border-accent/30">
-              {# 1. Material #}
-              <td class="px-4 py-3 align-middle">
-                <select name="{{ form.material.html_name }}" id="{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="!isDesktop" class="control !h-9 text-xs sm:text-sm w-full" required x-init="$el.querySelectorAll('[data-server]').forEach(o => o.remove())">
-                  <option value="">{% translate "Materialni tanlang" %}</option>
-                  {% for value, label in form.material.field.choices %}{% if value %}<option value="{{ value }}" data-server {% if form.material.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}
-                  <template x-for="item in filteredMaterials" :key="item.id">
-                    <option :value="item.id" :selected="item.id === material" x-text="item.label"></option>
-                  </template>
-                </select>
-                {% for e in form.material.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-                <p class="text-[11px] text-muted mt-1.5 flex flex-wrap items-center gap-1.5" x-show="m" x-cloak>
-                  <span class="inline-block h-1.5 w-1.5 rounded-full bg-accent flex-none"></span>
-                  <span>{% translate "Omborda:" %} <strong class="num font-mono text-ink font-semibold" x-text="m && n(m.stock) + ' ' + m.unit"></strong> · <span class="num font-mono text-muted" x-text="m && usd(m.price, 4)"></span></span>
-                  <span x-show="m && m.dims" class="num font-mono text-muted" x-text="'· ' + (m ? m.dims : '')"></span>
-                </p>
-              </td>
-
-              {# 2. Miqdor #}
-              <td class="px-3 py-3 align-middle">
-                <div class="relative">
-                  <input type="number" name="{{ form.quantity.html_name }}" id="{{ form.quantity.id_for_label }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="!isDesktop" class="control !h-9 text-xs font-mono pr-12 w-full" x-model="quantity" placeholder="100" required>
-                  <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted font-medium" x-text="m ? m.unit : ''"></span>
-                </div>
-                {% for e in form.quantity.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-              </td>
-
-              {# 4. Kiritilgan narx #}
-              <td class="px-3 py-3 align-middle">
-                <div class="relative">
-                  <span class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">$</span>
-                  <input type="number" name="{{ form.price_usd.html_name }}" id="{{ form.price_usd.id_for_label }}" step="0.01" min="0" inputmode="decimal" :disabled="!isDesktop" required class="control !h-9 text-xs font-mono pl-6 pr-2.5 w-full" x-model="price" placeholder="0.00">
-                </div>
-                {% for e in form.price_usd.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
-              </td>
-
-              {# 6. Yangi o'rtacha narx #}
-              <td class="px-4 py-3 align-middle text-right whitespace-nowrap font-mono">
-                <span class="text-[13.5px] font-semibold text-accent" x-text="avg !== null ? usd(avg, 4) : '—'"></span>
-              </td>
-
-              {# 7. Amal #}
-              <td class="px-5 py-3 align-middle text-right whitespace-nowrap">
-                <button type="submit" class="btn btn-primary min-h-10 px-4 text-xs font-semibold shadow-xs">
-                  {% icon "plus" 16 %}
-                  <span>{% translate "Kirimni saqlash" %}</span>
-                </button>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
-      </div>
-
-      {# Mobile Card View (lg:hidden) #}
-      <div class="lg:hidden p-4 form-stack bg-surface">
+      <div class="receipt-fields p-4">
         <div>
-          <label class="field-label" for="m-{{ form.material.id_for_label }}">{{ form.material.label }}</label>
-          <select name="{{ form.material.html_name }}" id="m-{{ form.material.id_for_label }}" x-model="material" x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })" :disabled="isDesktop" class="control" required x-init="$el.querySelectorAll('[data-server]').forEach(o => o.remove())">
+          <label class="field-label" for="{{ form.material.id_for_label }}">{{ form.material.label }}</label>
+          <select name="{{ form.material.html_name }}" id="{{ form.material.id_for_label }}"
+                  x-model="material" class="control" required
+                  x-effect="filteredMaterials; $nextTick(() => { if ($el.value !== material) $el.value = material; })"
+                  x-init="$el.querySelectorAll('[data-server]').forEach(o => o.remove())">
             <option value="">{% translate "Materialni tanlang" %}</option>
-            {% for value, label in form.material.field.choices %}{% if value %}<option value="{{ value }}" data-server {% if form.material.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}
+            {% for value, label in form.material.field.choices %}
+              {% if value %}<option value="{{ value }}" data-server {% if form.material.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endif %}
+            {% endfor %}
             <template x-for="item in filteredMaterials" :key="item.id">
-              <option :value="item.id" :selected="item.id === material" x-text="item.label"></option>
+              <option :value="item.id" x-text="item.label"></option>
             </template>
           </select>
-          <p class="text-[11px] text-muted mt-1" x-show="m && m.dims" x-cloak x-text="m ? m.dims : ''"></p>
         </div>
 
         <div>
-          <label class="field-label" for="m-{{ form.quantity.id_for_label }}">{{ form.quantity.label }} <span class="text-muted" x-text="m ? m.unit : ''"></span></label>
-          <input type="number" id="m-{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'" :inputmode="m && m.integer ? 'numeric' : 'decimal'" :disabled="isDesktop" class="control font-mono" x-model="quantity" placeholder="100">
+          <label class="field-label" for="{{ form.quantity.id_for_label }}">
+            {{ form.quantity.label }} <span class="text-muted" x-text="m ? m.unit : ''"></span>
+          </label>
+          <input type="number" id="{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}"
+                 value="{{ form.quantity.value|default_if_none:''|unlocalize }}" step="0.01" min="0.01"
+                 :step="m && m.integer ? '1' : '0.01'" :min="m && m.integer ? '1' : '0.01'"
+                 :inputmode="m && m.integer ? 'numeric' : 'decimal'" class="control font-mono"
+                 x-model="quantity" placeholder="100" required>
         </div>
 
         <div>
-          <label class="field-label" for="m-{{ form.price_usd.id_for_label }}">{{ form.price_usd.label }}</label>
-          <input type="number" id="m-{{ form.price_usd.id_for_label }}" name="{{ form.price_usd.html_name }}" step="0.01" min="0" :disabled="isDesktop" class="control font-mono" x-model="price" placeholder="0.00">
+          <label class="field-label" for="{{ form.price_mode.id_for_label }}">{{ form.price_mode.label }}</label>
+          <select id="{{ form.price_mode.id_for_label }}" name="{{ form.price_mode.html_name }}"
+                  x-model="priceMode" @change="price = ''" class="control">
+            {% for value, label in form.price_mode.field.choices %}
+              <option value="{{ value }}" {% if form.price_mode.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
         </div>
 
-        <div class="p-3 rounded border border-line/60 bg-raised/50 font-mono text-xs" x-show="avg !== null" x-cloak>
-          <div>
-            <span class="text-muted">{% translate "Yangi o'rtacha narx" %}:</span>
-            <strong class="text-accent ml-1" x-text="avg !== null ? usd(avg, 4) : '—'"></strong>
-          </div>
+        <div>
+          <label class="field-label" for="{{ form.price_usd.id_for_label }}">{{ form.price_usd.label }}</label>
+          <input type="number" id="{{ form.price_usd.id_for_label }}" name="{{ form.price_usd.html_name }}"
+                 value="{{ form.price_usd.value|default_if_none:''|unlocalize }}" step="0.01"
+                 :step="priceMode === 'unit' ? '0.0001' : '0.01'" min="0" inputmode="decimal"
+                 class="control font-mono" x-model="price" placeholder="0.00" required>
+        </div>
+
+        <div>
+          <p class="field-label" id="receipt-total-label">{% translate "Partiya jami" %}</p>
+          <output class="control font-mono" aria-labelledby="receipt-total-label" x-text="total === null ? '—' : usd(total)">—</output>
+        </div>
+
+        <div>
+          <p class="field-label" id="receipt-avg-label">{% translate "Yangi o'rtacha narx" %}</p>
+          <output class="control font-mono" aria-labelledby="receipt-avg-label" x-text="avg === null ? '—' : usd(avg, 4)">—</output>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block min-h-10 text-xs font-semibold">
@@ -194,7 +177,10 @@
           <span>{% translate "Kirimni saqlash" %}</span>
         </button>
       </div>
-
+      <p class="border-t border-line px-4 py-2 flex flex-wrap items-center gap-1.5 text-xs text-muted" x-show="m" x-cloak>
+        <span>{% translate "Omborda:" %} <strong class="num text-ink" x-text="m && n(m.stock) + ' ' + m.unit"></strong> · <span class="num" x-text="m && usd(m.price, 4)"></span></span>
+        <span x-show="m && m.dims" class="num" x-text="'· ' + (m ? m.dims : '')"></span>
+      </p>
     </div>
   </form>
 </div>

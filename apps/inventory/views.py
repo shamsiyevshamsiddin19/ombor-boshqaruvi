@@ -506,6 +506,10 @@ class KirimView(WarehouseAdminRequiredMixin, FormView):
         try:
             entry = services.record_kirim(user=self.request.user, **form.service_kwargs())
         except ValidationError as exc:
+            if hasattr(exc, "error_dict"):
+                for field in ("unit_price_usd", "total_price_usd"):
+                    for error in exc.error_dict.pop(field, []):
+                        form.add_error("price_usd", error)
             apply_service_errors(form, exc)
             return self.form_invalid(form)
         messages.success(
