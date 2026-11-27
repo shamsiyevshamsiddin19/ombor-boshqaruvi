@@ -40,7 +40,7 @@ class AuditWorkflowTests(TestCase):
         edit = reverse("inventory:material_edit", args=[self.paint.pk])
         payload = {
             "name": self.paint.name, "category": "KRASKA", "unit_of_measure": "KG",
-            "minimum_threshold": "0.50", "is_active": "on",
+            "minimum_threshold": "3", "is_active": "on",
         }
         response = self.client.post(edit, payload)
         self.assertIn("unit_of_measure", response.context["form"].errors)
@@ -49,10 +49,10 @@ class AuditWorkflowTests(TestCase):
         self.assertIn("is_active", response.context["form"].errors)
         self.assertRedirects(self.client.post(edit, dict(payload, length_mm=100, width_mm=200)), reverse("inventory:material_list"))
         self.paint.refresh_from_db()
-        self.assertEqual(self.paint.minimum_threshold, Decimal("0.50"))
+        self.assertEqual(self.paint.minimum_threshold, Decimal("3"))
         self.assertIsNone(self.paint.whole_stock.length_mm)
         self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "ru"
-        self.assertContains(self.client.get(edit), 'value="0.50"', count=2)
+        self.assertContains(self.client.get(edit), 'value="3"', count=2)
         response = self.client.patch(
             f"/api/materials/{self.paint.pk}/", {"unit_of_measure": "KG"}, content_type="application/json"
         )

@@ -47,6 +47,29 @@
     if (typeof next.select === 'function' && next.tagName === 'INPUT') next.select();
   });
 
+  // Whole-number fields (e.g. the material minimum): no decimal point, exponent or sign,
+  // and a lone 0 disappears when the field is entered so the user can type straight away.
+  document.addEventListener('keydown', (event) => {
+    if (!event.target.matches?.('input[data-whole-number]')) return;
+    if (['.', ',', 'e', 'E', '-', '+'].includes(event.key)) event.preventDefault();
+  });
+  document.addEventListener('focusin', (event) => {
+    const field = event.target;
+    if (field.matches?.('input[data-whole-number]') && Number(field.value) === 0 && field.value !== '') field.value = '';
+  });
+  document.addEventListener('beforeinput', (event) => {
+    if (!event.target.matches?.('input[data-whole-number]')) return;
+    if (!event.data || !/\D/.test(event.data)) return;
+    // Typed, pasted or dropped text: keep only its digits ("2.5" -> "25", "12 dona" -> "12").
+    event.preventDefault();
+    const digits = event.data.replace(/\D/g, '');
+    if (digits) {
+      const field = event.target;
+      field.value = field.value + digits;
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+
   function attachSuggestions(input, getOptions, onSelect, { showOnFocus = false } = {}) {
     const list = document.createElement('div');
     list.id = `${input.id}-suggestions`;
