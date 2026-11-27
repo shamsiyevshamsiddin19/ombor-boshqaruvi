@@ -2241,3 +2241,9 @@ msgstr "После добавления работники смогут выбр
 #: templates/inventory/home.html:250
 msgid "Ombor hozircha bo'sh"
 msgstr "Склад пока пуст"
+
+msgid "Narx turi"
+msgstr "Тип цены"
+
+msgid "Narx (USD)"
+msgstr "Цена (USD)"

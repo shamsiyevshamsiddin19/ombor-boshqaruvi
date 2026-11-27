@@ -222,11 +222,15 @@ class KirimForm(forms.Form):
         decimal_places=2,
         widget=forms.NumberInput(attrs={"step": "0.01", "inputmode": "decimal"}),
     )
-    # Older clients may still post a unit price. The page only asks for the batch total.
-    price_mode = forms.ChoiceField(choices=[(PRICE_TOTAL, PRICE_TOTAL), (PRICE_UNIT, PRICE_UNIT)], required=False)
+    price_mode = forms.ChoiceField(
+        label=_("Narx turi"),
+        choices=[(PRICE_TOTAL, _("Partiya jami")), (PRICE_UNIT, _("Birlik narxi"))],
+        initial=PRICE_TOTAL,
+        required=False,
+    )
     idempotency_key = forms.UUIDField(required=False, widget=forms.HiddenInput)
     price_usd = forms.DecimalField(
-        label=_("Partiya jami"), min_value=Decimal("0"), max_digits=14, decimal_places=4
+        label=_("Narx (USD)"), min_value=Decimal("0"), max_digits=14, decimal_places=4
     )
 
     def clean(self):

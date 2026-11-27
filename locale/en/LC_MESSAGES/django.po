@@ -2229,3 +2229,9 @@ msgstr "Once added, workers can choose this trade when they register. Select it 
 #: templates/inventory/home.html:250
 msgid "Ombor hozircha bo'sh"
 msgstr "The warehouse is empty"
+
+msgid "Narx turi"
+msgstr "Price type"
+
+msgid "Narx (USD)"
+msgstr "Price (USD)"
