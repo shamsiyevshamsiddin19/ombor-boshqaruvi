@@ -6,6 +6,8 @@ app_name = "inventory"
 
 urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
+    path("admin-dashboard/notifications/read-all/", views.NotificationReadAllView.as_view(), name="notifications_read_all"),
+    path("admin-dashboard/notifications/<str:key>/read/", views.NotificationReadView.as_view(), name="notification_read"),
     path("inventory/material-suggestions/", views.MaterialSuggestionsView.as_view(), name="material_suggestions"),
     path("inventory/whole/<int:pk>/withdraw/", views.WithdrawWholeView.as_view(), name="withdraw_whole"),
     path("inventory/offcuts/add/", views.OffcutCreateView.as_view(), name="offcut_add"),
@@ -22,8 +24,4 @@ urlpatterns = [
     path("admin-dashboard/expenses/export.csv", views.ExpenseExportView.as_view(), name="expenses_export"),
     path("admin-dashboard/reports/", views.ReportView.as_view(), name="reports"),
     path("admin-dashboard/reports/export.csv", views.ReportExportView.as_view(), name="reports_export"),
-    # Projects
-    path("admin-dashboard/projects/", views.ProjectListView.as_view(), name="project_list"),
-    path("admin-dashboard/projects/new/", views.ProjectCreateView.as_view(), name="project_create"),
-    path("admin-dashboard/projects/<int:pk>/edit/", views.ProjectUpdateView.as_view(), name="project_edit"),
 ]

@@ -13,7 +13,6 @@ from ..models import (
     InventoryTransaction,
     LeftoverOffcut,
     OperatingExpense,
-    Project,
     WholeMaterial,
 )
 
@@ -147,19 +146,9 @@ class LeftoverOffcutSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "created_by", "created_at")
 
 
-class ProjectSerializer(serializers.ModelSerializer):
-    created_by = serializers.StringRelatedField(read_only=True)
-
-    class Meta:
-        model = Project
-        fields = ("id", "name", "client", "is_active", "notes", "created_by", "created_at")
-        read_only_fields = ("id", "created_by", "created_at")
-
-
 class TransactionSerializer(HidePricesForWorkersMixin, serializers.ModelSerializer):
     material = MaterialSummarySerializer(read_only=True)
     user = serializers.StringRelatedField(read_only=True)
-    project = ProjectSerializer(read_only=True)
     unit_of_measure = serializers.CharField(source="movement_unit", read_only=True)
 
     class Meta:
@@ -177,7 +166,6 @@ class TransactionSerializer(HidePricesForWorkersMixin, serializers.ModelSerializ
             "is_offcut",
             "offcut_length_mm",
             "offcut_width_mm",
-            "project",
             "notes",
             "created_at",
         )
@@ -186,17 +174,11 @@ class TransactionSerializer(HidePricesForWorkersMixin, serializers.ModelSerializ
 
 class WithdrawSerializer(serializers.Serializer):
     quantity = serializers.DecimalField(max_digits=12, decimal_places=2, min_value=Decimal("0.01"))
-    project_id = serializers.PrimaryKeyRelatedField(
-        source="project", queryset=Project.objects.filter(is_active=True), required=False, allow_null=True,
-    )
     notes = serializers.CharField(required=False, allow_blank=True, max_length=500, default="")
 
 
 class OffcutWithdrawSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=1, default=1)
-    project_id = serializers.PrimaryKeyRelatedField(
-        source="project", queryset=Project.objects.filter(is_active=True), required=False, allow_null=True,
-    )
     notes = serializers.CharField(required=False, allow_blank=True, max_length=500, default="")
 
 

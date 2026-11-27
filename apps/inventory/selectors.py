@@ -300,7 +300,6 @@ def filter_transactions(
     user_id: int | None = None,
     material_id: int | None = None,
     transaction_type: str = "",
-    project_id: int | None = None,
     include_corrections: bool = False,
 ) -> QuerySet[InventoryTransaction]:
     qs = qs if qs is not None else InventoryTransaction.objects.all()
@@ -319,8 +318,6 @@ def filter_transactions(
         qs = qs.filter(material_id=material_id)
     if transaction_type:
         qs = qs.filter(_movement_type(transaction_type)) if include_corrections else qs.filter(transaction_type=transaction_type)
-    if project_id:
-        qs = qs.filter(project_id=project_id)
     return qs
 
 

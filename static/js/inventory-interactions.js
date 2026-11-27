@@ -18,6 +18,35 @@
     });
   }
 
+  // Every other form: Enter in a text-like field moves to the next field instead of submitting;
+  // on the last field it submits as usual. Search and filter forms keep their plain behaviour.
+  const TEXT_LIKE = new Set(['text', 'number', 'tel', 'email', 'password', 'date', 'month', 'time', 'url']);
+  const focusable = (field) => {
+    if (field.disabled || field.readOnly || field.getClientRects().length === 0) return false;
+    if (field.tagName === 'SELECT' || field.tagName === 'TEXTAREA') return true;
+    return field.tagName === 'INPUT' && TEXT_LIKE.has(field.type);
+  };
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || event.defaultPrevented || event.isComposing) return;
+    if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return;
+    const field = event.target;
+    if (field.tagName !== 'SELECT' && (field.tagName !== 'INPUT' || !TEXT_LIKE.has(field.type))) return;
+    const form = field.form;
+    if (!form || form.method === 'get' || form.matches('[role="search"], [data-enter-order], [data-no-enter-next]')) return;
+    const fields = Array.from(form.elements).filter(focusable);
+    const next = fields[fields.indexOf(field) + 1];
+    if (!next) {
+      if (field.tagName === 'SELECT') {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+      return;
+    }
+    event.preventDefault();
+    next.focus();
+    if (typeof next.select === 'function' && next.tagName === 'INPUT') next.select();
+  });
+
   function attachSuggestions(input, getOptions, onSelect, { showOnFocus = false } = {}) {
     const list = document.createElement('div');
     list.id = `${input.id}-suggestions`;
@@ -177,3 +206,44 @@
     }
   }
 })();
+
+// Bell menu (templates/base.html): mark one entry, or all, as read without leaving the page.
+document.addEventListener('alpine:init', () => {
+  Alpine.data('notificationMenu', () => {
+    // Kept in closures: Alpine's magic properties are not available after an await.
+    let root;
+    const items = () => root.querySelectorAll('[data-note-key]');
+    const post = async (url) => {
+      const token = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '';
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'X-CSRFToken': token, Accept: 'application/json' },
+        });
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    };
+    return {
+      open: false,
+      unread: 0,
+      init() {
+        root = this.$root;
+        this.unread = items().length;
+      },
+      async read(key, event) {
+        const item = event.currentTarget.closest('[data-note-key]');
+        if (!(await post(root.dataset.readUrl.replace('KEY', key)))) return;
+        item.remove();
+        this.unread = items().length;
+      },
+      async readAll() {
+        if (!(await post(root.dataset.readAllUrl))) return;
+        items().forEach((item) => item.remove());
+        this.unread = 0;
+      },
+    };
+  });
+});

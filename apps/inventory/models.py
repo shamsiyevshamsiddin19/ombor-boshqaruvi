@@ -340,29 +340,22 @@ class LeftoverOffcut(models.Model):
         return value.quantize(CENTS, rounding=ROUND_HALF_UP)
 
 
-# ---------------------------------------------------------------------------
-# Projects / orders: link withdrawals to what they are used for
-# ---------------------------------------------------------------------------
-class Project(models.Model):
-    """A production order or project that materials are withdrawn for."""
+class Notification(models.Model):
+    """An entry in an administrator's bell menu, read (and dismissed) per person."""
 
-    name = models.CharField(_("Nomi"), max_length=200)
-    client = models.CharField(_("Mijoz"), max_length=200, blank=True)
-    is_active = models.BooleanField(_("Faol"), default=True)
-    notes = models.TextField(_("Izoh"), blank=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="created_projects"
-    )
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
+    kind = models.CharField(max_length=30, default="info")
+    message = models.CharField(max_length=300)
+    url = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ["-created_at"]
-        verbose_name = _("loyiha")
-        verbose_name_plural = _("loyihalar")
-        indexes = [models.Index(fields=["is_active", "-created_at"])]
+        ordering = ["-created_at", "-id"]
+        indexes = [models.Index(fields=["recipient", "read_at", "-created_at"])]
 
     def __str__(self) -> str:
-        return self.name
+        return self.message
 
 
 class TransactionType(models.TextChoices):
@@ -455,15 +448,6 @@ class InventoryTransaction(models.Model):
         on_delete=models.PROTECT,
         related_name="reversal",
         help_text="The original entry this reversal cancels.",
-    )
-
-    project = models.ForeignKey(
-        Project,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="transactions",
-        verbose_name=_("Loyiha"),
     )
 
     idempotency_key = models.CharField(

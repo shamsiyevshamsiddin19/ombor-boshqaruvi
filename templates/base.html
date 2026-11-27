@@ -12,8 +12,9 @@
   <link rel="preload" href="{% static 'fonts/dm-sans-latin-400-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <link rel="stylesheet" href="{% static 'css/inventory-interactions.css' %}">
-  <script defer src="{% static 'vendor/alpine.min.js' %}"></script>
+  {# Loaded before Alpine so its alpine:init listener (notificationMenu) is registered in time. #}
   <script defer src="{% static 'js/inventory-interactions.js' %}"></script>
+  <script defer src="{% static 'vendor/alpine.min.js' %}"></script>
   <script>
     try {
       if (localStorage.getItem('sidebar_collapsed') === 'true') {
@@ -153,71 +154,69 @@
           </a>
 
           {# ---- 2. Bell icon: Bildirishnomalar (Notifications) ---- #}
-          <div class="relative flex items-center" x-data="{ notifyOpen: false }">
+          {# Entries are read one by one: the check button on the right marks one read and removes it. #}
+          <div class="relative flex items-center"
+               x-data="notificationMenu"
+               data-read-url="{% url 'inventory:notification_read' key='KEY' %}"
+               data-read-all-url="{% url 'inventory:notifications_read_all' %}">
             <button type="button"
-                    @click="notifyOpen = !notifyOpen"
-                    @keydown.escape.window="notifyOpen = false"
+                    @click="open = !open"
+                    @keydown.escape.window="open = false"
                     class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-surface hover:bg-raised text-ink transition-colors cursor-pointer shadow-2xs"
-                    :class="{ 'bg-raised border-ink': notifyOpen }"
+                    :class="{ 'bg-raised border-ink': open }"
                     title="{% translate 'Bildirishnomalar' %}"
                     aria-label="{% translate 'Bildirishnomalar' %}"
-                    :aria-expanded="notifyOpen">
+                    :aria-expanded="open">
               {% icon "bell" 18 %}
-              {% if nav_low_stock or nav_pending_users %}
-                <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-negative ring-2 ring-surface"></span>
-              {% endif %}
+              <span x-show="unread > 0" {% if not nav_notifications %}x-cloak{% endif %} class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-negative ring-2 ring-surface"></span>
             </button>
 
-            {# Notifications Dropdown Popover #}
-            <div x-show="notifyOpen"
+            <div x-show="open"
                  x-cloak
-                 @click.outside="notifyOpen = false"
+                 @click.outside="open = false"
                  x-transition:enter="transition ease-out duration-100"
                  x-transition:enter-start="transform opacity-0 scale-95"
                  x-transition:enter-end="transform opacity-100 scale-100"
                  x-transition:leave="transition ease-in duration-75"
                  x-transition:leave-start="transform opacity-100 scale-100"
                  x-transition:leave-end="transform opacity-0 scale-95"
-                 class="absolute right-0 top-[calc(100%+8px)] w-80 rounded-xl border border-line bg-surface p-2 shadow-xl z-50">
-              
-              <div class="flex items-center justify-between px-3 py-2 border-b border-line/60">
+                 style="width:min(22rem,calc(100vw - 2rem))"
+                 class="absolute right-0 top-[calc(100%+8px)] rounded-xl border border-line bg-surface p-2 shadow-xl z-50">
+
+              <div class="flex items-center justify-between gap-2 px-3 py-2 border-b border-line/60">
                 <span class="text-xs font-semibold uppercase tracking-wider text-muted">{% translate "Bildirishnomalar" %}</span>
-                {% if nav_low_stock or nav_pending_users %}
-                  <span class="pill pill-neg text-[11px] font-semibold">{{ nav_low_stock|add:nav_pending_users }} ta</span>
-                {% endif %}
+                <span class="flex items-center gap-2">
+                  <span x-show="unread > 0" {% if not nav_notifications %}x-cloak{% endif %} class="pill pill-neg text-[11px] font-semibold"><span x-text="unread">{{ nav_notifications|length }}</span> ta</span>
+                  <button type="button" x-show="unread > 1" {% if nav_notifications|length < 2 %}x-cloak{% endif %} @click="readAll()"
+                          style="white-space:nowrap" class="text-[11px] font-medium text-muted underline underline-offset-2 hover:text-ink">{% translate "Hammasini o'qildi" %}</button>
+                </span>
               </div>
 
-              <div class="py-1 divide-y divide-rule/60 text-xs">
-                {% if nav_low_stock %}
-                  <a href="{% url 'inventory:dashboard' %}" class="flex items-start gap-2.5 p-2.5 rounded-lg hover:bg-raised transition-colors">
-                    <span class="flex h-7 w-7 flex-none items-center justify-center rounded-lg bg-neg-bg text-negative mt-0.5">
-                      {% icon "alert" 14 %}
+              <ul style="max-height:60vh" class="overflow-y-auto py-1 divide-y divide-rule/60 text-xs">
+                {% for note in nav_notifications %}
+                <li data-note-key="{{ note.key }}" class="flex items-start gap-1.5 rounded-lg hover:bg-raised transition-colors">
+                  <a href="{{ note.url|default:'#' }}" class="flex min-w-0 flex-1 items-start gap-2.5 p-2.5">
+                    <span class="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-lg {% if note.kind == 'alert' %}bg-neg-bg text-negative{% else %}bg-accent/10 text-ink{% endif %}">
+                      {% if note.kind == 'alert' %}{% icon "alert" 14 %}{% elif note.kind == 'mail' %}{% icon "mail" 14 %}{% elif note.kind == 'arrival' %}{% icon "arrival" 14 %}{% else %}{% icon "box" 14 %}{% endif %}
                     </span>
-                    <div class="min-w-0">
-                      <p class="font-medium text-ink">{% translate "Minimal qoldiqdan kam" %}</p>
-                      <p class="text-muted mt-0.5">{% blocktranslate count n=nav_low_stock %}{{ n }} ta material kam qoldi{% plural %}{{ n }} ta material kam qoldi{% endblocktranslate %}</p>
-                    </div>
-                  </a>
-                {% endif %}
-
-                {% if nav_pending_users %}
-                  <a href="{% url 'users:pending_users' %}" class="flex items-start gap-2.5 p-2.5 rounded-lg hover:bg-raised transition-colors">
-                    <span class="flex h-7 w-7 flex-none items-center justify-center rounded-lg bg-accent/10 text-ink mt-0.5">
-                      {% icon "mail" 14 %}
+                    <span class="min-w-0">
+                      {% if note.title %}<span class="block font-medium text-ink">{{ note.title }}</span>{% endif %}
+                      <span class="block {% if note.title %}text-muted mt-0.5{% else %}text-ink{% endif %}">{{ note.text }}</span>
+                      {% if note.when %}<span class="mt-0.5 block text-[11px] text-muted">{{ note.when|timesince }} {% translate "oldin" %}</span>{% endif %}
                     </span>
-                    <div class="min-w-0">
-                      <p class="font-medium text-ink">{% translate "Yangi so'rovlar" %}</p>
-                      <p class="text-muted mt-0.5">{% blocktranslate count n=nav_pending_users %}{{ n }} ta xodim tasdiq kutmoqda{% plural %}{{ n }} ta xodim tasdiq kutmoqda{% endblocktranslate %}</p>
-                    </div>
                   </a>
-                {% endif %}
+                  <button type="button" @click="read('{{ note.key }}', $event)"
+                          class="mr-1.5 mt-2 flex h-7 w-7 flex-none items-center justify-center rounded-lg border border-line text-muted hover:border-ink hover:text-ink transition-colors"
+                          title="{% translate "O'qildi" %}" aria-label="{% translate "O'qildi" %}">
+                    {% icon "check" 14 %}
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
 
-                {% if not nav_low_stock and not nav_pending_users %}
-                  <div class="p-4 text-center text-muted">
-                    <p class="font-medium text-ink">{% translate "Yangi bildirishnomalar yo'q" %}</p>
-                    <p class="text-[11px] text-muted mt-0.5">{% translate "Barcha materiallar me'yorida va yangi so'rovlar mavjud emas." %}</p>
-                  </div>
-                {% endif %}
+              <div x-show="unread === 0" {% if nav_notifications %}x-cloak{% endif %} class="p-4 text-center text-muted text-xs">
+                <p class="font-medium text-ink">{% translate "Yangi bildirishnomalar yo'q" %}</p>
+                <p class="text-[11px] text-muted mt-0.5">{% translate "Barcha materiallar me'yorida va yangi so'rovlar mavjud emas." %}</p>
               </div>
             </div>
           </div>
