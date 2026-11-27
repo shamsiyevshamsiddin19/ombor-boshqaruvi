@@ -2,13 +2,25 @@
 {% load wms i18n %}
 {% block title %}{% translate "Ombor" %}{% endblock %}
 {% block content %}
+<style>
+.warehouse-content {font-size:16px; line-height:1.55}
+.warehouse-content .control {min-height:44px!important;font-size:16px!important}
+.warehouse-content .btn {min-height:42px;font-size:15px}
+.warehouse-content .grid-table td {font-size:15px;padding-top:18px;padding-bottom:18px}
+.warehouse-content .grid-table th {font-size:12px;letter-spacing:.025em}
+.warehouse-content .grid-table td>span.block {font-size:16px}
+.warehouse-content .panel {box-shadow:none}
+.warehouse-empty {display:flex;min-height:240px;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+.warehouse-empty>p:first-child {font-size:22px;font-weight:600}
+@media(max-width:640px){.warehouse-empty{min-height:200px}.warehouse-empty>p:first-child{font-size:20px}}
+</style>
 {% with whole_count=whole_page.paginator.count offcut_count=offcut_page.paginator.count %}
-<div x-data="{ tab: '{{ tab }}' }">
+<div class="warehouse-content" x-data="{ tab: '{{ tab }}' }">
 
   <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
     <div class="w-full min-w-0 max-w-full md:w-auto">
       <h1 class="font-bold text-[24px] leading-8 lg:text-[30px] lg:leading-9 text-ink">{% translate "Ombor" %}</h1>
-      <p class="mt-0.5 text-muted" style="font-size:14px">
+      <p class="mt-1 text-muted" style="font-size:18px">
         {% if user.is_warehouse_admin %}{% translate "Barcha materiallar" %}{% else %}{% blocktranslate with roles=user.worker_roles|role_list %}{{ roles }} uchun materiallar{% endblocktranslate %}{% endif %}
         · <span class="num font-medium text-ink">{{ whole_count }}</span> {% blocktranslate context "count" count n=whole_count %}material{% plural %}material{% endblocktranslate %}{% if show_offcuts %}, <span class="num font-medium text-ink">{{ offcut_count }}</span> {% blocktranslate context "count" count n=offcut_count %}qoldiq{% plural %}qoldiq{% endblocktranslate %}{% endif %}
       </p>
@@ -69,10 +81,9 @@
     <div class="panel mt-4 overflow-hidden lg:mt-0 shadow-xs">
       <div class="panel-head border-b border-line px-5 py-3.5 hidden lg:flex">
         <div class="flex items-center gap-2.5">
-          <h2 id="whole-title" class="font-semibold text-ink" style="font-size:16px">{% translate "Butun materiallar" %}</h2>
+          <h2 id="whole-title" class="font-semibold text-ink" style="font-size:18px">{% translate "Butun materiallar" %}</h2>
           <span class="pill pill-neutral font-medium">{{ whole_count }}</span>
         </div>
-        <p class="text-muted text-xs">{% translate "Miqdor omborda turgan to'liq birliklarda" %}</p>
       </div>
 
       {% if whole_stock %}
@@ -233,24 +244,23 @@
 
       {% include "partials/pagination.html" with page_obj=whole_page page_key="whole_page" tab_key="whole" %}
       {% else %}
-        <div class="border-t border-rule px-5 py-8">
-          <p class="font-medium">{% if query or category %}{% translate "Qidiruv bo'yicha material topilmadi." %}{% else %}{% translate "Kasbingiz uchun hali material qo'shilmagan." %}{% endif %}</p>
-          <p class="mt-1 text-muted">{% if query or category %}<a class="underline underline-offset-4" href="?tab=whole">{% translate "Filtrni tozalash" %}</a>{% elif user.is_warehouse_admin %}<a class="underline underline-offset-4" href="{% url 'inventory:material_create' %}">{% translate "Birinchi materialni qo'shing" %}</a>{% else %}{% translate "Administrator material qo'shgach, shu yerda ko'rinadi." %}{% endif %}</p>
+        <div class="warehouse-empty px-5 py-8">
+          <p class="font-medium">{% if query or category %}{% translate "Qidiruv bo'yicha material topilmadi." %}{% else %}{% if user.is_warehouse_admin %}{% translate "Ombor hozircha bo'sh" %}{% else %}{% translate "Kasbingiz uchun hali material qo'shilmagan." %}{% endif %}{% endif %}</p>
+          <p class="mt-1 text-muted">{% if query or category %}<a class="underline underline-offset-4" href="?tab=whole">{% translate "Filtrni tozalash" %}</a>{% elif user.is_warehouse_admin %}<a class="btn btn-primary" href="{% url 'inventory:material_create' %}">{% translate "Birinchi materialni qo'shing" %}</a>{% else %}{% translate "Administrator material qo'shgach, shu yerda ko'rinadi." %}{% endif %}</p>
         </div>
       {% endif %}
     </div>
   </section>
 
   {# ================= Qoldiq materiallar ================= #}
-  {% if show_offcuts %}
+  {% if show_offcuts and offcut_count or show_offcuts and query or show_offcuts and category %}
   <section class="{% if tab == 'offcuts' %}block{% else %}hidden lg:block{% endif %} lg:mt-6" :class="tab === 'offcuts' ? 'block' : 'hidden lg:block'" aria-labelledby="offcut-title">
     <div class="panel mt-4 overflow-hidden lg:mt-0 shadow-xs">
       <div class="panel-head border-b border-line px-5 py-3.5 hidden lg:flex">
         <div class="flex items-center gap-2.5">
-          <h2 id="offcut-title" class="font-semibold text-ink" style="font-size:16px">{% translate "Qoldiq materiallar" %}</h2>
+          <h2 id="offcut-title" class="font-semibold text-ink" style="font-size:18px">{% translate "Qoldiq materiallar" %}</h2>
           <span class="pill pill-neutral font-medium">{{ offcut_count }}</span>
         </div>
-        <p class="text-muted text-xs">{% translate "Kesishdan qolgan, qayta ishlatsa bo'ladigan bo'laklar · rasm list o'lchamiga nisbatan" %}</p>
       </div>
 
       {% if offcuts %}
@@ -339,7 +349,7 @@
 
       {% include "partials/pagination.html" with page_obj=offcut_page page_key="offcut_page" tab_key="offcuts" %}
       {% else %}
-        <div class="border-t border-rule px-5 py-8">
+        <div class="warehouse-empty px-5 py-8">
           <p class="font-medium">{% if query or category %}{% translate "Qidiruv bo'yicha qoldiq topilmadi." %}{% else %}{% translate "Hozircha qoldiq yo'q." %}{% endif %}</p>
           <p class="mt-1 text-muted">{% translate "List kesgandan keyin ishlatsa bo'ladigan bo'lak qolsa, uni qo'shing — keyingi buyurtmada shu yerdan topasiz." %}{% if can_add_offcut %} <a class="font-medium text-ink underline underline-offset-4" href="{% url 'inventory:offcut_add' %}">{% translate "Qoldiq qo'shish" %}</a>{% endif %}</p>
         </div>
