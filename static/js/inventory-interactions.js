@@ -70,6 +70,67 @@
     }
   });
 
+  // Phone inputs ([data-phone-mask]): digits are shown as "+998 90 123 45 67" while typing,
+  // on phones and computers alike. Text with letters (an old username on the login form) is
+  // left exactly as typed. The server normalises any spelling, so this is only for readability.
+  const PHONE_LOCAL_DIGITS = 9;
+  const phoneLocalDigits = (value) => {
+    let digits = value.replace(/\D/g, '');
+    if (digits.startsWith('998')) digits = digits.slice(3);
+    // A full number pasted after the "+998 " already in the field brings a second 998.
+    if (digits.length > PHONE_LOCAL_DIGITS && digits.startsWith('998')) digits = digits.slice(3);
+    if (digits.length === PHONE_LOCAL_DIGITS + 1 && digits.startsWith('0')) digits = digits.slice(1);
+    return digits.slice(0, PHONE_LOCAL_DIGITS);
+  };
+  const formatPhone = (local) => {
+    const groups = [local.slice(0, 2), local.slice(2, 5), local.slice(5, 7), local.slice(7, 9)].filter(Boolean);
+    return groups.length ? `+998 ${groups.join(' ')}` : '+998 ';
+  };
+  const looksLikeText = (value) => /[^\d\s+()\-]/.test(value);
+
+  function maskPhone(field, { deleting = false } = {}) {
+    const raw = field.value;
+    if (!raw || looksLikeText(raw)) return;
+    const local = phoneLocalDigits(raw);
+    if (!local && deleting) return; // let the user clear the "+998" prefix
+    // Keep the caret after the same number of local digits it was after before formatting.
+    const caret = field.selectionStart ?? raw.length;
+    const before = phoneLocalDigits(raw.slice(0, caret)).length;
+    const formatted = formatPhone(local);
+    if (formatted === raw) return;
+    field.value = formatted;
+    let position = formatted.length;
+    if (before < local.length) {
+      let seen = 0;
+      position = 5; // just after "+998 "
+      while (position < formatted.length && seen < before) {
+        if (/\d/.test(formatted[position])) seen += 1;
+        position += 1;
+      }
+    }
+    try { field.setSelectionRange(position, position); } catch (error) { /* type=tel always supports it */ }
+  }
+
+  for (const field of document.querySelectorAll('input[data-phone-mask]')) {
+    maskPhone(field); // a saved number like +998901234567 is shown spaced out
+  }
+  document.addEventListener('input', (event) => {
+    if (event.target.matches?.('input[data-phone-mask]')) {
+      maskPhone(event.target, { deleting: (event.inputType || '').startsWith('delete') });
+    }
+  });
+  document.addEventListener('focusin', (event) => {
+    const field = event.target;
+    if (field.matches?.('input[data-phone-mask]') && !field.value) {
+      field.value = '+998 ';
+      try { field.setSelectionRange(5, 5); } catch (error) { /* ignore */ }
+    }
+  });
+  document.addEventListener('focusout', (event) => {
+    const field = event.target;
+    if (field.matches?.('input[data-phone-mask]') && field.value.trim() === '+998') field.value = '';
+  });
+
   function attachSuggestions(input, getOptions, onSelect, { showOnFocus = false } = {}) {
     const list = document.createElement('div');
     list.id = `${input.id}-suggestions`;

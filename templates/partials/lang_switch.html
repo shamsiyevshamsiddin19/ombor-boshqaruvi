@@ -5,7 +5,7 @@
   <div class="grid grid-cols-3 gap-1 rounded-lg border border-line bg-raised p-1 shadow-2xs">
     {% for code, name in languages %}
       <button type="submit" name="language" value="{{ code }}" lang="{{ code }}" title="{{ name }}"
-              class="flex items-center justify-center rounded-md py-1.5 text-xs font-bold transition-all select-none {% if code|lower == current_lang|lower %}bg-ink text-white shadow-xs{% else %}text-muted hover:text-ink font-semibold{% endif %}"
+              class="flex items-center justify-center rounded-md {% if compact %}py-1 text-[11px]{% else %}py-1.5 text-xs{% endif %} font-bold transition-all select-none {% if code|lower == current_lang|lower %}bg-ink text-white shadow-xs{% else %}text-muted hover:text-ink font-semibold{% endif %}"
               aria-pressed="{% if code|lower == current_lang|lower %}true{% else %}false{% endif %}">
         {{ code|upper }}
       </button>
