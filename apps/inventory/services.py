@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .models import (
+    EXPENSE_TYPE_MAX_LENGTH,
     BaseMaterial,
     ExpenseCategory,
     InventoryTransaction,
@@ -26,6 +27,7 @@ from .models import (
     TransactionType,
     WholeMaterial,
     default_roles_for_category,
+    normalize_expense_type,
     offcut_category_codes,
 )
 from .selectors import user_can_access_material
@@ -574,8 +576,12 @@ def record_expense(
 ) -> OperatingExpense:
     """Record an operating expense (nalog, produkta, stanok, or other)."""
     _require_admin(user)
-    if category not in ExpenseCategory.values:
-        raise ValidationError({"category": _("Noma'lum xarajat turi.")})
+    # A built-in code, or the name of the admin's own type (normalised so "elektr" joins "Elektr").
+    category = category if category in ExpenseCategory.values else normalize_expense_type(category)
+    if not category:
+        raise ValidationError({"category": _("Xarajat turini tanlang yoki yozing.")})
+    if len(category) > EXPENSE_TYPE_MAX_LENGTH:
+        raise ValidationError({"category": _("Xarajat turi nomi juda uzun.")})
     clean_title = " ".join((title or "").split())
     if not clean_title:
         raise ValidationError({"title": _("Xarajat nomini kiriting.")})

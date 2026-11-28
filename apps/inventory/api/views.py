@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from apps.users.permissions import CanTakeStock, IsWarehouseAdmin
 
 from .. import selectors, services
-from ..models import BaseMaterial, ExpenseCategory, InventoryTransaction, TransactionType, category_codes
+from ..models import BaseMaterial, InventoryTransaction, TransactionType, category_codes
 from .serializers import (
     BaseMaterialSerializer,
     KirimSerializer,
@@ -216,11 +216,7 @@ class ExpenseViewSet(
                 month = dt.datetime.strptime(params["month"], "%Y-%m").date()
             except ValueError:
                 month = None
-        category = params.get("category", "")
-        return selectors.filter_expenses(
-            month=month,
-            category=category if category in ExpenseCategory.values else "",
-        )
+        return selectors.filter_expenses(month=month, category=params.get("category", "").strip())
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

@@ -415,7 +415,13 @@ def expense_totals(qs: QuerySet[OperatingExpense] | None = None) -> dict:
         nalog_usd=Coalesce(Sum("amount_usd", filter=Q(category=ExpenseCategory.NALOG)), ZERO_MONEY),
         produkta_usd=Coalesce(Sum("amount_usd", filter=Q(category=ExpenseCategory.PRODUKTA)), ZERO_MONEY),
         stanok_usd=Coalesce(Sum("amount_usd", filter=Q(category=ExpenseCategory.STANOK)), ZERO_MONEY),
-        other_usd=Coalesce(Sum("amount_usd", filter=Q(category=ExpenseCategory.OTHER)), ZERO_MONEY),
+        other_usd=Coalesce(
+            Sum(
+                "amount_usd",
+                filter=~Q(category__in=[ExpenseCategory.NALOG, ExpenseCategory.PRODUKTA, ExpenseCategory.STANOK]),
+            ),
+            ZERO_MONEY,
+        ),
     )
     return {
         "total_usd": Decimal(agg["total_usd"]).quantize(Decimal("0.01")),

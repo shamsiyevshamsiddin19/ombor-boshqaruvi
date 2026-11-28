@@ -69,7 +69,7 @@ class OperatingExpenseTests(TestCase):
                 amount_usd="15.00",
             )
         with self.assertRaises(ValidationError):
-            services.record_expense(user=self.admin, category="UNKNOWN", title="X", amount_usd="10")
+            services.record_expense(user=self.admin, category="   ", title="X", amount_usd="10")
         with self.assertRaises(ValidationError):
             services.record_expense(user=self.admin, category=ExpenseCategory.NALOG, title="  ", amount_usd="10")
         with self.assertRaises(ValidationError):
