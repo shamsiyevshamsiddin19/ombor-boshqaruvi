@@ -64,13 +64,14 @@
 
   {# Desktop Excel Table #}
   <div class="hidden md:block overflow-x-auto">
-    <form method="post" autocomplete="off" novalidate>
+    <form method="post" autocomplete="off" novalidate x-data="{ category: '{{ form.category.value|default_if_none:''|escapejs }}' }">
       {% csrf_token %}
       <table class="grid-table">
         <thead>
           <tr>
-            <th class="w-[150px] text-left">{% translate "Sana" %}</th>
-            <th class="w-[150px] text-left">{% translate "Turi" %}</th>
+            {# Minimum widths so the date and type inputs are never squeezed to nothing on narrower screens. #}
+            <th class="w-[150px] text-left" style="min-width:160px">{% translate "Sana" %}</th>
+            <th class="w-[150px] text-left" style="min-width:180px">{% translate "Turi" %}</th>
             <th class="min-w-[220px] text-left">{% translate "Nomi" %}</th>
             <th class="min-w-[200px] text-left">{% translate "Izoh" %}</th>
             <th class="w-[150px] text-left">{% translate "Kim kiritdi" %}</th>
@@ -87,7 +88,10 @@
             </td>
             <td class="px-3 py-3 align-middle">
               {{ form.category }}
+              {# "Boshqa": name the type yourself, e.g. "Elektr". It is offered in the list from then on. #}
+              <div class="mt-1.5" x-show="category === 'OTHER'" x-cloak>{{ form.new_category }}</div>
               {% for e in form.category.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
+              {% for e in form.new_category.errors %}<p class="field-error text-xs mt-1">{{ e }}</p>{% endfor %}
             </td>
             <td class="px-3 py-3 align-middle">
               {{ form.title }}
@@ -138,15 +142,18 @@
   </div>
 
   {# Mobile Form #}
-  <form method="post" autocomplete="off" novalidate class="md:hidden p-4 form-stack">
+  <form method="post" autocomplete="off" novalidate class="md:hidden p-4 form-stack"
+        x-data="{ category: '{{ mobile_form.category.value|default_if_none:''|escapejs }}' }">
     {% csrf_token %}
     {% include "partials/field.html" with field=mobile_form.category %}
+    <div x-show="category === 'OTHER'" x-cloak>{% include "partials/field.html" with field=mobile_form.new_category hide_optional=True %}</div>
     {% include "partials/field.html" with field=mobile_form.title %}
     <div class="grid grid-cols-2 gap-3">
       {% include "partials/field.html" with field=mobile_form.amount_usd %}
       {% include "partials/field.html" with field=mobile_form.expense_date %}
     </div>
-    {% include "partials/field.html" with field=mobile_form.notes %}
+    {# The label already says "(ixtiyoriy)"; don't add it a second time. #}
+    {% include "partials/field.html" with field=mobile_form.notes hide_optional=True %}
     <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">{% icon "plus" 18 %} {% translate "Saqlash" %}</button>
   </form>
 

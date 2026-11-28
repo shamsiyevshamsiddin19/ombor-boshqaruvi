@@ -540,21 +540,58 @@ class ExpenseCategory(models.TextChoices):
     OTHER = "OTHER", pgettext_lazy("expense_category", "Boshqa")
 
 
+#: Longest name an admin may give a type of their own ("Elektr", "Ijara", ...).
+EXPENSE_TYPE_MAX_LENGTH = 60
+
+
+def custom_expense_types() -> list[str]:
+    """Types admins typed in under "Boshqa" (e.g. "Elektr"), alphabetically."""
+    names = (
+        OperatingExpense.objects.exclude(category__in=ExpenseCategory.values)
+        .order_by()
+        .values_list("category", flat=True)
+        .distinct()
+    )
+    return sorted(names, key=str.casefold)
+
+
 def expense_category_choices() -> list[tuple[str, str]]:
-    return [(choice.value, str(choice.label)) for choice in ExpenseCategory]
+    """Built-in types, then the admins' own types, with "Boshqa" last (choosing it lets you name a new one)."""
+    builtin = [(c.value, str(c.label)) for c in ExpenseCategory if c != ExpenseCategory.OTHER]
+    custom = [(name, name) for name in custom_expense_types()]
+    return [*builtin, *custom, (ExpenseCategory.OTHER.value, str(ExpenseCategory.OTHER.label))]
+
+
+def normalize_expense_type(name: str) -> str:
+    """Turn a typed type name into the stored value, so one type is never kept under two spellings.
+
+    "nalog" -> the built-in NALOG code; "elektr" -> "Elektr" (or the spelling already in use).
+    """
+    clean = " ".join((name or "").split())
+    if not clean:
+        return ""
+    folded = clean.casefold()
+    for choice in ExpenseCategory:
+        if folded in {choice.value.casefold(), str(choice.label).casefold()}:
+            return choice.value
+    for existing in custom_expense_types():
+        if existing.casefold() == folded:
+            return existing
+    return clean[:1].upper() + clean[1:]
 
 
 def expense_category_label(value: str) -> str:
     try:
         return str(ExpenseCategory(value).label)
     except ValueError:
-        return value
+        return value  # an admin's own type is stored by its name
 
 
 class OperatingExpense(models.Model):
     """Additional factory/operating expense (nalog, produkta, stanok, etc.)."""
 
-    category = models.CharField(_("Turi"), max_length=30, choices=ExpenseCategory.choices)
+    # A built-in code (NALOG, PRODUKTA, STANOK, OTHER) or the name of a type an admin added, e.g. "Elektr".
+    category = models.CharField(_("Turi"), max_length=60)
     title = models.CharField(_("Xarajat nomi"), max_length=200)
     amount_usd = models.DecimalField(
         _("Summa (USD $)"),

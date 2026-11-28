@@ -8,8 +8,8 @@ from apps.users.models import worker_role_choices
 
 from .. import services
 from ..models import (
+    EXPENSE_TYPE_MAX_LENGTH,
     BaseMaterial,
-    ExpenseCategory,
     InventoryTransaction,
     LeftoverOffcut,
     OperatingExpense,
@@ -205,7 +205,8 @@ class KirimSerializer(serializers.Serializer):
 
 class OperatingExpenseSerializer(serializers.ModelSerializer):
     created_by = serializers.StringRelatedField(read_only=True)
-    category = serializers.ChoiceField(choices=ExpenseCategory.choices)
+    # A built-in code (NALOG, PRODUKTA, STANOK, OTHER) or an admin's own type name, e.g. "Elektr".
+    category = serializers.CharField(max_length=EXPENSE_TYPE_MAX_LENGTH)
     amount_usd = serializers.DecimalField(max_digits=14, decimal_places=2, min_value=Decimal("0.01"))
 
     class Meta:

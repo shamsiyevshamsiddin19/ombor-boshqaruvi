@@ -10,6 +10,7 @@ from apps.users.forms import unique_code
 from apps.users.models import User, worker_role_choices
 
 from .models import (
+    EXPENSE_TYPE_MAX_LENGTH,
     BaseMaterial,
     Category,
     ExpenseCategory,
@@ -21,6 +22,7 @@ from .models import (
     default_roles_for_category,
     expense_category_choices,
     localized_category_name,
+    normalize_expense_type,
     offcut_category_codes,
     transaction_type_choices,
 )
@@ -380,6 +382,13 @@ class ExpenseForm(forms.Form):
         choices=expense_category_choices,
         initial=ExpenseCategory.STANOK,
     )
+    # Shown when "Boshqa" is chosen: name a type of its own (e.g. "Elektr"). Left empty, it stays "Boshqa".
+    new_category = forms.CharField(
+        label=_("Yangi xarajat turi"),
+        required=False,
+        max_length=EXPENSE_TYPE_MAX_LENGTH,
+        widget=forms.TextInput(attrs={"placeholder": _("Masalan: Elektr, Ijara, Internet")}),
+    )
     title = forms.CharField(
         label=_("Nomi / nima uchun"),
         max_length=200,
@@ -395,7 +404,9 @@ class ExpenseForm(forms.Form):
     expense_date = forms.DateField(
         label=_("Sana"),
         initial=timezone.localdate,
-        widget=forms.DateInput(attrs={"type": "date"}),
+        # <input type="date"> only understands YYYY-MM-DD; the Uzbek locale's "28.11.2026" left it blank,
+        # so the expense could not be saved until a date was picked by hand.
+        widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
     )
     notes = forms.CharField(
         label=_("Izoh (ixtiyoriy)"),
@@ -406,8 +417,16 @@ class ExpenseForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["category"].widget.attrs.update({"class": "control"})
+        self.fields["category"].widget.attrs.update({"class": "control", "x-model": "category"})
+        self.fields["new_category"].widget.attrs.update({"class": "control", ":disabled": "category !== 'OTHER'"})
         self.fields["title"].widget.attrs.update({"class": "control"})
+
+    def clean(self):
+        cleaned = super().clean()
+        new_name = normalize_expense_type(cleaned.get("new_category", ""))
+        if cleaned.get("category") == ExpenseCategory.OTHER and new_name:
+            cleaned["category"] = new_name
+        return cleaned
         self.fields["amount_usd"].widget.attrs.update({"class": "control font-mono"})
         self.fields["expense_date"].widget.attrs.update({"class": "control font-mono"})
         self.fields["notes"].widget.attrs.update({"class": "control"})
