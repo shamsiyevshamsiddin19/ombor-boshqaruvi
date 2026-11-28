@@ -39,6 +39,7 @@ class PhoneField(forms.CharField):
                 "inputmode": "tel",
                 "autocomplete": "tel",
                 "placeholder": "+998 90 123 45 67",
+                "data-phone-mask": "",
             }
         )
 
@@ -74,6 +75,8 @@ class LoginForm(AuthenticationForm):
                 "inputmode": "tel",
                 "autofocus": True,
                 "placeholder": "+998 90 123 45 67",
+                # Formats digits as a phone; an old username typed with letters is left alone.
+                "data-phone-mask": "",
             }
         )
         with_eye(self.fields["password"]).label = _("Parol")

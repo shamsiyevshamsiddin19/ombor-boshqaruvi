@@ -131,10 +131,14 @@ class MaterialSuggestionsView(ApprovedUserRequiredMixin, View):
         category = request.GET.get("category", "")
         names = []
         if query and len(query) <= BaseMaterial._meta.get_field("name").max_length:
-            materials = selectors.visible_materials(request.user).filter(name__istartswith=query)
+            materials = selectors.visible_materials(request.user)
             if category:
                 materials = materials.filter(category=category)
-            names = list(materials.order_by("name").values_list("name", flat=True).distinct()[:8])
+            # Names that start with what was typed come first, then names that contain it elsewhere.
+            names = list(materials.filter(name__istartswith=query).order_by("name").values_list("name", flat=True)[:8])
+            if len(names) < 8:
+                more = materials.filter(selectors.text_search_q("name", query)).exclude(name__in=names)
+                names += list(more.order_by("name").values_list("name", flat=True)[: 8 - len(names)])
         return JsonResponse({"names": names}, headers={"Cache-Control": "private, no-store"})
 
 
@@ -355,7 +359,7 @@ class MaterialListView(WarehouseAdminRequiredMixin, ListView):
         category = self.request.GET.get("category", "")
         status = self.request.GET.get("status", "active")
         if query:
-            qs = qs.filter(name__istartswith=query)
+            qs = qs.filter(selectors.text_search_q("name", query))
         if category in category_codes():
             qs = qs.filter(category=category)
         if status == "active":

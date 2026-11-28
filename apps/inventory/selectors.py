@@ -114,10 +114,33 @@ def user_can_access_material(user, material: BaseMaterial) -> bool:
     return material.is_active and bool(set(material.allowed_roles) & set(user.worker_roles))
 
 
+#: Uzbek is written with several apostrophe characters (o'g'il, o‘g‘il, oʻgʻil); search treats them alike.
+APOSTROPHES = "'‘’ʻʼ`"
+
+
+def text_search_q(field: str, query: str) -> Q:
+    """Rows whose ``field`` contains ``query`` anywhere, case-insensitively and apostrophe-insensitively.
+
+    "18 mm", "oq" or a surname are found too, not only the first letters of the text.
+    A single character still means "starts with".
+    """
+    query = query.strip()
+    if not query:
+        return Q()
+    if len(query) == 1:
+        # A single letter would match almost everything; "l" means "starts with l".
+        return Q(**{f"{field}__istartswith": query})
+    if not any(mark in query for mark in APOSTROPHES):
+        return Q(**{f"{field}__icontains": query})
+    match = Q()
+    for mark in APOSTROPHES:
+        match |= Q(**{f"{field}__icontains": "".join(mark if ch in APOSTROPHES else ch for ch in query)})
+    return match
+
+
 def search_stock(qs: QuerySet, *, query: str = "", category: str = "", exact: bool = False) -> QuerySet:
     if query:
-        lookup = "material__name__iexact" if exact else "material__name__istartswith"
-        qs = qs.filter(**{lookup: query})
+        qs = qs.filter(material__name__iexact=query) if exact else qs.filter(text_search_q("material__name", query))
     if category:
         qs = qs.filter(material__category=category)
     return qs

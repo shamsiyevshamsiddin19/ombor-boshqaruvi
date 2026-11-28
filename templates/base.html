@@ -318,12 +318,13 @@
       <button type="button" class="btn btn-ghost -mr-2 !px-2" @click="menu = false" aria-label="{% translate 'Yopish' %}">{% icon "close" 22 %}</button>
     </div>
     <div class="flex-1 overflow-y-auto px-3 py-4">
-      <div class="mb-4 flex items-start justify-between gap-3 px-2.5">
-        <div class="min-w-0">
-          <p class="font-medium" style="font-size:16px">{{ user.display_name }}</p>
-          <p class="text-muted">{% for r in user.roles %}{{ r|short_role }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+      <div class="mb-4 flex items-center justify-between gap-3 px-2.5">
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-medium" style="font-size:16px">{{ user.display_name }}</p>
+          <p class="truncate text-muted">{% for r in user.roles %}{{ r|short_role }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
         </div>
-        {% include "partials/lang_switch.html" %}
+        {# Fixed, compact width: the switch must never cover the name. #}
+        <div class="flex-none" style="width:120px">{% include "partials/lang_switch.html" with compact=True %}</div>
       </div>
       {% include "partials/nav.html" %}
     </div>
