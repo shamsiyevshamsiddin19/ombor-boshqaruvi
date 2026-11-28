@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f9fafb">
+  {# Search engines index only the login page (it overrides this block); everything else stays out. #}
+  <meta name="robots" content="{% block robots %}noindex, nofollow{% endblock %}">
   <title>{% block title %}{% translate "Ombor" %}{% endblock %} · {{ brand_name }}</title>
   <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">

@@ -14,7 +14,7 @@ msgstr ""
 msgid "O'lchamlar (uzunlik va kenglik) birga berilishi kerak."
 msgstr "Dimensions (length and width) must be provided together."
 
-#: apps/inventory/apps.py:9 templates/base.html:7 templates/inventory/home.html:3 templates/inventory/home.html:10
+#: apps/inventory/apps.py:9 templates/base.html:9 templates/inventory/home.html:3 templates/inventory/home.html:10
 #: templates/inventory/kirim_form.html:34 templates/inventory/my_history.html:13 templates/inventory/offcut_form.html:37 templates/inventory/withdraw_offcut.html:7
 #: templates/inventory/withdraw_whole.html:15 templates/partials/bottom_nav.html:2 templates/partials/nav.html:1 templates/partials/nav.html:6
 #: templates/partials/nav.html:7 templates/partials/nav.html:12
@@ -94,7 +94,7 @@ msgid "Qancha oldingiz?"
 msgstr "How much did you take?"
 
 #: apps/inventory/forms.py:266 apps/inventory/forms.py:326 apps/inventory/models.py:308 apps/inventory/models.py:603
-#: apps/inventory/views.py:704 apps/inventory/views.py:744 templates/inventory/_txn_rows.html:20 templates/inventory/expenses.html:75
+#: apps/inventory/views.py:704 apps/inventory/views.py:744 templates/inventory/_txn_rows.html:20 templates/inventory/expenses.html:76
 msgid "Izoh"
 msgstr "Note"
 
@@ -130,7 +130,7 @@ msgstr "Enter the size for a sheet or roll leftover."
 msgid "Necha dona oldingiz?"
 msgstr "How many pieces did you take?"
 
-#: apps/inventory/forms.py:338 apps/inventory/forms.py:435 templates/inventory/dashboard.html:61
+#: apps/inventory/forms.py:338 apps/inventory/forms.py:437 templates/inventory/dashboard.html:61
 msgid "Oy"
 msgstr "Month"
 
@@ -143,7 +143,7 @@ msgstr "Movement type"
 msgid "Ishchi"
 msgstr "Worker"
 
-#: apps/inventory/forms.py:361 apps/inventory/forms.py:450
+#: apps/inventory/forms.py:361 apps/inventory/forms.py:452
 msgid "Oyni YYYY-MM ko'rinishida kiriting."
 msgstr "Enter the month as YYYY-MM."
 
@@ -155,7 +155,7 @@ msgstr "Other"
 msgid "Tanlang"
 msgstr "Select"
 
-#: apps/inventory/forms.py:381 apps/inventory/forms.py:438
+#: apps/inventory/forms.py:381 apps/inventory/forms.py:440
 msgid "Xarajat turi"
 msgstr "Expense type"
 
@@ -180,20 +180,20 @@ msgid "Summa (USD)"
 msgstr "Amount (USD)"
 
 #: apps/inventory/forms.py:405 apps/inventory/models.py:602 apps/inventory/views.py:704 apps/inventory/views.py:734
-#: templates/inventory/expenses.html:72
+#: templates/inventory/expenses.html:73
 msgid "Sana"
 msgstr "Date"
 
-#: apps/inventory/forms.py:410
+#: apps/inventory/forms.py:412
 msgid "Izoh (ixtiyoriy)"
 msgstr "Note (optional)"
 
-#: apps/inventory/forms.py:413
+#: apps/inventory/forms.py:415
 msgid "Qo'shimcha izoh..."
 msgstr "Additional notes..."
 
 #: apps/inventory/forms.py:50 apps/inventory/forms.py:348 apps/inventory/forms.py:351 apps/inventory/forms.py:341
-#: apps/inventory/forms.py:440
+#: apps/inventory/forms.py:442
 msgid "Barchasi"
 msgstr "All"
 
@@ -483,7 +483,7 @@ msgid "dona"
 msgstr "pcs"
 
 #: apps/inventory/models.py:594 apps/inventory/views.py:704 apps/inventory/views.py:735 templates/inventory/_txn_rows.html:9
-#: templates/inventory/expenses.html:73
+#: templates/inventory/expenses.html:74
 msgid "Turi"
 msgstr "Type"
 
@@ -507,7 +507,7 @@ msgstr "operating expenses"
 msgid "Kod"
 msgstr "Code"
 
-#: apps/inventory/models.py:82 apps/inventory/models.py:177 apps/users/models.py:32 templates/inventory/expenses.html:74
+#: apps/inventory/models.py:82 apps/inventory/models.py:177 apps/users/models.py:32 templates/inventory/expenses.html:75
 msgid "Nomi"
 msgstr "Name"
 
@@ -918,7 +918,7 @@ msgstr "%(who)s recorded stock in: %(name)s +%(amount)s %(unit)s, %(total)s. New
 msgid "Xarajat saqlandi: %(title)s — %(amount)s."
 msgstr "Expense saved: %(title)s — %(amount)s."
 
-#: apps/inventory/views.py:704 templates/inventory/expenses.html:76 templates/inventory/kirim_form.html:204
+#: apps/inventory/views.py:704 templates/inventory/expenses.html:77 templates/inventory/kirim_form.html:204
 msgid "Kim kiritdi"
 msgstr "Recorded by"
 
@@ -1208,7 +1208,7 @@ msgstr "Trade “%(name)s” added. Workers can now choose it when they register
 msgid "Juda ko'p urinish. %(minutes)d daqiqadan keyin qayta urinib ko'ring."
 msgstr "Too many attempts. Try again in %(minutes)d minutes."
 
-#: config/urls.py:8
+#: config/urls.py:9
 msgid "Mebel Ombori — texnik boshqaruv"
 msgstr "Mebel Ombori — technical administration"
 
@@ -1216,7 +1216,7 @@ msgstr "Mebel Ombori — technical administration"
 msgid "Davom etish uchun tizimga kiring."
 msgstr "Log in to continue."
 
-#: templates/403.html:15 templates/users/login.html:3 templates/users/login.html:14 templates/users/register.html:21
+#: templates/403.html:15 templates/users/login.html:3 templates/users/login.html:20 templates/users/register.html:21
 msgid "Kirish"
 msgstr "Log in"
 
@@ -1264,74 +1264,74 @@ msgstr "Wait a moment and reload the page. Your last action may not have been sa
 msgid "Serverda xatolik yuz berdi"
 msgstr "Something went wrong on the server"
 
-#: templates/base.html:112 templates/base.html:288 templates/base.html:332
+#: templates/base.html:101 templates/base.html:239
+msgid "Rol yo'q"
+msgstr "No role"
+
+#: templates/base.html:114 templates/base.html:290 templates/base.html:334
 msgid "Chiqish"
 msgstr "Log out"
 
-#: templates/base.html:135
+#: templates/base.html:137
 msgid "Ombordagi butun materiallarning joriy qiymati"
 msgstr "Current value of all whole materials in stock"
 
-#: templates/base.html:136 templates/inventory/dashboard.html:22
+#: templates/base.html:138 templates/inventory/dashboard.html:22
 msgid "Ombor qiymati"
 msgstr "Stock value"
 
-#: templates/base.html:146 templates/base.html:147 templates/users/pending_user_review.html:5 templates/users/pending_users.html:3
+#: templates/base.html:148 templates/base.html:149 templates/users/pending_user_review.html:5 templates/users/pending_users.html:3
 #: templates/users/pending_users.html:7 templates/users/user_list.html:16
 msgid "So'rovlar"
 msgstr "Requests"
 
-#: templates/base.html:167 templates/base.html:168 templates/base.html:187
+#: templates/base.html:169 templates/base.html:170 templates/base.html:189
 msgid "Bildirishnomalar"
 msgstr "Notifications"
 
-#: templates/base.html:191
+#: templates/base.html:193
 msgid "Hammasini o'qildi"
 msgstr "Mark all as read"
 
-#: templates/base.html:205
+#: templates/base.html:207
 msgid "oldin"
 msgstr "ago"
 
-#: templates/base.html:210 templates/base.html:210
+#: templates/base.html:212 templates/base.html:212
 msgid "O'qildi"
 msgstr "Mark as read"
 
-#: templates/base.html:218
+#: templates/base.html:220
 msgid "Yangi bildirishnomalar yo'q"
 msgstr "No new notifications"
 
-#: templates/base.html:219
+#: templates/base.html:221
 msgid "Barcha materiallar me'yorida va yangi so'rovlar mavjud emas."
 msgstr "All stock is sufficient and there are no new requests."
 
-#: templates/base.html:277 templates/partials/lang_switch.html:3
+#: templates/base.html:279 templates/partials/lang_switch.html:3
 msgid "Til"
 msgstr "Language"
 
-#: templates/base.html:306
+#: templates/base.html:308
 msgid "Tezkor menyu"
 msgstr "Quick menu"
 
-#: templates/base.html:312 templates/partials/bottom_nav.html:10
+#: templates/base.html:314 templates/partials/bottom_nav.html:10
 msgid "Menyu"
 msgstr "Menu"
 
-#: templates/base.html:72 templates/base.html:73 templates/base.html:294
+#: templates/base.html:74 templates/base.html:75 templates/base.html:296
 msgid "Menyuni ochish"
 msgstr "Open menu"
 
-#: templates/base.html:72 templates/base.html:73 templates/base.html:318
+#: templates/base.html:74 templates/base.html:75 templates/base.html:320
 msgid "Yopish"
 msgstr "Close"
 
-#: templates/base.html:85
+#: templates/base.html:87
 msgid "Asosiy menyu"
 msgstr "Main menu"
-
-#: templates/base.html:99 templates/base.html:237
-msgid "Rol yo'q"
-msgstr "No role"
 
 #: templates/inventory/_recent_material_groups.html:10 templates/inventory/_recent_transactions.html:12 templates/inventory/_txn_rows.html:10 templates/inventory/_warehouse_material_group.html:7
 #: templates/inventory/dashboard.html:84 templates/inventory/home.html:107 templates/inventory/material_form.html:128 templates/inventory/material_list.html:59
@@ -1362,7 +1362,7 @@ msgid "Holati"
 msgstr "Status"
 
 #: templates/inventory/_recent_material_groups.html:17 templates/inventory/_recent_transactions.html:13 templates/inventory/_txn_rows.html:21 templates/inventory/_warehouse_material_group.html:18
-#: templates/inventory/dashboard.html:90 templates/inventory/expenses.html:78 templates/inventory/home.html:114 templates/inventory/material_form.html:135
+#: templates/inventory/dashboard.html:90 templates/inventory/expenses.html:79 templates/inventory/home.html:114 templates/inventory/material_form.html:135
 #: templates/inventory/material_list.html:65 templates/inventory/offcut_form.html:73 templates/users/pending_users.html:30 templates/users/user_list.html:56
 msgid "Amal"
 msgstr "Action"
@@ -1586,12 +1586,12 @@ msgstr "All time"
 msgid "nalog, produkta, stanok va boshqa xarajatlar"
 msgstr "tax, food, machinery and other expenses"
 
-#: templates/inventory/expenses.html:111 templates/inventory/expenses.html:155 templates/inventory/material_form.html:278 templates/inventory/material_form.html:432
+#: templates/inventory/expenses.html:112 templates/inventory/expenses.html:157 templates/inventory/material_form.html:278 templates/inventory/material_form.html:432
 #: templates/users/user_edit.html:28
 msgid "Saqlash"
 msgstr "Save"
 
-#: templates/inventory/expenses.html:134 templates/inventory/expenses.html:169
+#: templates/inventory/expenses.html:135 templates/inventory/expenses.html:171
 msgid "Tanlangan davrda qo'shimcha xarajatlar yo'q."
 msgstr "No operating expenses in the selected period."
 
@@ -1643,7 +1643,7 @@ msgstr "Expense history"
 msgid "tarixda saqlanadi"
 msgstr "saved in history"
 
-#: templates/inventory/expenses.html:77
+#: templates/inventory/expenses.html:78
 msgid "Summa"
 msgstr "Amount"
 
@@ -2126,21 +2126,25 @@ msgstr "Password not stored yet: it will become visible when the worker signs in
 msgid "Parolni ko'rib bo'lmaydi"
 msgstr "Password cannot be viewed"
 
-#: templates/users/login.html:17
-msgid "Ro'yxatdan o'ting"
-msgstr "Register"
-
-#: templates/users/login.html:17
-msgid "Yangi ishchimisiz?"
-msgstr "New worker?"
-
-#: templates/users/login.html:6
+#: templates/users/login.html:12
 msgid "Tizimga kirish"
 msgstr "Log in"
 
-#: templates/users/login.html:7
+#: templates/users/login.html:13
 msgid "Sex omboriga telefon raqami va parolingiz bilan kiring."
 msgstr "Log in to the workshop warehouse with your phone number and password."
+
+#: templates/users/login.html:23
+msgid "Ro'yxatdan o'ting"
+msgstr "Register"
+
+#: templates/users/login.html:23
+msgid "Yangi ishchimisiz?"
+msgstr "New worker?"
+
+#: templates/users/login.html:7
+msgid "Profur sex ombori: telefon raqami va parol bilan tizimga kiring. Yangi ishchilar shu yerdan ro'yxatdan o'tadi."
+msgstr "Profur workshop warehouse: sign in with your phone number and password. New workers register here."
 
 #: templates/users/pending_user_review.html:13
 msgid "Ishchi o'zi tanlagan kasblar belgilangan. Kerak bo'lsa o'zgartiring — u faqat shu kasblarga tegishli materiallarni ko'radi va oladi."

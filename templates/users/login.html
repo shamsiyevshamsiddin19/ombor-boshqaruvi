@@ -1,6 +1,12 @@
 {% extends "users/auth_base.html" %}
 {% load i18n %}
 {% block title %}{% translate "Kirish" %}{% endblock %}
+{# The page a search result should open: indexed, with one canonical address (no ?next=...). #}
+{% block robots %}index, follow{% endblock %}
+{% block head %}
+  <meta name="description" content="{% translate "Profur sex ombori: telefon raqami va parol bilan tizimga kiring. Yangi ishchilar shu yerdan ro'yxatdan o'tadi." %}">
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% url 'users:login' %}">
+{% endblock %}
 {% block auth_content %}
 <div class="panel p-6 shadow-sm sm:p-8">
   <h1 class="font-bold" style="font-size:24px;line-height:32px">{% translate "Tizimga kirish" %}</h1>
@@ -14,5 +20,5 @@
     <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">{% translate "Kirish" %}</button>
   </form>
 </div>
-<p class="mt-6 text-center text-muted">{% translate "Yangi ishchimisiz?" %} <a class="font-medium text-ink underline underline-offset-4" href="{% url 'users:register' %}">{% translate "Ro'yxatdan o'ting" %}</a></p>
+<p class="mt-6 text-center text-muted">{% translate "Yangi ishchimisiz?" %} <a class="font-semibold text-blue-700 underline underline-offset-4" href="{% url 'users:register' %}">{% translate "Ro'yxatdan o'ting" %}</a></p>
 {% endblock %}
